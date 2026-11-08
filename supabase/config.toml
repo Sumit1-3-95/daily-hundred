@@ -1,0 +1,7 @@
+# These two functions check their own credentials (personal token / cron secret),
+# so Supabase's JWT check is switched off for them.
+[functions.health-sync]
+verify_jwt = false
+
+[functions.send-nudges]
+verify_jwt = false
