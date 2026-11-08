@@ -77,3 +77,19 @@ test('sleep hours across midnight', () => {
   assert.equal(sleepHours('23:30', '07:00'), 7.5);
   assert.equal(sleepHours('01:00', '07:15'), 6.3);
 });
+
+test('calories and burn auto tasks', () => {
+  const S = base();
+  S.targets = { ...targets, activeKcal: 400 };
+  S.tasks = [
+    { id: 'c', type: 'auto', auto_key: 'calories', weight: 1, days: ALL, sort: 0 },
+    { id: 'b', type: 'auto', auto_key: 'burn', weight: 1, days: ALL, sort: 1 },
+  ];
+  S.days['2026-11-08'] = { log: { active_kcal: 200 }, food: [{ food_id: 'roti', qty: 10 }], workouts: [], tlogs: {} };
+  let c = calcDay(S, '2026-11-08', '2026-11-08');
+  assert.equal(c.scored[0].credit, 0);      // calories only count once closed
+  assert.equal(c.scored[1].credit, 0.5);    // 200 of 400 active kcal
+  S.days['2026-11-08'].log.closed = true;
+  c = calcDay(S, '2026-11-08', '2026-11-08');
+  assert.equal(c.scored[0].credit, 1);      // 850 kcal < 2000
+});

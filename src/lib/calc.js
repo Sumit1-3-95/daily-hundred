@@ -12,6 +12,8 @@ export const AUTO_LABEL = {
   sleep: (t) => `Sleep ${t.sleep} hours`,
   closed: () => 'Log all meals and close the day',
   deficit: (t) => `${t.deficit} kcal deficit`,
+  calories: (t) => `Eat under ${Number(t.kcal).toLocaleString('en-IN')} kcal`,
+  burn: (t) => `Burn ${t.activeKcal} active kcal`,
 };
 export const taskName = (task, targets) =>
   task.type === 'auto' && AUTO_LABEL[task.auto_key] ? AUTO_LABEL[task.auto_key](targets) : task.name;
@@ -69,6 +71,9 @@ export function calcDay(S, k, today) {
           sleep: clamp(sleep / t.sleep),
           closed: closed ? 1 : 0,
           deficit: closed ? clamp(Math.max(0, deficit) / t.deficit) : 0,
+          // under the calorie target, judged once the day is closed
+          calories: closed ? (eaten <= t.kcal ? 1 : clamp(t.kcal / eaten)) : 0,
+          burn: clamp(active / (t.activeKcal || 400)),
         })[x.auto_key] ?? 0;
       default: return 0;
     }

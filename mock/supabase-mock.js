@@ -11,14 +11,15 @@ function seed() {
   const db = { profiles: [], foods: [], food_logs: [], workout_types: [], workouts: [], day_logs: [], lists: [], list_items: [], tasks: [], task_logs: [],
     body_scans: [], blood_results: [], nudges: [], push_subscriptions: [], api_tokens: [], events: [] };
   const u = { user_id: UID };
-  db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', targets: { bmr: 1605, deficit: 500, workoutMin: 45, protein: 125, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1 } });
-  const F = [['roti', 'Roti (phulka)', '1 pc', 85, 3], ['rice', 'Steamed rice', '1 katori (150 g)', 195, 4], ['dal', 'Dal (toor / moong)', '1 katori', 150, 9],
-    ['rajma', 'Rajma', '1 katori', 210, 11], ['paneer', 'Paneer sabzi', '1 katori', 280, 14], ['sabzi', 'Mixed veg sabzi', '1 katori', 120, 3],
-    ['curd', 'Curd', '1 katori (150 g)', 90, 5], ['milk', 'Milk (toned)', '1 glass (250 ml)', 150, 8], ['egg', 'Boiled egg', '1 egg', 75, 6],
-    ['poha', 'Poha', '1 plate', 250, 5], ['chicken', 'Chicken curry', '1 katori', 260, 24], ['whey', 'Whey protein', '1 scoop (30 g)', 120, 24],
-    ['chai', 'Masala chai (with sugar)', '1 cup', 90, 3]];
+  db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 8000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1 } });
+  const F = [['thali', 'Roti sabzi curd', '2 roti + 1 katori sabzi + curd', 380, 14, true], ['dalchawal', 'Dal chawal curd', '1 katori dal + rice + curd', 440, 18, true],
+    ['tikki', 'Aloo tikki salad', '2 tikki + salad', 350, 7, true], ['paneer', 'Paneer salad', '100 g paneer + veggies', 330, 20, true],
+    ['sandwich', 'Sub-style sandwich', '6-inch, veg or paneer', 380, 16, true], ['daliya', 'Daliya', '1 bowl', 220, 7, true],
+    ['shake', 'Protein shake', '1 scoop whey in water', 130, 25, true], ['soya', 'Soya dish', '1 katori', 250, 25, true],
+    ['sweet', 'Indian sweet', '1 piece', 150, 2, true], ['chai', 'Masala chai', '1 cup with sugar', 90, 3, true],
+    ['roti', 'Extra roti', '1 roti', 85, 3, false], ['egg', 'Boiled egg', '1 egg', 75, 6, false], ['fruit', 'Fruit', '1 medium', 100, 1, false]];
   const fid = {};
-  F.forEach(([k, name, serving, kcal, protein]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, archived: false }); });
+  F.forEach(([k, name, serving, kcal, protein, quick]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick, icon: k, archived: false }); });
   const W = [['Cult Strength', 'Full body', 7], ['Cult HRX', 'Full body', 9], ['Leg day', 'Lower body', 7], ['Outdoor walk', 'Cardio', 5]];
   const wt = W.map(([name, area, kpm]) => { const r = { id: uuid(), ...u, name, area, kcal_per_min: kpm }; db.workout_types.push(r); return r; });
   const routine = { id: uuid(), ...u, title: 'Morning routine', kind: 'routine', sort: 0 };
@@ -30,8 +31,11 @@ function seed() {
   const T = [
     { name: 'Morning routine', type: 'checklist', list_id: routine.id, weight: 2 },
     { name: 'Workout', type: 'auto', auto_key: 'workout', weight: 3, days: [1, 2, 3, 4, 5, 6] },
-    { name: 'Hit protein target', type: 'auto', auto_key: 'protein', weight: 2 },
-    { name: 'Drink water target', type: 'auto', auto_key: 'water', weight: 1 },
+    { name: 'Protein', type: 'auto', auto_key: 'protein', weight: 2 },
+    { name: 'Water', type: 'auto', auto_key: 'water', weight: 2 },
+    { name: 'Active burn', type: 'auto', auto_key: 'burn', weight: 1 },
+    { name: 'Calories', type: 'auto', auto_key: 'calories', weight: 1 },
+    { name: 'Deficit', type: 'auto', auto_key: 'deficit', weight: 2 },
     { name: 'Read', type: 'number', target: 25, unit: 'pages', weight: 1 },
     { name: 'Sleep target', type: 'auto', auto_key: 'sleep', weight: 1 },
     { name: 'Log all meals and close the day', type: 'auto', auto_key: 'closed', weight: 1 },
@@ -46,11 +50,10 @@ function seed() {
   for (let i = 40; i >= 1; i--) {
     const d = addDays(now, -i), k = key(d), good = r() < 0.3;
     const add = (f, qty, meal) => db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid[f], qty, meal });
-    add(pick(['poha', 'egg']), pick([1, 2]), 'Breakfast'); add('milk', 1, 'Breakfast');
-    add('roti', pick([2, 3]), 'Lunch'); add('dal', 1, 'Lunch'); add('sabzi', 1, 'Lunch'); add('curd', 1, 'Lunch');
-    add('chai', 1, 'Snack'); if (good || r() < 0.5) add('whey', 1, 'Snack');
-    add('roti', pick([2, 3]), 'Dinner'); add(pick(['paneer', 'chicken', 'rajma']), 1, 'Dinner');
-    if (good) add('chicken', 1, 'Lunch');
+    add('chai', 1, 'Breakfast'); add(pick(['daliya', 'tikki', 'sandwich']), 1, 'Breakfast');
+    add(pick(['thali', 'dalchawal']), 1, 'Lunch'); if (good || r() < 0.5) add('shake', 1, 'Snack');
+    add(pick(['thali', 'paneer', 'soya', 'dalchawal']), 1, 'Dinner'); if (r() < 0.3) add('sweet', 1, 'Dinner');
+    if (good) add('soya', 1, 'Lunch');
     let wk = 0;
     if (d.getDay() !== 0 && (good || r() < 0.8)) { const w = pick(wt.slice(0, 3)), m = 40 + Math.floor(r() * 20); wk = Math.round(m * w.kcal_per_min);
       db.workouts.push({ id: uuid(), ...u, day: k, type_id: w.id, name: w.name, area: w.area, minutes: m, kcal: wk, source: pick(['apple_watch', 'cult']) }); }
@@ -60,10 +63,10 @@ function seed() {
     const ri = db.list_items.filter((x) => x.list_id === routine.id).map((x) => x.id);
     const got = good ? ri : ri.filter(() => r() < 0.7);
     db.task_logs.push({ ...u, day: k, task_id: T[0].id, done: got.length === ri.length, value: null, items: got });
-    db.task_logs.push({ ...u, day: k, task_id: T[4].id, done: good, value: good ? 25 : Math.floor(r() * 30), items: [] });
+    db.task_logs.push({ ...u, day: k, task_id: T[7].id, done: good, value: good ? 25 : Math.floor(r() * 30), items: [] });
   }
   const k = key(now);
-  db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid.poha, qty: 1, meal: 'Breakfast' }, { id: uuid(), ...u, day: k, food_id: fid.milk, qty: 1, meal: 'Breakfast' });
+  db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid.daliya, qty: 1, meal: 'Breakfast' }, { id: uuid(), ...u, day: k, food_id: fid.chai, qty: 1, meal: 'Breakfast' });
   db.day_logs.push({ ...u, day: k, water_ml: 1250, sleep_hours: null, weight: null, active_kcal: 220, steps: 3100, closed: false, rest: false });
   return db;
 }

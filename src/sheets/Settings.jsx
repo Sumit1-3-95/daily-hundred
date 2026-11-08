@@ -4,10 +4,11 @@ import { Field } from '../components/ui.jsx';
 import { pushSupport, subscribePush } from '../lib/push.js';
 import { clearPin } from '../lib/pin.js';
 
-const NUDGE_LABEL = { sleep: 'Sleep and wake time', weight: 'Morning weight', routine: 'Morning routine', water: 'Water check', close_day: 'Close the day' };
+const NUDGE_LABEL = { sleep: 'Wake-up time (morning)', weight: 'Morning weight', routine: 'Morning routine', water: 'Water check', close_day: 'Sign off and bedtime (night)' };
 const TARGETS = [
   ['deficit', 'Daily deficit (kcal)', '10'], ['workoutMin', 'Workout (min / day)', '5'], ['kcal', 'Calories to eat (kcal)', '10'],
   ['protein', 'Protein (g)', '1'], ['water', 'Water (ml)', '250'], ['sleep', 'Sleep (hours)', '0.5'],
+  ['activeKcal', 'Active burn (kcal)', '10'], ['steps', 'Steps', '500'],
   ['bmr', 'Resting burn (kcal)', '1'], ['startWeight', 'Start weight (kg)', '0.1'], ['goalWeight', 'Goal weight (kg)', '0.1'],
 ];
 

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { taskName } from '../lib/calc.js';
-import { Check, fmt } from './ui.jsx';
+import { Check, MBar, fmt } from './ui.jsx';
+import { IconTile } from './Icons.jsx';
+
+const AUTO_ICON = { workout: 'dumbbell', protein: 'bolt', water: 'water', sleep: 'moon', closed: 'moon', deficit: 'target', calories: 'calories', burn: 'fire' };
 
 function autoMeta(task, c, t) {
   return ({
@@ -10,7 +13,9 @@ function autoMeta(task, c, t) {
     water: `${(c.water / 1000).toFixed(2)} / ${t.water / 1000} L logged`,
     sleep: c.sleep ? `${c.sleep} h logged` : 'Not logged yet',
     closed: c.closed ? 'Closed' : 'Close the day on Home tonight',
-    deficit: c.closed ? `${fmt(c.deficit)} / ${t.deficit} kcal` : 'Counts once the day is closed',
+    deficit: c.closed ? `${fmt(c.deficit)} / ${t.deficit} kcal` : `${fmt(c.shownD)} kcal projected · counts when you close the day`,
+    calories: `${fmt(c.eaten)} / ${fmt(t.kcal)} kcal eaten${c.closed ? '' : ' · counts when you close the day'}`,
+    burn: `${fmt(c.active)} / ${t.activeKcal} active kcal`,
   })[task.auto_key];
 }
 
@@ -44,9 +49,9 @@ export default function TaskRow({ k, c, task, credit, manage, onEdit }) {
     meta = `${got} of ${items.length} steps`;
     right = <button className="expand" onClick={() => setOpenList((o) => !o)} aria-expanded={openList}>{openList ? 'Hide' : 'Steps'}</button>;
   } else {
-    ctrl = <span className="chk auto" aria-hidden="true"><Check /></span>;
+    ctrl = done ? <span className="chk auto" aria-hidden="true"><Check /></span> : <IconTile name={AUTO_ICON[task.auto_key]} size="sm" />;
     meta = autoMeta(task, c, t);
-    right = <span className="pill">auto</span>;
+    right = <span className="pill">{Math.round(credit * 100)}%</span>;
   }
   if (manage) right = <button className="link" onClick={() => onEdit(task)}>Edit</button>;
 
@@ -57,6 +62,7 @@ export default function TaskRow({ k, c, task, credit, manage, onEdit }) {
         <div className="t-body">
           <div className="t-name">{name}{task.weight > 1 && <span className="weight-tag">×{task.weight}</span>}</div>
           {meta && <div className="t-meta">{meta}</div>}
+          {(task.type === 'auto' || task.type === 'number') && !done && credit > 0 && <MBar v={credit} cls="r1" />}
         </div>
         {right}
       </div>

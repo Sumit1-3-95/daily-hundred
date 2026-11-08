@@ -3,8 +3,9 @@ import { useStore } from '../store.jsx';
 import { BarChart, LineChart } from '../components/Charts.jsx';
 import { MBar, fmt } from '../components/ui.jsx';
 import { periodStats } from '../lib/calc.js';
-import { DOW, MEALS, addDays, key, lastN, mealNow, parse, short } from '../lib/dates.js';
-import { frequentFoods } from '../sheets/QuickAdd.jsx';
+import { DOW, MEALS, addDays, key, lastN, parse, short } from '../lib/dates.js';
+import FoodPicker from '../components/FoodPicker.jsx';
+import { IconTile, iconForWorkout } from '../components/Icons.jsx';
 
 const SUBS = [['overview', 'Overview'], ['food', 'Food'], ['workout', 'Workout'], ['body', 'Body']];
 
@@ -39,7 +40,9 @@ function Overview() {
   const Q = periodStats(S, n, key(addDays(parse(today), -n)), today);
   const wchg = P.weightStart != null && P.weightEnd != null ? P.weightEnd - P.weightStart : null;
   const fatKg = P.deficitTotal / 7700;
-  const Tile = ({ l, v, s, d }) => <div className="tile"><span>{l}</span><b>{v}</b>{s && <small>{s}</small>}{d}</div>;
+  const TI = { 'Avg day score': 'check', 'Avg deficit': 'target', 'Fat burned (est.)': 'fire', 'Weight change': 'scale', 'Avg eaten': 'calories',
+    'Avg protein': 'bolt', Workout: 'dumbbell', 'Avg sleep': 'moon', 'Avg water': 'water', 'Avg steps': 'steps' };
+  const Tile = ({ l, v, s, d }) => <div className="tile"><div className="stat-h"><IconTile name={TI[l]} size="sm" /><span>{l}</span></div><b>{v}</b>{s && <small>{s}</small>}{d}</div>;
   const k14 = lastN(14, parse(today)), cs14 = k14.map(calc);
   const k30 = lastN(30, parse(today));
 
@@ -96,25 +99,12 @@ function Overview() {
 
 // ---------- Food ----------
 function Food() {
-  const { S, today, calc, A, open } = useStore();
-  const c = calc(today), t = S.targets;
-  const fav = frequentFoods(S, today, 8);
+  const { S, today, calc, A } = useStore();
+  const c = calc(today);
+  const live = S.foods.filter((f) => !f.archived);
   return (
     <>
-      <section className="card"><div className="totals">
-        <div><span>Calories</span><b>{fmt(c.eaten)}</b><MBar v={c.eaten / t.kcal} /><small className="sub">of {fmt(t.kcal)}</small></div>
-        <div><span>Protein</span><b>{fmt(c.protein)} g</b><MBar v={c.protein / t.protein} cls="r3" /><small className="sub">of {t.protein} g</small></div>
-        <div><span>Water</span><b>{(c.water / 1000).toFixed(2)} L</b><MBar v={c.water / t.water} /><small className="sub">of {t.water / 1000} L</small></div>
-      </div></section>
-      <section className="card"><div className="row-h"><h3>Quick add</h3><span className="sub">to {mealNow()}</span></div>
-        <div className="chips">{fav.map((f) => (
-          <button key={f.id} className="chip" onClick={() => A.logFood(today, f.id, mealNow())}>+ {f.name.split(' (')[0]}<b>{fmt(f.kcal)}</b></button>
-        ))}</div>
-        <div className="btn-row">
-          <button className="btn sm" onClick={() => open('logFood')}>Log food</button>
-          <button className="btn ghost sm" onClick={() => open('newFood')}>New food item</button>
-          <button className="btn ghost sm" onClick={() => open('water')}>Water</button>
-        </div></section>
+      <section className="card"><h3>Add food</h3><FoodPicker k={today} /></section>
       <section className="card"><h3>Today's log</h3><div className="list">
         {!c.d.food.length && <div className="empty">Nothing logged yet today.</div>}
         {MEALS.map((m) => {
@@ -125,8 +115,9 @@ function Food() {
               {rows.map((f) => {
                 const x = S.foodsById[f.food_id] || { name: 'Deleted item', serving: '', kcal: 0, protein: 0 };
                 return (
-                  <div className="li" key={f.id}><div className="grow"><div className="nm">{x.name}</div>
-                    <div className="mt">{Number(f.qty)} × {x.serving} · {fmt(x.protein * f.qty)} g protein</div></div>
+                  <div className="li" key={f.id}><IconTile name={x.icon || 'bowl'} size="sm" />
+                    <div className="grow"><div className="nm">{x.name}</div>
+                      <div className="mt">{Number(f.qty)} × {x.serving} · {fmt(x.protein * f.qty)} g protein</div></div>
                     <div className="stepper">
                       <button onClick={() => A.setFoodQty(today, f, Number(f.qty) - 1)} aria-label="Less">−</button>
                       <span className="v">{fmt(x.kcal * f.qty)}</span>
@@ -136,10 +127,12 @@ function Food() {
               })}</div>
           );
         })}</div></section>
-      <section className="card"><div className="row-h"><h3>Your food library</h3><span className="sub">{S.foods.filter((f) => !f.archived).length} items</span></div>
-        <div className="list">{S.foods.filter((f) => !f.archived).map((f) => (
-          <div className="li" key={f.id}><div className="grow"><div className="nm">{f.name}</div><div className="mt">{f.serving}</div></div>
-            <div className="rt">{fmt(f.kcal)} kcal<small>{f.protein} g protein</small></div></div>
+      <section className="card"><div className="row-h"><h3>Your foods</h3><span className="sub">tick to show in quick picks</span></div>
+        <div className="list">{live.map((f) => (
+          <div className="li" key={f.id}><IconTile name={f.icon || 'bowl'} size="sm" />
+            <div className="grow"><div className="nm">{f.name}</div><div className="mt">{f.serving} · {fmt(f.kcal)} kcal · {f.protein} g</div></div>
+            <input type="checkbox" id={`q-${f.id}`} checked={!!f.quick} onChange={(e) => A.updateFood(f.id, { quick: e.target.checked })} aria-label={`Show ${f.name} in quick picks`} />
+          </div>
         ))}</div></section>
     </>
   );
@@ -162,7 +155,7 @@ function Workout() {
     <>
       <section className="card"><div className="row-h"><h3>Today</h3><span className="sub">{c.d.workouts.length} session{c.d.workouts.length === 1 ? '' : 's'}</span></div>
         <div className="list">{c.d.workouts.length ? c.d.workouts.map((w) => (
-          <div className="li" key={w.id}><div className="grow"><div className="nm">{w.name}</div><div className="mt">{w.area} · {src[w.source]}</div></div>
+          <div className="li" key={w.id}><IconTile name={iconForWorkout(w.area)} size="sm" /><div className="grow"><div className="nm">{w.name}</div><div className="mt">{w.area} · {src[w.source]}</div></div>
             <div className="rt">{fmt(w.minutes)} min<small>{fmt(w.kcal)} kcal</small></div>
             <button className="del" onClick={() => A.deleteWorkout(today, w)} aria-label={`Remove ${w.name}`}>✕</button></div>
         )) : <div className="empty">No workout logged yet. Apple Watch workouts arrive when your Shortcut runs.</div>}</div>
@@ -177,7 +170,7 @@ function Workout() {
           <div className="hbar" key={a}><span>{a}</span><div className="tr"><i style={{ width: `${(m / amax) * 100}%` }} /></div><b>{fmt(m)}</b></div>
         )) : <div className="empty">No workouts in the last 14 days.</div>}</section>
       <section className="card"><h3>Workout types</h3><div className="list">{S.wtypes.map((w) => (
-        <div className="li" key={w.id}><div className="grow"><div className="nm">{w.name}</div><div className="mt">{w.area}</div></div>
+        <div className="li" key={w.id}><IconTile name={iconForWorkout(w.area)} size="sm" /><div className="grow"><div className="nm">{w.name}</div><div className="mt">{w.area}</div></div>
           <div className="rt">{w.kcal_per_min}<small>kcal / min</small></div></div>
       ))}</div></section>
     </>

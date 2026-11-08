@@ -1,48 +1,35 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { Field, fmt } from '../components/ui.jsx';
-import { CloseBlock, RoutineBlock, SleepBlock, WaterBlock, WeightBlock } from '../components/Nudges.jsx';
-import { DOW, MEALS, mealNow } from '../lib/dates.js';
+import { CloseBlock, RoutineBlock, WakeBlock, WaterBlock, WeightBlock } from '../components/Nudges.jsx';
+import FoodPicker from '../components/FoodPicker.jsx';
+import { FOOD_ICONS, IconTile } from '../components/Icons.jsx';
+import { DOW, mealNow } from '../lib/dates.js';
 import { AUTO_LABEL } from '../lib/calc.js';
 
 const AREAS = ['Full body', 'Upper body', 'Lower body', 'Core', 'Cardio', 'Mobility', 'Other'];
 const n = (v) => (v === '' || v == null ? null : Number(v));
 
 export function LogFood() {
-  const { S, today, A, open, toast } = useStore();
-  const [meal, setMeal] = useState(mealNow());
-  const [qy, setQ] = useState('');
-  const list = S.foods.filter((f) => !f.archived && (!qy.trim() || f.name.toLowerCase().includes(qy.trim().toLowerCase())));
-  return (
-    <>
-      <h2>Log food</h2>
-      <div className="two">
-        <Field label="Meal" id="fMeal"><select id="fMeal" value={meal} onChange={(e) => setMeal(e.target.value)}>{MEALS.map((m) => <option key={m}>{m}</option>)}</select></Field>
-        <Field label="Search" id="fSearch"><input id="fSearch" value={qy} onChange={(e) => setQ(e.target.value)} placeholder="roti, dal…" autoComplete="off" /></Field>
-      </div>
-      <div className="pick">{list.length ? <div className="list">{list.map((f) => (
-        <div className="li" key={f.id}><div className="grow"><div className="nm">{f.name}</div><div className="mt">{f.serving} · {fmt(f.kcal)} kcal · {f.protein} g protein</div></div>
-          <button className="add1" onClick={async () => { await A.logFood(today, f.id, meal); toast(`Added ${f.name} to ${meal.toLowerCase()}`); }}>+ Add</button></div>
-      ))}</div> : <div className="empty" style={{ margin: '12px 0' }}>No match. Add it as a new food item.</div>}</div>
-      <button className="btn ghost" onClick={() => open('newFood', { name: qy })}>Not in the list? Add a new food item</button>
-    </>
-  );
+  const { today } = useStore();
+  return <><h2>Log food</h2><FoodPicker k={today} /></>;
 }
 
 export function NewFood({ name = '' }) {
   const { today, A, close, toast } = useStore();
+  const [icon, setIcon] = useState('bowl');
   return (
     <>
       <h2>New food item</h2>
       <form onSubmit={async (e) => {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
         const row = await A.createFood({ name: fd.get('name').trim(), serving: fd.get('serving').trim(), kcal: Number(fd.get('kcal')),
-          protein: Number(fd.get('protein')), carbs: n(fd.get('carbs')), fat: n(fd.get('fat')) });
+          protein: Number(fd.get('protein')), carbs: n(fd.get('carbs')), fat: n(fd.get('fat')), icon, quick: !!fd.get('quick') });
         if (fd.get('log')) await A.logFood(today, row.id, mealNow());
         toast(`Saved ${row.name}`); close();
       }}>
-        <Field label="Name" id="nfName"><input id="nfName" name="name" required defaultValue={name} placeholder="e.g. Moong dal chilla" /></Field>
-        <Field label="Serving" id="nfServ"><input id="nfServ" name="serving" required placeholder="e.g. 1 pc, 1 katori, 100 g" /></Field>
+        <Field label="Name" id="nfName"><input id="nfName" name="name" required defaultValue={name} placeholder="e.g. Rajma chawal" /></Field>
+        <Field label="One serving is" id="nfServ"><input id="nfServ" name="serving" required placeholder="e.g. 1 plate, 2 roti + sabzi, 1 piece" /></Field>
         <div className="two">
           <Field label="Calories (kcal)" id="nfK"><input id="nfK" name="kcal" type="number" inputMode="decimal" min="0" required /></Field>
           <Field label="Protein (g)" id="nfP"><input id="nfP" name="protein" type="number" inputMode="decimal" min="0" step="0.1" required /></Field>
@@ -51,6 +38,11 @@ export function NewFood({ name = '' }) {
           <Field label="Carbs (g, optional)" id="nfC"><input id="nfC" name="carbs" type="number" min="0" step="0.1" /></Field>
           <Field label="Fat (g, optional)" id="nfF"><input id="nfF" name="fat" type="number" min="0" step="0.1" /></Field>
         </div>
+        <div className="field"><span className="lb">Picture</span>
+          <div className="iconpick">{FOOD_ICONS.map((ic) => (
+            <button type="button" key={ic} aria-pressed={icon === ic} onClick={() => setIcon(ic)} aria-label={ic}><IconTile name={ic} size="sm" /></button>
+          ))}</div></div>
+        <label className="toggle" htmlFor="nfQuick"><span>Show in quick picks</span><input id="nfQuick" name="quick" type="checkbox" defaultChecked /></label>
         <label className="toggle" htmlFor="nfLog"><span>Also log 1 serving now</span><input id="nfLog" name="log" type="checkbox" defaultChecked /></label>
         <button className="btn">Save food item</button>
       </form>
@@ -112,9 +104,9 @@ export function NewWorkout() {
 
 export const Water = () => { const { today } = useStore(); return <><h2>Water</h2><WaterBlock k={today} /></>; };
 export const Weight = () => { const { today, close } = useStore(); return <><h2>Today's weight</h2><WeightBlock k={today} onDone={close} /></>; };
-export const Sleep = () => { const { today, close } = useStore(); return <><h2>Last night's sleep</h2><SleepBlock k={today} onDone={close} /></>; };
+export const Sleep = () => { const { today, close } = useStore(); return <><h2>Good morning</h2><WakeBlock k={today} onDone={close} /></>; };
 export const Routine = () => { const { today } = useStore(); return <><h2>Morning routine</h2><RoutineBlock k={today} /></>; };
-export const CloseDay = () => { const { today, close } = useStore(); return <><h2>Close the day</h2><CloseBlock k={today} onDone={close} /></>; };
+export const CloseDay = () => { const { today, close } = useStore(); return <><h2>Sign off for today</h2><CloseBlock k={today} onDone={close} /></>; };
 
 export function TaskForm({ task, preset }) {
   const { S, A, close, toast } = useStore();

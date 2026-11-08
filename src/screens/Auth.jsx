@@ -27,7 +27,7 @@ export function Login() {
     e.preventDefault(); setBusy(true); setErr('');
     const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'email' });
     setBusy(false);
-    if (error) setErr('That code did not work. Check the latest email or send a new code.');
+    if (error) setErr(error.message);
   };
   return (
     <div className="center"><div className="auth">

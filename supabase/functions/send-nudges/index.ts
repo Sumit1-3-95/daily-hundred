@@ -43,8 +43,8 @@ Deno.serve(async (req) => {
 
     for (const n of pending) {
       let msg: { title: string; body: string; url: string } | null = null;
-      if (n.kind === 'sleep' && log?.sleep_hours == null)
-        msg = { title: 'Good morning', body: 'When did you sleep and wake up?', url: '/?nudge=sleep' };
+      if (n.kind === 'sleep' && log?.sleep_hours == null && log?.wake_time == null)
+        msg = { title: 'Good morning ☀️', body: 'What time did you wake up?', url: '/?nudge=sleep' };
       if (n.kind === 'weight' && log?.weight == null)
         msg = { title: 'Morning weigh-in', body: 'Step on the scale before breakfast and log it.', url: '/?nudge=weight' };
       if (n.kind === 'water') {
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
         }
       }
       if (n.kind === 'close_day' && !log?.closed)
-        msg = { title: 'Close your day', body: 'Log any meals left, then close the day to lock in your deficit.', url: '/?nudge=close' };
+        msg = { title: 'Time to sign off', body: 'Log any meals left, note your bedtime and close the day.', url: '/?nudge=close' };
 
       await db.from('nudge_sends').insert({ nudge_id: n.id, day: now.date });
       if (!msg) continue;

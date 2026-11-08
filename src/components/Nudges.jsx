@@ -1,29 +1,40 @@
 // In-app nudges on Home. The same blocks open in a sheet when you tap a push notification.
+// Sleep is split: bedtime is logged when you close the day at night, wake time in the morning.
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
-import { sleepHours } from '../lib/dates.js';
+import { addDays, key, parse, sleepHours } from '../lib/dates.js';
 import { Check, Field, fmt } from './ui.jsx';
+import { Icon, IconTile } from './Icons.jsx';
 
 const DK = (k) => `dh.dismiss.${k}`;
 const getDismissed = (k) => { try { return JSON.parse(localStorage.getItem(DK(k))) || []; } catch { return []; } };
 const addDismissed = (k, id) => { try { localStorage.setItem(DK(k), JSON.stringify([...getDismissed(k), id])); } catch { /* ignore */ } };
+const nowHHMM = () => { const d = new Date(); const m = Math.round(d.getMinutes() / 5) * 5; d.setMinutes(m); return d.toTimeString().slice(0, 5); };
+const yesterday = (k) => key(addDays(parse(k), -1));
 
 export function routineTasks(S, c) {
   return c.scored.filter((s) => s.task.type === 'checklist' && S.lists.find((l) => l.id === s.task.list_id)?.kind === 'routine');
 }
 
-export function SleepBlock({ k, onDone }) {
+/** Morning: wake time. Uses last night's bedtime (logged when you closed the day) to work out sleep. */
+export function WakeBlock({ k, onDone }) {
   const { A, calc } = useStore();
   const log = calc(k).log;
-  const [bed, setBed] = useState(log.bed_time?.slice(0, 5) || '23:00');
-  const [wake, setWake] = useState(log.wake_time?.slice(0, 5) || '06:45');
+  const bedLogged = calc(yesterday(k)).log.bed_time?.slice(0, 5);
+  const [bed, setBed] = useState(bedLogged || '23:00');
+  const [wake, setWake] = useState(log.wake_time?.slice(0, 5) || nowHHMM());
   const h = sleepHours(bed, wake);
   return (
-    <form onSubmit={async (e) => { e.preventDefault(); await A.saveDay(k, { bed_time: bed, wake_time: wake, sleep_hours: h }); onDone?.(); }}>
-      <div className="two">
-        <Field label="Went to bed" id="nbed"><input id="nbed" type="time" value={bed} onChange={(e) => setBed(e.target.value)} required /></Field>
-        <Field label="Woke up" id="nwake"><input id="nwake" type="time" value={wake} onChange={(e) => setWake(e.target.value)} required /></Field>
-      </div>
+    <form onSubmit={async (e) => {
+      e.preventDefault();
+      if (!bedLogged) await A.saveDay(yesterday(k), { bed_time: bed });
+      await A.saveDay(k, { wake_time: wake, sleep_hours: h });
+      onDone?.();
+    }}>
+      {bedLogged
+        ? <p className="hint"><Icon name="moon" size={14} /> You went to bed at <b>{bedLogged}</b> last night.</p>
+        : <Field label="Went to bed last night" id="nbed"><input id="nbed" type="time" value={bed} onChange={(e) => setBed(e.target.value)} required /></Field>}
+      <Field label="Woke up at" id="nwake"><input id="nwake" type="time" value={wake} onChange={(e) => setWake(e.target.value)} required /></Field>
       <button className="btn">Save · {h ?? '–'} h sleep</button>
     </form>
   );
@@ -35,9 +46,22 @@ export function WeightBlock({ k, onDone }) {
   const [w, setW] = useState(calc(k).weight ?? last ?? '');
   return (
     <form className="inline" onSubmit={async (e) => { e.preventDefault(); await A.saveDay(k, { weight: Math.round(Number(w) * 10) / 10 }); onDone?.(); }}>
+      <IconTile name="scale" />
       <Field label="Weight (kg)" id="nw"><input id="nw" type="number" inputMode="decimal" step="0.1" min="30" max="250" value={w} onChange={(e) => setW(e.target.value)} required /></Field>
       <button className="btn sm">Save</button>
     </form>
+  );
+}
+
+export function WaterButtons({ k }) {
+  const { A } = useStore();
+  return (
+    <div className="water-btns">
+      <button onClick={() => A.addWater(k, 250)}><Icon name="water" size={20} /><span>+250 ml</span><small>glass</small></button>
+      <button onClick={() => A.addWater(k, 500)}><Icon name="bottle" size={20} /><span>+500 ml</span><small>bottle</small></button>
+      <button onClick={() => A.addWater(k, 1000)}><Icon name="bottle" size={20} /><span>+1 L</span><small>big bottle</small></button>
+      <button className="undo" onClick={() => A.addWater(k, -250)}><span>Undo</span><small>−250 ml</small></button>
+    </div>
   );
 }
 
@@ -47,16 +71,35 @@ export function WaterBlock({ k, onDone }) {
   const [total, setTotal] = useState('');
   return (
     <>
-      <p className="hint">So far: <b>{(c.water / 1000).toFixed(2)} L</b> of {S.targets.water / 1000} L</p>
-      <div className="chips">
-        {[250, 500, 750].map((ml) => <button key={ml} className="chip" onClick={() => A.addWater(k, ml)}>+ {ml} ml</button>)}
-        <button className="chip" onClick={() => A.addWater(k, -250)}>Undo 250</button>
+      <div className="inline" style={{ alignItems: 'center' }}>
+        <Glass p={c.water / S.targets.water} size={56} />
+        <p className="hint" style={{ flex: 1 }}>So far <b>{(c.water / 1000).toFixed(2)} L</b> of {S.targets.water / 1000} L</p>
       </div>
+      <WaterButtons k={k} />
       <form className="inline" onSubmit={async (e) => { e.preventDefault(); await A.saveDay(k, { water_ml: Math.round(Number(total) * 1000) }); setTotal(''); onDone?.(); }}>
         <Field label="Or set today's total (L)" id="nwt"><input id="nwt" type="number" inputMode="decimal" step="0.05" min="0" max="10" value={total} onChange={(e) => setTotal(e.target.value)} required /></Field>
         <button className="btn sm ghost">Set total</button>
       </form>
     </>
+  );
+}
+
+/** A glass that fills up. p = 0..1+ */
+export function Glass({ p, size = 120 }) {
+  const fill = Math.max(0, Math.min(1, p || 0));
+  const top = 8 + (1 - fill) * 84;
+  const id = `g${size}`;
+  return (
+    <svg className="glass" width={size * 0.8} height={size} viewBox="0 0 80 100" role="img" aria-label={`${Math.round(fill * 100)}% of water target`}>
+      <defs><clipPath id={id}><path d="M10 6h60l-7 86a4 4 0 0 1-4 4H21a4 4 0 0 1-4-4z" /></clipPath></defs>
+      <g clipPath={`url(#${id})`}>
+        <rect x="0" y="0" width="80" height="100" className="glass-bg" />
+        {fill > 0 && <path className="glass-water" d={`M0 ${top} q10 -5 20 0 t20 0 t20 0 t20 0 V100 H0z`} />}
+        {fill > 0.15 && <><circle className="glass-bubble" cx="30" cy={Math.min(88, top + 18)} r="2" /><circle className="glass-bubble" cx="48" cy={Math.min(90, top + 30)} r="1.5" /></>}
+      </g>
+      <path className="glass-line" d="M10 6h60l-7 86a4 4 0 0 1-4 4H21a4 4 0 0 1-4-4z" />
+      {[0.25, 0.5, 0.75].map((m) => <path key={m} className="glass-tick" d={`M${64 - m * 0} ${8 + (1 - m) * 84}h-6`} />)}
+    </svg>
   );
 }
 
@@ -70,7 +113,6 @@ export function RoutineBlock({ k }) {
     const items = S.items.filter((i) => i.list_id === task.list_id);
     return (
       <div key={task.id} className="subitems" style={{ paddingLeft: 0 }}>
-        <div className="qp-h">{task.name}</div>
         {items.map((i) => {
           const on = (tl.items || []).includes(i.id);
           return (
@@ -84,13 +126,24 @@ export function RoutineBlock({ k }) {
   });
 }
 
+/** Night: confirm the day's numbers, note bedtime, close the day. */
 export function CloseBlock({ k, onDone }) {
   const { A, calc, S } = useStore();
   const c = calc(k);
+  const [bed, setBed] = useState(c.log.bed_time?.slice(0, 5) || nowHHMM());
   return (
     <>
-      <p className="hint">Eaten {fmt(c.eaten)} kcal and {fmt(c.protein)} g protein. Burned {fmt(c.burned)} kcal. If that's everything, close the day to lock in a {fmt(c.deficit)} kcal deficit (target {S.targets.deficit}).</p>
-      <button className="btn" onClick={async () => { if (await A.closeDay(k)) onDone?.(); }}>Close the day</button>
+      <div className="close-sum">
+        <div><IconTile name="calories" size="sm" /><span>Eaten</span><b>{fmt(c.eaten)}</b></div>
+        <div><IconTile name="fire" size="sm" /><span>Burned</span><b>{fmt(c.burned)}</b></div>
+        <div><IconTile name="target" size="sm" /><span>Deficit</span><b>{fmt(c.deficit)}</b></div>
+        <div><IconTile name="bolt" size="sm" /><span>Protein</span><b>{fmt(c.protein)} g</b></div>
+      </div>
+      <p className="hint">If all your meals are logged, close the day to lock in the deficit (target {S.targets.deficit} kcal).</p>
+      <Field label="Going to bed at" id="nbt"><input id="nbt" type="time" value={bed} onChange={(e) => setBed(e.target.value)} /></Field>
+      <button className="btn" onClick={async () => { if (await A.closeDay(k)) { if (bed) await A.saveDay(k, { bed_time: bed }); onDone?.(); } }}>
+        Close the day and sign off
+      </button>
     </>
   );
 }
@@ -99,12 +152,10 @@ export function CloseBlock({ k, onDone }) {
 function dueNudges(S, c, hour) {
   const t = S.targets, out = [];
   const rts = routineTasks(S, c);
-  if (hour >= 5 && hour < 14 && !c.log.sleep_hours) out.push(['sleep', 'Good morning. When did you sleep and wake up?']);
-  if (hour >= 5 && hour < 12 && c.weight == null) out.push(['weight', 'Morning weigh-in']);
-  if (hour >= 8 && rts.some((r) => r.credit < 0.999)) out.push(['routine', 'Is your morning routine done?']);
-  const pace = t.water * Math.min(1, Math.max(0, (hour - 7) / 14));
-  if (hour >= 11 && c.water < pace) out.push(['water', `Water check: ${(c.water / 1000).toFixed(2)} L so far`]);
-  if (hour >= 21 && !c.closed) out.push(['close', 'Ready to close the day?']);
+  if (hour >= 5 && hour < 13 && !c.log.wake_time && !c.log.sleep_hours) out.push(['wake', 'sun', 'Good morning. What time did you wake up?']);
+  if (hour >= 5 && hour < 12 && c.weight == null) out.push(['weight', 'scale', 'Morning weigh-in']);
+  if (hour >= 8 && rts.some((r) => r.credit < 0.999)) out.push(['routine', 'list', 'Is your morning routine done?']);
+  if (hour >= 21 && !c.closed) out.push(['close', 'moon', 'Ready to sign off for the day?']);
   return out;
 }
 
@@ -115,12 +166,12 @@ export default function NudgeCards({ k }) {
   const dismissed = getDismissed(k);
   const list = dueNudges(S, c, new Date().getHours()).filter(([id]) => !dismissed.includes(id)).slice(0, 2);
   if (!list.length) return null;
-  const Block = { sleep: SleepBlock, weight: WeightBlock, routine: RoutineBlock, water: WaterBlock, close: CloseBlock };
-  return list.map(([id, title]) => {
+  const Block = { wake: WakeBlock, weight: WeightBlock, routine: RoutineBlock, close: CloseBlock };
+  return list.map(([id, icon, title]) => {
     const B = Block[id];
     return (
       <section key={id} className="card nudge">
-        <div className="row-h"><h3>{title}</h3>
+        <div className="row-h"><div className="nudge-h"><IconTile name={icon} size="sm" /><h3>{title}</h3></div>
           <button className="x" onClick={() => { addDismissed(k, id); track('nudge_dismissed', { id }); force((n) => n + 1); }}>Later</button></div>
         <B k={k} />
       </section>

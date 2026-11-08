@@ -6,7 +6,7 @@ import { fetchAll, supabase } from './lib/supabase.js';
 import { addDays, key, todayKey } from './lib/dates.js';
 import { calcDay, emptyDay } from './lib/calc.js';
 
-const DEFAULT_TARGETS = { bmr: 1605, deficit: 500, workoutMin: 45, protein: 125, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1 };
+const DEFAULT_TARGETS = { bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, activeKcal: 400, steps: 8000, goalWeight: 71.5, startWeight: 77.1 };
 const HISTORY_DAYS = 120;
 
 const Ctx = createContext(null);
@@ -132,6 +132,12 @@ export function StoreProvider({ session, children }) {
       track('meal_repeated', { meal });
       toast(`Added yesterday's ${meal.toLowerCase()}`);
     },
+    /** Take one serving of a food off today's log (newest entry first, preferring the given meal). */
+    removeOneFood: (k, foodId, meal) => {
+      const rows = day(k).food.filter((f) => f.food_id === foodId);
+      const row = rows.filter((f) => f.meal === meal).pop() || rows.pop();
+      if (row) return A.setFoodQty(k, row, Number(row.qty) - 1);
+    },
     createFood: async (f) => {
       const row = await q(supabase.from('foods').insert({ user_id: uid, ...f }).select().single());
       commit((S) => { S.foods.push(row); S.foodsById[row.id] = row; });
@@ -244,6 +250,11 @@ export function StoreProvider({ session, children }) {
     saveProfile: async (patch) => {
       const row = await q(supabase.from('profiles').update(patch).eq('id', uid).select().single());
       commit((S) => { S.profile = row; S.targets = { ...DEFAULT_TARGETS, ...(row.targets || {}) }; });
+    },
+    savePrefs: (patch) => A.saveProfile({ prefs: { ...(ref.current.profile.prefs || {}), ...patch } }),
+    updateFood: async (id, patch) => {
+      const row = await q(supabase.from('foods').update(patch).eq('id', id).select().single());
+      commit((S) => { S.foods = S.foods.map((x) => (x.id === id ? row : x)); S.foodsById[id] = row; });
     },
     saveNudge: async (n) => {
       if (n.id) {
