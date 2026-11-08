@@ -108,3 +108,4 @@ mock/                  in-memory Supabase for `npm run demo`
 
 - Claude: upload an InBody or blood report photo and fill the numbers; describe a meal in words and log it; plan tomorrow's tasks.
 - Productivity tab (deep work, focus blocks).
+Last deployed: 8 Nov 2026.
