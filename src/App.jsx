@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { configured, supabase } from './lib/supabase.js';
-import { hasPin, watchLock } from './lib/pin.js';
 import { StoreProvider, useStore } from './store.jsx';
-import { Login, NotConfigured, PinLock, SetPin } from './screens/Auth.jsx';
+import { Login, NotConfigured } from './screens/Auth.jsx';
 import Home from './screens/Home.jsx';
 import Health from './screens/Health.jsx';
 import Today from './screens/Today.jsx';
@@ -64,31 +63,20 @@ function Shell() {
 
 export default function App() {
   const [session, setSession] = useState(undefined);
-  const [pinTick, setPinTick] = useState(0);
-  const [locked, setLocked] = useState(true);
 
   useEffect(() => {
-    if (!configured) return;
+    if (!configured) return undefined;
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => data.subscription.unsubscribe();
-  }, []);
-  useEffect(() => {
-    const lock = () => setLocked(true);
-    window.addEventListener('dh-lock', lock);
-    const stop = watchLock(lock);
-    return () => { window.removeEventListener('dh-lock', lock); stop(); };
   }, []);
 
   if (!configured) return <NotConfigured />;
   if (session === undefined) return <div className="spinner">Loading…</div>;
   if (!session) return <Login />;
-  const uid = session.user.id;
-  if (!hasPin(uid)) return <SetPin uid={uid} onDone={() => { setLocked(false); setPinTick(pinTick + 1); }} />;
   return (
     <StoreProvider session={session}>
       <Shell />
-      {locked && <PinLock uid={uid} onUnlock={() => setLocked(false)} />}
     </StoreProvider>
   );
 }

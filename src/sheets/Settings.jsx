@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { Field } from '../components/ui.jsx';
 import { pushSupport, subscribePush } from '../lib/push.js';
-import { clearPin } from '../lib/pin.js';
+import { supabase } from '../lib/supabase.js';
 
 const NUDGE_LABEL = { sleep: 'Wake-up time (morning)', weight: 'Morning weight', routine: 'Morning routine', water: 'Water check', close_day: 'Sign off and bedtime (night)' };
 const TARGETS = [
@@ -115,14 +115,23 @@ function HealthSync() {
 }
 
 function Account() {
-  const { S, A } = useStore();
+  const { S, A, toast } = useStore();
+  const [pin, setPin] = useState('');
   return (
     <>
-      <p className="hint">Signed in as {S.profile.name || 'you'}. The PIN only unlocks the app on this device.</p>
-      <button className="btn ghost" onClick={() => window.dispatchEvent(new Event('dh-lock'))}>Lock now</button>
-      <button className="btn ghost" onClick={() => { clearPin(); window.location.reload(); }}>Change PIN</button>
-      <button className="btn ghost" onClick={async () => { clearPin(); await A.signOut(); }}>Sign out</button>
-      <p className="hint">Daily Hundred v0.1</p>
+      <p className="hint">Signed in as {S.profile.name || 'you'}.</p>
+      <form className="inline" onSubmit={async (e) => {
+        e.preventDefault();
+        const { error } = await supabase.auth.updateUser({ password: pin });
+        if (error) toast(error.message); else { toast('Login PIN changed'); setPin(''); }
+      }}>
+        <div className="field"><label htmlFor="npin">New 6-digit login PIN</label>
+          <input id="npin" type="password" inputMode="numeric" autoComplete="new-password" maxLength={6} value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} /></div>
+        <button className="btn sm" disabled={!/^\d{6}$/.test(pin)}>Save</button>
+      </form>
+      <button className="btn ghost" onClick={() => A.signOut()}>Sign out</button>
+      <p className="hint">Daily Hundred v0.2</p>
     </>
   );
 }

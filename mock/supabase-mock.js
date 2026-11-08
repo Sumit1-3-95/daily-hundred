@@ -127,6 +127,9 @@ export function createClient() {
       signOut: async () => ({ error: null }),
       signInWithOtp: async () => ({ error: null }),
       verifyOtp: async () => ({ error: null }),
+      signInWithPassword: async () => ({ data: { session }, error: null }),
+      signUp: async () => ({ data: { session }, error: null }),
+      updateUser: async () => ({ data: {}, error: null }),
     },
   };
 }

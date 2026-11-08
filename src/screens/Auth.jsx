@@ -11,44 +11,64 @@ const Logo = () => (
 );
 
 export function Login() {
+  const [mode, setMode] = useState('pin'); // pin | new | code
   const [email, setEmail] = useState('');
+  const [pin, setPinV] = useState('');
   const [code, setCode] = useState('');
-  const [step, setStep] = useState('email');
+  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const send = async (e) => {
-    e.preventDefault(); setBusy(true); setErr('');
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: true, emailRedirectTo: window.location.origin } });
-    setBusy(false);
-    if (error) setErr(error.message.includes('invited') ? 'This email has not been invited yet.' : error.message);
-    else setStep('code');
-  };
-  const verify = async (e) => {
-    e.preventDefault(); setBusy(true); setErr('');
+  const run = async (fn) => { setBusy(true); setErr(''); try { await fn(); } catch (e) { setErr(e.message); } setBusy(false); };
+  const pinOk = /^\d{6}$/.test(pin);
+
+  const signIn = (e) => { e.preventDefault(); run(async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: pin });
+    if (error) throw new Error(error.message.includes('Invalid') ? 'Email or PIN is wrong.' : error.message);
+  }); };
+  const signUp = (e) => { e.preventDefault(); run(async () => {
+    const { data, error } = await supabase.auth.signUp({ email: email.trim(), password: pin });
+    if (error) throw new Error(error.message.includes('invited') ? 'This email has not been invited yet.' : error.message);
+    if (!data.session) throw new Error('Account created. Turn off "Confirm email" in Supabase to sign in without an email.');
+  }); };
+  const sendCode = (e) => { e.preventDefault(); run(async () => {
+    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false, emailRedirectTo: window.location.origin } });
+    if (error) throw error; setSent(true);
+  }); };
+  const verify = (e) => { e.preventDefault(); run(async () => {
     const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'email' });
-    setBusy(false);
-    if (error) setErr(error.message);
-  };
+    if (error) throw error;
+  }); };
+
+  const emailField = <div className="field"><label htmlFor="em">Email</label>
+    <input id="em" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>;
+  const pinField = <div className="field"><label htmlFor="pn">{mode === 'new' ? 'Choose a 6-digit PIN' : '6-digit PIN'}</label>
+    <input id="pn" type="password" inputMode="numeric" autoComplete={mode === 'new' ? 'new-password' : 'current-password'} maxLength={6} required
+      value={pin} onChange={(e) => setPinV(e.target.value.replace(/\D/g, ''))} /></div>;
+
   return (
     <div className="center"><div className="auth">
       <Logo />
       <h1>Daily Hundred</h1>
-      {step === 'email' ? (
-        <form onSubmit={send}>
-          <p className="hint">Sign in with your email once on this device. After that you unlock with a PIN.</p>
-          <div className="field"><label htmlFor="em">Email</label>
-            <input id="em" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-          <button className="btn" disabled={busy}>{busy ? 'Sending…' : 'Email me a code'}</button>
-        </form>
-      ) : (
-        <form onSubmit={verify}>
-          <p className="hint">We sent a 6-digit code to <b>{email}</b>. You can also tap the link in that email.</p>
-          <div className="field"><label htmlFor="cd">Code</label>
-            <input id="cd" inputMode="numeric" autoComplete="one-time-code" maxLength={10} required value={code} onChange={(e) => setCode(e.target.value)} /></div>
-          <button className="btn" disabled={busy}>{busy ? 'Checking…' : 'Sign in'}</button>
-          <button type="button" className="btn ghost" onClick={() => { setStep('email'); setCode(''); }}>Use a different email</button>
-        </form>
-      )}
+      {mode === 'pin' && <form onSubmit={signIn}>
+        {emailField}{pinField}
+        <button className="btn" disabled={busy || !pinOk}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        <button type="button" className="btn ghost" onClick={() => { setMode('new'); setErr(''); }}>First time here? Create your account</button>
+        <button type="button" className="link" onClick={() => { setMode('code'); setErr(''); }}>Forgot PIN? Sign in with an email code</button>
+      </form>}
+      {mode === 'new' && <form onSubmit={signUp}>
+        <p className="hint">Use the email you were invited with.</p>
+        {emailField}{pinField}
+        <button className="btn" disabled={busy || !pinOk}>{busy ? 'Creating…' : 'Create account'}</button>
+        <button type="button" className="link" onClick={() => setMode('pin')}>I already have an account</button>
+      </form>}
+      {mode === 'code' && (!sent
+        ? <form onSubmit={sendCode}>{emailField}<button className="btn" disabled={busy}>Email me a code</button>
+            <button type="button" className="link" onClick={() => setMode('pin')}>Back to PIN sign-in</button></form>
+        : <form onSubmit={verify}>
+            <p className="hint">Enter the code sent to <b>{email}</b>. Then set a new PIN in Settings → Account.</p>
+            <div className="field"><label htmlFor="cd">Code</label>
+              <input id="cd" inputMode="numeric" autoComplete="one-time-code" maxLength={10} required value={code} onChange={(e) => setCode(e.target.value)} /></div>
+            <button className="btn" disabled={busy}>Sign in</button></form>)}
       {err && <p className="err">{err}</p>}
     </div></div>
   );
