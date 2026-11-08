@@ -1,33 +1,36 @@
-// Tap-to-log food grid: your regular meals as picture cards with calories and protein.
-// Tap a card to add one serving; the count and the day's totals update right away.
+// Food picker grouped by meal. Each food is a picture card (photo if set, otherwise a drawn icon).
+// Tap a card to add one serving; the badge shows how many you've had today.
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
-import { IconTile } from './Icons.jsx';
-import { MBar, fmt } from './ui.jsx';
+import { Icon, IconTile } from './Icons.jsx';
+import { fmt } from './ui.jsx';
 import { MEALS, mealNow } from '../lib/dates.js';
 
-export default function FoodPicker({ k, showTotals = true }) {
+const MEAL_ICON = { Breakfast: 'sun', Lunch: 'thali', Snack: 'chai', Dinner: 'moon' };
+
+export default function FoodPicker({ k }) {
   const { S, A, calc, open } = useStore();
   const [meal, setMeal] = useState(mealNow());
-  const [more, setMore] = useState(false);
+  const [all, setAll] = useState(false);
   const [qy, setQ] = useState('');
   const c = calc(k), t = S.targets;
   const live = S.foods.filter((f) => !f.archived);
-  const quick = live.filter((f) => f.quick);
-  const others = live.filter((f) => !f.quick && (!qy.trim() || f.name.toLowerCase().includes(qy.trim().toLowerCase())));
-  const count = (id) => c.d.food.filter((f) => f.food_id === id).reduce((a, f) => a + Number(f.qty), 0);
+  const forMeal = live.filter((f) => f.quick && (!f.meals?.length || f.meals.includes(meal)));
+  const rest = live.filter((f) => !forMeal.includes(f) && (!qy.trim() || f.name.toLowerCase().includes(qy.trim().toLowerCase())));
+  const countIn = (id) => c.d.food.filter((f) => f.food_id === id && f.meal === meal).reduce((a, f) => a + Number(f.qty), 0);
+  const mealKcal = (m) => c.d.food.filter((f) => f.meal === m).reduce((a, f) => a + (S.foodsById[f.food_id]?.kcal || 0) * f.qty, 0);
 
   const Card = ({ f }) => {
-    const n = count(f.id);
+    const n = countIn(f.id);
     return (
       <div className={`fcard${n ? ' on' : ''}`}>
         <button className="fmain" onClick={() => A.logFood(k, f.id, meal)} aria-label={`Add ${f.name} to ${meal}`}>
-          <IconTile name={f.icon || 'bowl'} />
+          <span className="fimg">{f.image_url ? <img src={f.image_url} alt="" loading="lazy" /> : <IconTile name={f.icon || 'bowl'} size="lg" />}</span>
           <span className="fname">{f.name}</span>
-          <span className="fnum"><b>{fmt(f.kcal)}</b> kcal · <b>{f.protein}</b> g</span>
+          <span className="fnum">{fmt(f.kcal)} kcal · {f.protein} g</span>
         </button>
         {n > 0 && <>
-          <span className="fcount" aria-label={`${n} today`}>×{n}</span>
+          <span className="fcount">{n}</span>
           <button className="fminus" onClick={() => A.removeOneFood(k, f.id, meal)} aria-label={`Remove one ${f.name}`}>−</button>
         </>}
       </div>
@@ -36,35 +39,33 @@ export default function FoodPicker({ k, showTotals = true }) {
 
   return (
     <div className="picker">
-      {showTotals && (
-        <div className="ptotals">
-          <div><span>Calories</span><b>{fmt(c.eaten)}</b><small>/ {fmt(t.kcal)}</small><MBar v={c.eaten / t.kcal} cls="r2" /></div>
-          <div><span>Protein</span><b>{fmt(c.protein)} g</b><small>/ {t.protein} g</small><MBar v={c.protein / t.protein} cls="r3" /></div>
-        </div>
-      )}
-      <div className="mealbar" role="group" aria-label="Meal">
-        {MEALS.map((m) => <button key={m} aria-pressed={meal === m} onClick={() => setMeal(m)}>{m}</button>)}
+      <div className="ptotals-line">
+        <span><b>{fmt(c.eaten)}</b> / {fmt(t.kcal)} kcal</span>
+        <span><b>{fmt(c.protein)}</b> / {t.protein} g protein</span>
       </div>
-      <div className="fgrid">{quick.map((f) => <Card key={f.id} f={f} />)}</div>
-      {!quick.length && <div className="empty">No quick picks yet. Add a food and tick “Show in quick picks”.</div>}
+      <div className="mealtabs" role="tablist" aria-label="Meal">
+        {MEALS.map((m) => (
+          <button key={m} role="tab" aria-selected={meal === m} onClick={() => setMeal(m)}>
+            <Icon name={MEAL_ICON[m]} size={18} /><span>{m}</span>{mealKcal(m) > 0 && <small>{fmt(mealKcal(m))}</small>}
+          </button>
+        ))}
+      </div>
+      <div className="fgrid">{forMeal.map((f) => <Card key={f.id} f={f} />)}</div>
+      {!forMeal.length && <div className="empty">No quick picks for {meal.toLowerCase()} yet.</div>}
       <div className="btn-row">
-        <button className="btn ghost sm" onClick={() => setMore((m) => !m)} aria-expanded={more}>{more ? 'Hide other foods' : `Other foods (${live.length - quick.length})`}</button>
-        <button className="btn ghost sm" onClick={() => open('newFood', { name: qy })}>+ New food</button>
+        <button className="btn ghost sm" onClick={() => setAll((x) => !x)} aria-expanded={all}>{all ? 'Hide other foods' : 'Other foods'}</button>
+        <button className="btn ghost sm" onClick={() => open('newFood', { name: qy, meal })}>+ New food</button>
       </div>
-      {more && (
-        <>
-          <div className="field"><label htmlFor="fpSearch">Search</label>
-            <input id="fpSearch" value={qy} onChange={(e) => setQ(e.target.value)} placeholder="roti, egg…" autoComplete="off" /></div>
-          <div className="list">{others.map((f) => (
-            <div className="li" key={f.id}>
-              <IconTile name={f.icon || 'bowl'} size="sm" />
-              <div className="grow"><div className="nm">{f.name}{count(f.id) ? <span className="weight-tag">×{count(f.id)}</span> : null}</div>
-                <div className="mt">{f.serving} · {fmt(f.kcal)} kcal · {f.protein} g</div></div>
-              <button className="add1" onClick={() => A.logFood(k, f.id, meal)}>+ Add</button>
-            </div>
-          ))}{!others.length && <div className="empty">No match.</div>}</div>
-        </>
-      )}
+      {all && <>
+        <input className="search" value={qy} onChange={(e) => setQ(e.target.value)} placeholder="Search foods" aria-label="Search foods" />
+        <div className="list">{rest.map((f) => (
+          <div className="li" key={f.id}><IconTile name={f.icon || 'bowl'} size="sm" />
+            <div className="grow"><div className="nm">{f.name}{countIn(f.id) ? <span className="weight-tag">{countIn(f.id)}</span> : null}</div>
+              <div className="mt">{f.serving} · {fmt(f.kcal)} kcal · {f.protein} g</div></div>
+            <button className="add1" onClick={() => A.logFood(k, f.id, meal)} aria-label={`Add ${f.name}`}>+</button>
+          </div>
+        ))}{!rest.length && <div className="empty">No match.</div>}</div>
+      </>}
     </div>
   );
 }

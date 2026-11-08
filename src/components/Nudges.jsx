@@ -53,14 +53,14 @@ export function WeightBlock({ k, onDone }) {
   );
 }
 
-export function WaterButtons({ k }) {
+export function WaterButtons({ k, compact }) {
   const { A } = useStore();
   return (
-    <div className="water-btns">
-      <button onClick={() => A.addWater(k, 250)}><Icon name="water" size={20} /><span>+250 ml</span><small>glass</small></button>
-      <button onClick={() => A.addWater(k, 500)}><Icon name="bottle" size={20} /><span>+500 ml</span><small>bottle</small></button>
-      <button onClick={() => A.addWater(k, 1000)}><Icon name="bottle" size={20} /><span>+1 L</span><small>big bottle</small></button>
-      <button className="undo" onClick={() => A.addWater(k, -250)}><span>Undo</span><small>−250 ml</small></button>
+    <div className={`water-btns${compact ? ' compact' : ''}`}>
+      <button onClick={() => A.addWater(k, 250)}><Icon name="water" size={compact ? 16 : 20} /><span>+250 ml</span>{!compact && <small>glass</small>}</button>
+      <button onClick={() => A.addWater(k, 500)}><Icon name="bottle" size={compact ? 16 : 20} /><span>+500 ml</span>{!compact && <small>bottle</small>}</button>
+      <button onClick={() => A.addWater(k, 1000)}><Icon name="bottle" size={compact ? 16 : 20} /><span>+1 L</span>{!compact && <small>big bottle</small>}</button>
+      <button className="undo" onClick={() => A.addWater(k, -250)} aria-label="Undo 250 ml"><span>Undo</span>{!compact && <small>−250 ml</small>}</button>
     </div>
   );
 }
@@ -177,4 +177,35 @@ export default function NudgeCards({ k }) {
       </section>
     );
   });
+}
+
+/** Short "do this now" list for the top of Home. Each line opens the right log. */
+export function Alerts({ k }) {
+  const { S, calc, open } = useStore();
+  const [, force] = useState(0);
+  const c = calc(k);
+  const h = new Date().getHours();
+  const dismissed = getDismissed(k);
+  const ate = (m) => c.d.food.some((f) => f.meal === m);
+  const rts = routineTasks(S, c);
+  const list = [];
+  if (h >= 5 && !c.log.wake_time && !c.log.sleep_hours) list.push(['wake', 'sun', 'Add your wake-up time', 'sleep']);
+  if (h >= 5 && h < 12 && c.weight == null) list.push(['weight', 'scale', 'Weigh in before breakfast', 'weight']);
+  if (h >= 8 && rts.some((r) => r.credit < 0.999)) list.push(['routine', 'list', 'Finish your morning routine', 'routine']);
+  // only the latest meal that's missing, so the list stays short
+  const missing = [[21, 'Dinner'], [15, 'Lunch'], [10, 'Breakfast']].find(([hr, m]) => h >= hr && !ate(m));
+  if (missing) list.push([`meal-${missing[1]}`, 'thali', `Log your ${missing[1].toLowerCase()}`, 'logFood']);
+  if (h >= 21 && !c.closed) list.push(['close', 'moon', 'Sign off and close the day', 'closeDay']);
+  const show = list.filter(([id]) => !dismissed.includes(id)).slice(0, 3);
+  if (!show.length) return null;
+  return (
+    <section className="alerts" aria-label="To do now">
+      {show.map(([id, ic, text, sheet]) => (
+        <div className="alert" key={id}>
+          <button className="alert-main" onClick={() => open(sheet)}><IconTile name={ic} size="sm" /><span>{text}</span><span className="chev" aria-hidden="true">›</span></button>
+          <button className="alert-x" onClick={() => { addDismissed(k, id); force((n) => n + 1); }} aria-label={`Hide: ${text}`}>×</button>
+        </div>
+      ))}
+    </section>
+  );
 }

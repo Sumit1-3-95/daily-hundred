@@ -19,7 +19,10 @@ function seed() {
     ['sweet', 'Indian sweet', '1 piece', 150, 2, true], ['chai', 'Masala chai', '1 cup with sugar', 90, 3, true],
     ['roti', 'Extra roti', '1 roti', 85, 3, false], ['egg', 'Boiled egg', '1 egg', 75, 6, false], ['fruit', 'Fruit', '1 medium', 100, 1, false]];
   const fid = {};
-  F.forEach(([k, name, serving, kcal, protein, quick]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick, icon: k, archived: false }); });
+  const MEALS_OF = { daliya: ['Breakfast'], sandwich: ['Breakfast', 'Lunch', 'Snack'], tikki: ['Breakfast', 'Snack'], chai: ['Breakfast', 'Snack'], shake: ['Breakfast', 'Snack'],
+    egg: ['Breakfast'], thali: ['Lunch', 'Dinner'], dalchawal: ['Lunch', 'Dinner'], paneer: ['Lunch', 'Dinner'], soya: ['Lunch', 'Dinner'], roti: ['Lunch', 'Dinner'],
+    sweet: ['Lunch', 'Snack', 'Dinner'], fruit: ['Breakfast', 'Snack'] };
+  F.forEach(([k, name, serving, kcal, protein, quick]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick, icon: k, meals: MEALS_OF[k] || [], image_url: null, archived: false }); });
   const W = [['Cult Strength', 'Full body', 7], ['Cult HRX', 'Full body', 9], ['Leg day', 'Lower body', 7], ['Outdoor walk', 'Cardio', 5]];
   const wt = W.map(([name, area, kpm]) => { const r = { id: uuid(), ...u, name, area, kcal_per_min: kpm }; db.workout_types.push(r); return r; });
   const routine = { id: uuid(), ...u, title: 'Morning routine', kind: 'routine', sort: 0 };
@@ -36,7 +39,7 @@ function seed() {
     { name: 'Active burn', type: 'auto', auto_key: 'burn', weight: 1 },
     { name: 'Calories', type: 'auto', auto_key: 'calories', weight: 1 },
     { name: 'Deficit', type: 'auto', auto_key: 'deficit', weight: 2 },
-    { name: 'Read', type: 'number', target: 25, unit: 'pages', weight: 1 },
+    { name: 'Read', type: 'number', target: 25, unit: 'pages', weight: 1, icon: 'book' },
     { name: 'Sleep target', type: 'auto', auto_key: 'sleep', weight: 1 },
     { name: 'Log all meals and close the day', type: 'auto', auto_key: 'closed', weight: 1 },
   ].map((t, i) => ({ id: uuid(), ...u, days: ALL, auto_key: null, target: null, unit: null, list_id: null, archived: false, sort: i, ...t }));

@@ -3,8 +3,10 @@ import { useStore } from '../store.jsx';
 import { Field, fmt } from '../components/ui.jsx';
 import { CloseBlock, RoutineBlock, WakeBlock, WaterBlock, WeightBlock } from '../components/Nudges.jsx';
 import FoodPicker from '../components/FoodPicker.jsx';
-import { FOOD_ICONS, IconTile } from '../components/Icons.jsx';
-import { DOW, mealNow } from '../lib/dates.js';
+import { FOOD_ICONS, IconTile, iconForWorkout } from '../components/Icons.jsx';
+
+const TASK_ICONS = ['check', 'book', 'sun', 'moon', 'water', 'bolt', 'dumbbell', 'shoe', 'lotus', 'steps', 'fire', 'list', 'flag', 'chai', 'bed', 'target'];
+import { DOW, MEALS, lastN, mealNow, parse } from '../lib/dates.js';
 import { AUTO_LABEL } from '../lib/calc.js';
 
 const AREAS = ['Full body', 'Upper body', 'Lower body', 'Core', 'Cardio', 'Mobility', 'Other'];
@@ -15,17 +17,20 @@ export function LogFood() {
   return <><h2>Log food</h2><FoodPicker k={today} /></>;
 }
 
-export function NewFood({ name = '' }) {
+export function NewFood({ name = '', meal }) {
   const { today, A, close, toast } = useStore();
   const [icon, setIcon] = useState('bowl');
+  const [meals, setMeals] = useState([meal || mealNow()]);
+  const tog = (m) => setMeals((x) => (x.includes(m) ? x.filter((y) => y !== m) : [...x, m]));
   return (
     <>
       <h2>New food item</h2>
       <form onSubmit={async (e) => {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
         const row = await A.createFood({ name: fd.get('name').trim(), serving: fd.get('serving').trim(), kcal: Number(fd.get('kcal')),
-          protein: Number(fd.get('protein')), carbs: n(fd.get('carbs')), fat: n(fd.get('fat')), icon, quick: !!fd.get('quick') });
-        if (fd.get('log')) await A.logFood(today, row.id, mealNow());
+          protein: Number(fd.get('protein')), carbs: n(fd.get('carbs')), fat: n(fd.get('fat')), icon, quick: !!fd.get('quick'),
+          meals, image_url: (fd.get('img') || '').trim() || null });
+        if (fd.get('log')) await A.logFood(today, row.id, meals[0] || mealNow());
         toast(`Saved ${row.name}`); close();
       }}>
         <Field label="Name" id="nfName"><input id="nfName" name="name" required defaultValue={name} placeholder="e.g. Rajma chawal" /></Field>
@@ -42,6 +47,11 @@ export function NewFood({ name = '' }) {
           <div className="iconpick">{FOOD_ICONS.map((ic) => (
             <button type="button" key={ic} aria-pressed={icon === ic} onClick={() => setIcon(ic)} aria-label={ic}><IconTile name={ic} size="sm" /></button>
           ))}</div></div>
+        <div className="field"><span className="lb">Usually eaten at</span>
+          <div className="weights">{MEALS.map((m) => (
+            <label key={m}><input type="checkbox" checked={meals.includes(m)} onChange={() => tog(m)} /><span>{m}</span></label>
+          ))}</div></div>
+        <Field label="Photo link (optional)" id="nfImg"><input id="nfImg" name="img" type="url" placeholder="https://…" /></Field>
         <label className="toggle" htmlFor="nfQuick"><span>Show in quick picks</span><input id="nfQuick" name="quick" type="checkbox" defaultChecked /></label>
         <label className="toggle" htmlFor="nfLog"><span>Also log 1 serving now</span><input id="nfLog" name="log" type="checkbox" defaultChecked /></label>
         <button className="btn">Save food item</button>
@@ -50,8 +60,22 @@ export function NewFood({ name = '' }) {
   );
 }
 
+function frequentWorkouts(S, today, n = 4) {
+  const by = {};
+  lastN(30, parse(today)).forEach((k) => (S.days[k]?.workouts || []).forEach((w) => {
+    (by[w.name] ||= { name: w.name, area: w.area, type_id: w.type_id, mins: [], kcals: [] });
+    by[w.name].mins.push(Number(w.minutes)); by[w.name].kcals.push(Number(w.kcal));
+  }));
+  const med = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
+  const ranked = Object.values(by).sort((a, b) => b.mins.length - a.mins.length).map((x) => ({ ...x, minutes: med(x.mins), kcal: med(x.kcals) }));
+  if (ranked.length) return ranked.slice(0, n);
+  return S.wtypes.slice(0, n).map((w) => ({ name: w.name, area: w.area, type_id: w.id, minutes: 45, kcal: Math.round(45 * w.kcal_per_min) }));
+}
+
 export function LogWorkout() {
   const { S, today, A, open, close, toast } = useStore();
+  const [manual, setManual] = useState(false);
+  const picks = frequentWorkouts(S, today);
   const [typeId, setType] = useState(S.wtypes[0]?.id || '');
   const [min, setMin] = useState(45);
   const w = S.wtypes.find((x) => x.id === typeId);
@@ -59,7 +83,15 @@ export function LogWorkout() {
   return (
     <>
       <h2>Log workout</h2>
-      <form onSubmit={async (e) => {
+      <div className="wpicks">{picks.map((w) => (
+        <button key={w.name} className="wpick" onClick={async () => {
+          await A.logWorkout(today, { type_id: w.type_id, name: w.name, area: w.area, minutes: w.minutes, kcal: w.kcal, source: 'cult' });
+          toast(`Logged ${w.name}`); close();
+        }}><IconTile name={iconForWorkout(w.area)} /><span className="fname">{w.name}</span><span className="fnum">{fmt(w.minutes)} min · {fmt(w.kcal)} kcal</span></button>
+      ))}</div>
+      <p className="hint">Tap to log with your usual time and calories, or enter the exact numbers from the Cult app.</p>
+      <button className="btn ghost" onClick={() => setManual((m) => !m)} aria-expanded={manual}>{manual ? 'Hide' : 'Enter exact numbers'}</button>
+      {manual && <form onSubmit={async (e) => {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
         await A.logWorkout(today, { type_id: w?.id ?? null, name: w?.name || 'Workout', area: w?.area || 'Other',
           minutes: Number(min), kcal: n(fd.get('kcal')) ?? est, source: fd.get('src') });
@@ -75,8 +107,8 @@ export function LogWorkout() {
           <option value="cult">Cult app</option><option value="apple_watch">Apple Watch</option><option value="manual">Manual</option></select></Field>
         <p className="hint">Leave calories empty to estimate from the workout type. Copy the exact number from the Cult app when you have it.</p>
         <button className="btn">Save workout</button>
-      </form>
-      <button className="btn ghost" onClick={() => open('newWorkout')}>Add a new workout type</button>
+        <button type="button" className="link" onClick={() => open('newWorkout')}>Add a new workout type</button>
+      </form>}
     </>
   );
 }
@@ -112,6 +144,7 @@ export function TaskForm({ task, preset }) {
   const { S, A, close, toast } = useStore();
   const t0 = task || { name: '', type: 'check', weight: 1, days: [0, 1, 2, 3, 4, 5, 6], ...(preset || {}) };
   const [type, setType] = useState(t0.type);
+  const [icon, setIcon] = useState(t0.icon || 'check');
   const [sure, setSure] = useState(false);
   const routines = S.lists;
   return (
@@ -123,7 +156,7 @@ export function TaskForm({ task, preset }) {
         if (!days.length) { toast('Pick at least one day'); return; }
         const autoKey = type === 'auto' ? fd.get('auto') : null;
         const row = {
-          ...(task ? { id: task.id } : {}), type, days, weight: Number(fd.get('weight')),
+          ...(task ? { id: task.id } : {}), type, days, weight: Number(fd.get('weight')), icon,
           name: type === 'auto' ? (fd.get('name') || '').trim() || AUTO_LABEL[autoKey](S.targets) : fd.get('name').trim(),
           auto_key: autoKey,
           target: type === 'number' ? Number(fd.get('target')) || 1 : null,
@@ -147,6 +180,10 @@ export function TaskForm({ task, preset }) {
           : <p className="hint">Create a list in the Lists tab first.</p>)}
         {type === 'auto' && <Field label="Completes when" id="tA"><select id="tA" name="auto" defaultValue={t0.auto_key || 'protein'}>
           {Object.entries(AUTO_LABEL).map(([k2, f]) => <option key={k2} value={k2}>{f(S.targets)}</option>)}</select></Field>}
+        <div className="field"><span className="lb">Icon</span>
+          <div className="iconpick">{TASK_ICONS.map((ic) => (
+            <button type="button" key={ic} aria-pressed={icon === ic} onClick={() => setIcon(ic)} aria-label={ic}><IconTile name={ic} size="sm" /></button>
+          ))}</div></div>
         <div className="field"><span className="lb">Points in the day score</span>
           <div className="weights">{[1, 2, 3, 5].map((w) => (
             <label key={w}><input type="radio" name="weight" value={w} defaultChecked={(t0.weight || 1) === w} /><span>×{w}</span></label>
