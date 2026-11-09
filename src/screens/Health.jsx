@@ -6,6 +6,7 @@ import { periodStats } from '../lib/calc.js';
 import { METRICS } from '../lib/metrics.js';
 import { DOW, MEALS, addDays, key, lastN, parse, short } from '../lib/dates.js';
 import FoodPicker from '../components/FoodPicker.jsx';
+import { PlanCalendar, PlanCard } from '../components/Plan.jsx';
 import { FoodThumb } from '../components/TodayCards.jsx';
 import { Icon, IconTile, iconForWorkout } from '../components/Icons.jsx';
 
@@ -175,6 +176,8 @@ function Workout() {
   const amax = Math.max(1, ...Object.values(areas));
   return (
     <>
+      <PlanCard k={today} />
+      <PlanCalendar />
       <section className="card">
         <div className="row-h"><h3>Last 7 days</h3><span className="sub">{fmt(totMin)} min · {sessions} sessions</span></div>
         <div className="wdays">{wk.map(({ k, c, ws }) => {

@@ -56,12 +56,16 @@ export function StoreProvider({ session, children }) {
       fetchAll(() => supabase.from('body_scans').select('*').eq('user_id', uid).order('date')),
       fetchAll(() => supabase.from('blood_results').select('*').eq('user_id', uid).order('date')),
     ]);
+    // the plan table is optional (migration 0006); the app works without it
+    let plan = [];
+    try { plan = await fetchAll(() => supabase.from('plan_days').select('*').eq('user_id', uid).order('day')); } catch { plan = []; }
     const S = {
       uid, profile: profile || { id: uid, name: '' },
       targets: { ...DEFAULT_TARGETS, ...(profile?.targets || {}) },
       foods, foodsById: Object.fromEntries(foods.map((f) => [f.id, f])),
       wtypes, tasks, lists: lists.sort((a, b) => a.sort - b.sort), items: items.sort((a, b) => a.sort - b.sort),
       nudges: nudges.sort((a, b) => a.at_time.localeCompare(b.at_time)), scans, blood, days: {},
+      plan: Object.fromEntries(plan.map((p) => [p.day, p])),
     };
     const day = (k) => (S.days[k] ||= emptyDay());
     dayLogs.forEach((r) => { day(r.day).log = r; });
@@ -305,6 +309,33 @@ export function StoreProvider({ session, children }) {
       const row = await q(supabase.from('workout_types').update(patch).eq('id', id).select().single());
       commit((S) => { S.wtypes = S.wtypes.map((x) => (x.id === id ? row : x)); });
     },
+    // ---------- workout plan ----------
+    savePlan: async (k, patch) => {
+      const prev = ref.current.plan[k];
+      commit((S) => { S.plan[k] = { ...prev, ...patch }; });
+      try {
+        const row = await q(supabase.from('plan_days').update({ ...patch, updated_at: new Date().toISOString() }).eq('user_id', uid).eq('day', k).select().single());
+        commit((S) => { S.plan[k] = row; });
+      } catch { commit((S) => { S.plan[k] = prev; }); }
+    },
+    togglePlanItem: (k, itemId) => {
+      const p = ref.current.plan[k], cur = p.checked || [];
+      return A.savePlan(k, { checked: cur.includes(itemId) ? cur.filter((x) => x !== itemId) : [...cur, itemId] });
+    },
+    /** Finish the day's plan: log its workouts and mark it done. */
+    completePlan: async (k) => {
+      const p = ref.current.plan[k];
+      for (const l of p.logs || []) {
+        const type = ref.current.wtypes.find((w) => w.name.toLowerCase() === l.name.toLowerCase());
+        await A.logWorkout(k, { type_id: type?.id ?? null, name: l.name, area: l.area, minutes: l.minutes, kcal: l.kcal, source: p.place?.includes('Cult') ? 'cult' : 'manual' });
+      }
+      if (p.kind === 'rest' && k === today) await A.saveDay(k, { rest: true });
+      await A.savePlan(k, { status: 'done', checked: (p.items || []).map((i) => i.id) });
+      toast(p.logs?.length ? `Done! Logged ${p.logs.map((l) => l.name).join(' + ')}` : 'Done!');
+      track('plan_done', { kind: p.kind });
+    },
+    skipPlan: (k) => A.savePlan(k, { status: 'skipped' }),
+    reopenPlan: (k) => A.savePlan(k, { status: 'planned' }),
     savePrefs: (patch) => A.saveProfile({ prefs: { ...(ref.current.profile.prefs || {}), ...patch } }),
     updateFood: async (id, patch) => {
       const row = await q(supabase.from('foods').update(patch).eq('id', id).select().single());

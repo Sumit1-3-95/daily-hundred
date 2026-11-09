@@ -1,5 +1,6 @@
 // In-memory stand-in for @supabase/supabase-js, used by `npm run demo`.
 // Lets you click through the app with sample data, without a Supabase project.
+import PLAN from './plan.json';
 const UID = '00000000-0000-0000-0000-000000000001';
 const uuid = () => crypto.randomUUID();
 const key = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -9,7 +10,7 @@ function rng(s) { return () => { s |= 0; s = (s + 0x6d2b79f5) | 0; let t = Math.
 
 function seed() {
   const db = { profiles: [], foods: [], food_logs: [], workout_types: [], workouts: [], day_logs: [], lists: [], list_items: [], tasks: [], task_logs: [],
-    body_scans: [], blood_results: [], nudges: [], push_subscriptions: [], api_tokens: [], events: [] };
+    body_scans: [], blood_results: [], nudges: [], push_subscriptions: [], api_tokens: [], events: [], plan_days: [] };
   const u = { user_id: UID };
   db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 8000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1 } });
   const F = [
@@ -47,6 +48,7 @@ function seed() {
   const AV = [{ id: uuid(), ...u, name: 'Alcohol', type: 'avoid', weight: 3, unit: 'drinks', icon: 'drink', days: ALL, sort: 90, archived: false },
     { id: uuid(), ...u, name: 'Smoking', type: 'avoid', weight: 3, unit: 'cigarettes', icon: 'smoke', days: ALL, sort: 91, archived: false }];
   db.tasks.push(...AV);
+  db.plan_days = PLAN.map((r) => ({ ...r, user_id: UID, checked: [], status: 'planned' }));
   [['sleep', '07:30:00'], ['weight', '08:00:00'], ['routine', '09:30:00'], ['water', '12:00:00'], ['water', '16:00:00'], ['close_day', '21:30:00']]
     .forEach(([kind, at_time]) => db.nudges.push({ id: uuid(), ...u, kind, at_time, enabled: true, days: ALL }));
   db.body_scans.push({ id: uuid(), ...u, date: '2026-11-04', source: 'InBody 260 at Cult', weight: 77.1, pbf: 25.8, fat_mass: 19.9, smm: 32.3, visceral: 8, whr: 0.96, bmr: 1605, score: 71, seg: { la: 1.2, ra: 1.1, tr: 11.0, ll: 2.7, rl: 2.7 } });
@@ -77,7 +79,7 @@ function seed() {
 }
 
 const DB = seed();
-const PK = { day_logs: ['user_id', 'day'], task_logs: ['user_id', 'day', 'task_id'], push_subscriptions: ['endpoint'], profiles: ['id'] };
+const PK = { plan_days: ['user_id', 'day'], day_logs: ['user_id', 'day'], task_logs: ['user_id', 'day', 'task_id'], push_subscriptions: ['endpoint'], profiles: ['id'] };
 
 class Q {
   constructor(t) { this.t = t; this.f = []; this.op = 'select'; this.payload = null; this.one = null; this.rng = null; this.ord = null; this.ret = false; this.conf = null; }

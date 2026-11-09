@@ -1,0 +1,1225 @@
+[
+ {
+  "day": "2026-11-09",
+  "kind": "strength",
+  "title": "Upper body",
+  "place": "GG Gym",
+  "minutes": 65,
+  "kcal": 470,
+  "items": [
+   {
+    "id": "1",
+    "name": "Warm-up",
+    "detail": "5 min easy cardio + arm/hip circles"
+   },
+   {
+    "id": "2",
+    "name": "Dumbbell bench press",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "3",
+    "name": "Lat pulldown",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "4",
+    "name": "Seated dumbbell shoulder press",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "5",
+    "name": "Seated cable row",
+    "detail": "3 \u00d7 12"
+   },
+   {
+    "id": "6",
+    "name": "Biceps curl + triceps pushdown",
+    "detail": "2 \u00d7 12 each, back to back"
+   },
+   {
+    "id": "7",
+    "name": "Plank",
+    "detail": "3 \u00d7 30 s"
+   },
+   {
+    "id": "8",
+    "name": "Treadmill intervals \u00b7 20 min",
+    "detail": "5 min walk 5.5 km/h \u2192 6 \u00d7 (1 min jog 8.5 km/h + 1 min walk) \u2192 3 min easy"
+   },
+   {
+    "id": "9",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "10",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Upper body",
+    "area": "Upper body",
+    "minutes": 45,
+    "kcal": 280
+   },
+   {
+    "name": "Treadmill",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 190
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-10",
+  "kind": "strength",
+  "title": "Lower body",
+  "place": "GG Gym",
+  "minutes": 65,
+  "kcal": 480,
+  "items": [
+   {
+    "id": "1",
+    "name": "Warm-up",
+    "detail": "5 min easy cardio + arm/hip circles"
+   },
+   {
+    "id": "2",
+    "name": "Goblet squat",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "3",
+    "name": "Dumbbell Romanian deadlift",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "4",
+    "name": "Leg press",
+    "detail": "3 \u00d7 12"
+   },
+   {
+    "id": "5",
+    "name": "Walking lunges",
+    "detail": "2 \u00d7 10 each leg"
+   },
+   {
+    "id": "6",
+    "name": "Lying leg curl",
+    "detail": "2 \u00d7 12"
+   },
+   {
+    "id": "7",
+    "name": "Dead bug",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "8",
+    "name": "Incline walk \u00b7 20 min",
+    "detail": "12% incline, 5.2 km/h, steady breathing"
+   },
+   {
+    "id": "9",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "10",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Lower body",
+    "area": "Lower body",
+    "minutes": 45,
+    "kcal": 290
+   },
+   {
+    "name": "Treadmill",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 190
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-11",
+  "kind": "strength",
+  "title": "Full-body circuit",
+  "place": "GG Gym",
+  "minutes": 65,
+  "kcal": 500,
+  "items": [
+   {
+    "id": "1",
+    "name": "Warm-up",
+    "detail": "5 min easy cardio + arm/hip circles"
+   },
+   {
+    "id": "2",
+    "name": "Circuit \u00d7 3 rounds",
+    "detail": "15 kettlebell swings \u00b7 10 push-ups \u00b7 12 goblet squats \u00b7 30 s mountain climbers \u00b7 40 s plank, 90 s rest"
+   },
+   {
+    "id": "3",
+    "name": "Bike",
+    "detail": "10 min, moderate"
+   },
+   {
+    "id": "4",
+    "name": "Side plank",
+    "detail": "2 \u00d7 25 s each side"
+   },
+   {
+    "id": "5",
+    "name": "Treadmill intervals \u00b7 20 min",
+    "detail": "5 min walk 5.5 km/h \u2192 6 \u00d7 (1 min jog 8.5 km/h + 1 min walk) \u2192 3 min easy"
+   },
+   {
+    "id": "6",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "7",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Full-body circuit",
+    "area": "Full body",
+    "minutes": 45,
+    "kcal": 310
+   },
+   {
+    "name": "Treadmill",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 190
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-12",
+  "kind": "strength",
+  "title": "Upper body",
+  "place": "GG Gym",
+  "minutes": 65,
+  "kcal": 460,
+  "items": [
+   {
+    "id": "1",
+    "name": "Warm-up",
+    "detail": "5 min easy cardio + arm/hip circles"
+   },
+   {
+    "id": "2",
+    "name": "Dumbbell bench press",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "3",
+    "name": "Lat pulldown",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "4",
+    "name": "Seated dumbbell shoulder press",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "5",
+    "name": "Seated cable row",
+    "detail": "3 \u00d7 12"
+   },
+   {
+    "id": "6",
+    "name": "Biceps curl + triceps pushdown",
+    "detail": "2 \u00d7 12 each, back to back"
+   },
+   {
+    "id": "7",
+    "name": "Plank",
+    "detail": "3 \u00d7 30 s"
+   },
+   {
+    "id": "8",
+    "name": "Incline walk \u00b7 20 min",
+    "detail": "12% incline, 5.2 km/h, steady breathing"
+   },
+   {
+    "id": "9",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "10",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Upper body",
+    "area": "Upper body",
+    "minutes": 45,
+    "kcal": 270
+   },
+   {
+    "name": "Treadmill",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 190
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-13",
+  "kind": "strength",
+  "title": "Lower body",
+  "place": "GG Gym",
+  "minutes": 65,
+  "kcal": 490,
+  "items": [
+   {
+    "id": "1",
+    "name": "Warm-up",
+    "detail": "5 min easy cardio + arm/hip circles"
+   },
+   {
+    "id": "2",
+    "name": "Goblet squat",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "3",
+    "name": "Dumbbell Romanian deadlift",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "4",
+    "name": "Leg press",
+    "detail": "3 \u00d7 12"
+   },
+   {
+    "id": "5",
+    "name": "Walking lunges",
+    "detail": "2 \u00d7 10 each leg"
+   },
+   {
+    "id": "6",
+    "name": "Lying leg curl",
+    "detail": "2 \u00d7 12"
+   },
+   {
+    "id": "7",
+    "name": "Dead bug",
+    "detail": "3 \u00d7 10"
+   },
+   {
+    "id": "8",
+    "name": "Treadmill intervals \u00b7 20 min",
+    "detail": "5 min walk 5.5 km/h \u2192 6 \u00d7 (1 min jog 8.5 km/h + 1 min walk) \u2192 3 min easy"
+   },
+   {
+    "id": "9",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "10",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Lower body",
+    "area": "Lower body",
+    "minutes": 45,
+    "kcal": 300
+   },
+   {
+    "name": "Treadmill",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 190
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-14",
+  "kind": "cardio",
+  "title": "Travel day \u00b7 walk",
+  "place": "",
+  "minutes": 30,
+  "kcal": 150,
+  "items": [
+   {
+    "id": "1",
+    "name": "Walk",
+    "detail": "30 min, any time today"
+   },
+   {
+    "id": "2",
+    "name": "Stretch",
+    "detail": "10 min after the drive"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Outdoor walk",
+    "area": "Cardio",
+    "minutes": 30,
+    "kcal": 150
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-15",
+  "kind": "rest",
+  "title": "Rest day",
+  "place": "",
+  "minutes": 0,
+  "kcal": 0,
+  "items": [
+   {
+    "id": "1",
+    "name": "Easy steps",
+    "detail": "8,000 steps"
+   },
+   {
+    "id": "2",
+    "name": "Plan the Cult week",
+    "detail": "Book Mon\u2013Fri classes in the Cult app"
+   }
+  ],
+  "logs": [],
+  "note": null
+ },
+ {
+  "day": "2026-11-16",
+  "kind": "class",
+  "title": "Cult Strength + walk",
+  "place": "Cult, Noida",
+  "minutes": 60,
+  "kcal": 410,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult Strength class \u00b7 50 min",
+    "detail": "Upper-body focus. Pick weights where the last 2 reps are hard."
+   },
+   {
+    "id": "3",
+    "name": "Incline walk \u00b7 10 min",
+    "detail": "10% incline, 5.2 km/h, after class"
+   },
+   {
+    "id": "4",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "5",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Strength",
+    "area": "Upper body",
+    "minutes": 50,
+    "kcal": 330
+   },
+   {
+    "name": "Incline walk",
+    "area": "Cardio",
+    "minutes": 10,
+    "kcal": 80
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-17",
+  "kind": "class",
+  "title": "Cult HRX",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult HRX class \u00b7 50 min",
+    "detail": "Push the intervals, recover fully in the rests."
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "4",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult HRX",
+    "area": "Full body",
+    "minutes": 50,
+    "kcal": 450
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-18",
+  "kind": "class",
+  "title": "Cult Strength + walk",
+  "place": "Cult, Noida",
+  "minutes": 60,
+  "kcal": 420,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult Strength class \u00b7 50 min",
+    "detail": "Lower-body focus. Slow on the way down."
+   },
+   {
+    "id": "3",
+    "name": "Incline walk \u00b7 10 min",
+    "detail": "10% incline, 5.2 km/h, after class"
+   },
+   {
+    "id": "4",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "5",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Strength",
+    "area": "Lower body",
+    "minutes": 50,
+    "kcal": 340
+   },
+   {
+    "name": "Incline walk",
+    "area": "Cardio",
+    "minutes": 10,
+    "kcal": 80
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-19",
+  "kind": "mobility",
+  "title": "Cult Yoga",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 180,
+  "items": [
+   {
+    "id": "1",
+    "name": "Yoga class \u00b7 50 min",
+    "detail": "Recovery day: go easy, focus on hips and back"
+   },
+   {
+    "id": "2",
+    "name": "Evening walk",
+    "detail": "20 min, easy"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Yoga",
+    "area": "Mobility",
+    "minutes": 50,
+    "kcal": 180
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-20",
+  "kind": "class",
+  "title": "Cult HRX",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult HRX class \u00b7 50 min",
+    "detail": "Or a Burn class if HRX is full."
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "4",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult HRX",
+    "area": "Full body",
+    "minutes": 50,
+    "kcal": 450
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-21",
+  "kind": "cardio",
+  "title": "Long easy cardio \u00b7 40 min",
+  "place": "Outdoors",
+  "minutes": 50,
+  "kcal": 320,
+  "items": [
+   {
+    "id": "1",
+    "name": "Brisk walk or easy jog",
+    "detail": "40 min at a pace you can still talk"
+   },
+   {
+    "id": "2",
+    "name": "Core",
+    "detail": "10 min: dead bug, side plank, bird dog"
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Outdoor walk / jog",
+    "area": "Cardio",
+    "minutes": 40,
+    "kcal": 280
+   },
+   {
+    "name": "Core",
+    "area": "Core",
+    "minutes": 10,
+    "kcal": 40
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-22",
+  "kind": "rest",
+  "title": "Rest day",
+  "place": "",
+  "minutes": 0,
+  "kcal": 0,
+  "items": [
+   {
+    "id": "1",
+    "name": "Easy steps",
+    "detail": "8,000 steps through the day"
+   },
+   {
+    "id": "2",
+    "name": "Mobility",
+    "detail": "10 min stretching before bed"
+   }
+  ],
+  "logs": [],
+  "note": null
+ },
+ {
+  "day": "2026-11-23",
+  "kind": "class",
+  "title": "Cult Strength + walk",
+  "place": "Cult, Noida",
+  "minutes": 65,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult Strength class \u00b7 50 min",
+    "detail": "Upper-body focus. Pick weights where the last 2 reps are hard."
+   },
+   {
+    "id": "3",
+    "name": "Incline walk \u00b7 15 min",
+    "detail": "10% incline, 5.2 km/h, after class"
+   },
+   {
+    "id": "4",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "5",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Strength",
+    "area": "Upper body",
+    "minutes": 50,
+    "kcal": 330
+   },
+   {
+    "name": "Incline walk",
+    "area": "Cardio",
+    "minutes": 15,
+    "kcal": 120
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-24",
+  "kind": "class",
+  "title": "Cult HRX",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult HRX class \u00b7 50 min",
+    "detail": "Push the intervals, recover fully in the rests."
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "4",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult HRX",
+    "area": "Full body",
+    "minutes": 50,
+    "kcal": 450
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-25",
+  "kind": "class",
+  "title": "Cult Strength + walk",
+  "place": "Cult, Noida",
+  "minutes": 65,
+  "kcal": 460,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult Strength class \u00b7 50 min",
+    "detail": "Lower-body focus. Slow on the way down."
+   },
+   {
+    "id": "3",
+    "name": "Incline walk \u00b7 15 min",
+    "detail": "10% incline, 5.2 km/h, after class"
+   },
+   {
+    "id": "4",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "5",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Strength",
+    "area": "Lower body",
+    "minutes": 50,
+    "kcal": 340
+   },
+   {
+    "name": "Incline walk",
+    "area": "Cardio",
+    "minutes": 15,
+    "kcal": 120
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-26",
+  "kind": "mobility",
+  "title": "Cult Yoga",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 180,
+  "items": [
+   {
+    "id": "1",
+    "name": "Yoga class \u00b7 50 min",
+    "detail": "Recovery day: go easy, focus on hips and back"
+   },
+   {
+    "id": "2",
+    "name": "Evening walk",
+    "detail": "20 min, easy"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Yoga",
+    "area": "Mobility",
+    "minutes": 50,
+    "kcal": 180
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-27",
+  "kind": "class",
+  "title": "Cult HRX",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult HRX class \u00b7 50 min",
+    "detail": "Or a Burn class if HRX is full."
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "4",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult HRX",
+    "area": "Full body",
+    "minutes": 50,
+    "kcal": 450
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-28",
+  "kind": "cardio",
+  "title": "Long easy cardio \u00b7 45 min",
+  "place": "Outdoors",
+  "minutes": 55,
+  "kcal": 355,
+  "items": [
+   {
+    "id": "1",
+    "name": "Brisk walk or easy jog",
+    "detail": "45 min at a pace you can still talk"
+   },
+   {
+    "id": "2",
+    "name": "Core",
+    "detail": "10 min: dead bug, side plank, bird dog"
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Outdoor walk / jog",
+    "area": "Cardio",
+    "minutes": 45,
+    "kcal": 315
+   },
+   {
+    "name": "Core",
+    "area": "Core",
+    "minutes": 10,
+    "kcal": 40
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-11-29",
+  "kind": "rest",
+  "title": "Rest day",
+  "place": "",
+  "minutes": 0,
+  "kcal": 0,
+  "items": [
+   {
+    "id": "1",
+    "name": "Easy steps",
+    "detail": "8,000 steps through the day"
+   },
+   {
+    "id": "2",
+    "name": "Mobility",
+    "detail": "10 min stretching before bed"
+   }
+  ],
+  "logs": [],
+  "note": null
+ },
+ {
+  "day": "2026-11-30",
+  "kind": "class",
+  "title": "Cult Strength + walk",
+  "place": "Cult, Noida",
+  "minutes": 65,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult Strength class \u00b7 50 min",
+    "detail": "Upper-body focus. Pick weights where the last 2 reps are hard."
+   },
+   {
+    "id": "3",
+    "name": "Incline walk \u00b7 15 min",
+    "detail": "10% incline, 5.2 km/h, after class"
+   },
+   {
+    "id": "4",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "5",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Strength",
+    "area": "Upper body",
+    "minutes": 50,
+    "kcal": 330
+   },
+   {
+    "name": "Incline walk",
+    "area": "Cardio",
+    "minutes": 15,
+    "kcal": 120
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-12-01",
+  "kind": "class",
+  "title": "Cult HRX",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult HRX class \u00b7 50 min",
+    "detail": "Push the intervals, recover fully in the rests."
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "4",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult HRX",
+    "area": "Full body",
+    "minutes": 50,
+    "kcal": 450
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-12-02",
+  "kind": "class",
+  "title": "Cult Strength + walk",
+  "place": "Cult, Noida",
+  "minutes": 65,
+  "kcal": 460,
+  "items": [
+   {
+    "id": "1",
+    "name": "InBody re-scan",
+    "detail": "Morning, before breakfast and water, at Cult"
+   },
+   {
+    "id": "2",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "3",
+    "name": "Cult Strength class \u00b7 50 min",
+    "detail": "Lower-body focus. Slow on the way down."
+   },
+   {
+    "id": "4",
+    "name": "Incline walk \u00b7 15 min",
+    "detail": "10% incline, 5.2 km/h, after class"
+   },
+   {
+    "id": "5",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "6",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Strength",
+    "area": "Lower body",
+    "minutes": 50,
+    "kcal": 340
+   },
+   {
+    "name": "Incline walk",
+    "area": "Cardio",
+    "minutes": 15,
+    "kcal": 120
+   }
+  ],
+  "note": "4 weeks since the last scan"
+ },
+ {
+  "day": "2026-12-03",
+  "kind": "mobility",
+  "title": "Cult Yoga",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 180,
+  "items": [
+   {
+    "id": "1",
+    "name": "Yoga class \u00b7 50 min",
+    "detail": "Recovery day: go easy, focus on hips and back"
+   },
+   {
+    "id": "2",
+    "name": "Evening walk",
+    "detail": "20 min, easy"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult Yoga",
+    "area": "Mobility",
+    "minutes": 50,
+    "kcal": 180
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-12-04",
+  "kind": "class",
+  "title": "Cult HRX",
+  "place": "Cult, Noida",
+  "minutes": 50,
+  "kcal": 450,
+  "items": [
+   {
+    "id": "1",
+    "name": "Get there 10 min early",
+    "detail": "Fill water bottle, light warm-up"
+   },
+   {
+    "id": "2",
+    "name": "Cult HRX class \u00b7 50 min",
+    "detail": "Or a Burn class if HRX is full."
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   },
+   {
+    "id": "4",
+    "name": "Protein after",
+    "detail": "Shake within 45 min"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Cult HRX",
+    "area": "Full body",
+    "minutes": 50,
+    "kcal": 450
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-12-05",
+  "kind": "cardio",
+  "title": "Long easy cardio \u00b7 50 min",
+  "place": "Outdoors",
+  "minutes": 60,
+  "kcal": 390,
+  "items": [
+   {
+    "id": "1",
+    "name": "Brisk walk or easy jog",
+    "detail": "50 min at a pace you can still talk"
+   },
+   {
+    "id": "2",
+    "name": "Core",
+    "detail": "10 min: dead bug, side plank, bird dog"
+   },
+   {
+    "id": "3",
+    "name": "Stretch",
+    "detail": "5 min: hamstrings, hips, chest"
+   }
+  ],
+  "logs": [
+   {
+    "name": "Outdoor walk / jog",
+    "area": "Cardio",
+    "minutes": 50,
+    "kcal": 350
+   },
+   {
+    "name": "Core",
+    "area": "Core",
+    "minutes": 10,
+    "kcal": 40
+   }
+  ],
+  "note": null
+ },
+ {
+  "day": "2026-12-06",
+  "kind": "rest",
+  "title": "Rest day",
+  "place": "",
+  "minutes": 0,
+  "kcal": 0,
+  "items": [
+   {
+    "id": "1",
+    "name": "Easy steps",
+    "detail": "8,000 steps through the day"
+   },
+   {
+    "id": "2",
+    "name": "Mobility",
+    "detail": "10 min stretching before bed"
+   }
+  ],
+  "logs": [],
+  "note": null
+ }
+]

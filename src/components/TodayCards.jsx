@@ -4,6 +4,7 @@ import { Icon, IconTile, iconForWorkout } from './Icons.jsx';
 import { fmt } from './ui.jsx';
 import { AUTO_SHEET, taskIcon } from './TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
+import { PlanCard } from './Plan.jsx';
 import { MEALS } from '../lib/dates.js';
 
 /** Two labelled bars side by side. */
@@ -28,6 +29,7 @@ export function WorkoutSection() {
   return (
     <section className="card sec">
       <div className="row-h"><h3><Icon name="dumbbell" size={16} /> Workout</h3><button className="link" onClick={() => open('logWorkout')}>+ Log</button></div>
+      <PlanCard k={today} compact />
       <Bars items={[['Time', c.rest ? t.workoutMin : c.wMin, t.workoutMin, 'min', 'r3'], ['Calories burned', c.active, t.activeKcal, 'kcal', 'r2']]} />
       {c.rest && <p className="hint">Rest day.</p>}
       {c.d.workouts.length > 0 && (
