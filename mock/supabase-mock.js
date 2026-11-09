@@ -48,6 +48,9 @@ function seed() {
   const AV = [{ id: uuid(), ...u, name: 'Alcohol', type: 'avoid', weight: 3, unit: 'drinks', icon: 'drink', days: ALL, sort: 90, archived: false },
     { id: uuid(), ...u, name: 'Smoking', type: 'avoid', weight: 3, unit: 'cigarettes', icon: 'smoke', days: ALL, sort: 91, archived: false }];
   db.tasks.push(...AV);
+  const yk = key(addDays(new Date(), -1));
+  db.tasks.push({ id: uuid(), ...u, name: 'Laundry: fold and put away', type: 'todo', weight: 2, on_day: yk, days: ALL, sort: 95, archived: false, icon: 'check' },
+    { id: uuid(), ...u, name: 'Pay electricity bill', type: 'todo', weight: 1, on_day: key(new Date()), days: ALL, sort: 96, archived: false, icon: 'check' });
   db.plan_days = PLAN.map((r) => ({ ...r, user_id: UID, checked: [], status: 'planned' }));
   [['sleep', '07:30:00'], ['weight', '08:00:00'], ['routine', '09:30:00'], ['water', '12:00:00'], ['water', '16:00:00'], ['close_day', '21:30:00']]
     .forEach(([kind, at_time]) => db.nudges.push({ id: uuid(), ...u, kind, at_time, enabled: true, days: ALL }));

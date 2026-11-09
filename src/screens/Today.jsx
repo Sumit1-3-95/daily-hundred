@@ -1,8 +1,9 @@
+// Habits tab: today's habit score, habit cards, one-time to-dos, detractors and the month calendar.
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
-import TaskRow from '../components/TaskRow.jsx';
-import { AvoidCards } from '../components/Avoid.jsx';
 import { Icon } from '../components/Icons.jsx';
+import { AvoidCards } from '../components/Avoid.jsx';
+import { HabitCard, TodoAdd, TodoRow } from '../components/Habits.jsx';
 import { streak } from '../lib/calc.js';
 import { key, parse } from '../lib/dates.js';
 
@@ -28,65 +29,62 @@ export function MonthCalendar({ onPick }) {
   for (let d = 1; d <= dim; d++) {
     const k = key(new Date(y, mo, d)), fut = k > today, cc = calc(k);
     let cls = 'c';
-    if (!fut && cc.hasData) {
-      const s = cc.score;
-      cls += ` ${s >= 0.999 ? 's4 perfect' : s >= 0.75 ? 's3' : s >= 0.5 ? 's2' : s > 0 ? 's1' : ''}`;
-    }
+    if (!fut && cc.hasData) { const s = cc.score; cls += ` ${s >= 0.999 ? 's4 perfect' : s >= 0.75 ? 's3' : s >= 0.5 ? 's2' : s > 0 ? 's1' : ''}`; }
     if (fut) cls += ' future';
     if (k === today) cls += ' today';
-    cells.push(fut ? <span key={k} className={cls}>{d}</span>
-      : <button key={k} className={cls} onClick={() => onPick(k)} aria-label={`${d} ${T.toLocaleDateString('en-IN', { month: 'long' })}${cc.hasData ? `, ${Math.round(cc.score * 100)}%` : ''}`}>{d}</button>);
+    cells.push(fut ? <span key={k} className={cls}>{d}</span> : <button key={k} className={cls} onClick={() => onPick(k)} aria-label={`${d}${cc.hasData ? `, ${Math.round(cc.score * 100)}%` : ''}`}>{d}</button>);
   }
   return <div className="cal">{['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((h, i) => <span key={`h${i}`} className="h">{h}</span>)}{cells}</div>;
 }
 
 export default function Today() {
-  const { S, today, calc, A, open } = useStore();
+  const { S, today, calc, open } = useStore();
   const [manage, setManage] = useState(false);
   const [showDone, setShowDone] = useState(false);
-  const c = calc(today);
+  const c = calc(today), H = c.pillars.habits;
   const st = streak(S, today);
-  const todo = c.scored.filter((s) => s.credit < 0.999);
-  const done = c.scored.filter((s) => s.credit >= 0.999);
-  const left = Math.round((1 - c.score) * 100);
-  const T = parse(today);
-  let perfect = 0;
-  for (let d = 1; d <= T.getDate(); d++) { const cc = calc(key(new Date(T.getFullYear(), T.getMonth(), d))); if (cc.hasData && cc.score >= 0.999) perfect++; }
-  const row = (s) => <TaskRow key={s.task.id} k={today} c={c} task={s.task} credit={s.credit} manage={manage} onEdit={(t) => open('task', { task: t })} />;
+  const habits = c.scored.filter((s) => s.pillar === 'habits' && s.task.type !== 'todo');
+  const todos = c.scored.filter((s) => s.task.type === 'todo');
+  const todoOpen = todos.filter((s) => s.credit < 0.999), todoDone = todos.filter((s) => s.credit >= 0.999);
+  const hs = H.score ?? 0;
+  const msg = hs >= 0.999 ? 'All habits done!' : hs >= 0.75 ? 'Almost there' : hs > 0 ? 'Keep going' : "Let's start";
 
   return (
     <>
-      <section className={`card today-head${c.score >= 0.999 ? ' perfect' : ''}`}>
-        <ScoreRing v={c.score} />
+      <section className={`card today-head${hs >= 0.999 ? ' perfect' : ''}`}>
+        <ScoreRing v={hs} />
         <div className="th-body">
-          <div className="th-title">{c.score >= 0.999 ? 'Perfect day!' : left <= 20 ? 'Almost there' : todo.length === c.total ? "Let's get going" : 'Keep going'}</div>
-          <div className="th-sub">{c.score >= 0.999 ? 'Every task done. Enjoy it.' : `${left} points to 100 · ${todo.length} task${todo.length === 1 ? '' : 's'} left`}</div>
+          <div className="th-title">{msg}</div>
+          <div className="th-sub">{H.done} of {H.total} habits · day score {Math.round(c.score * 100)}%</div>
           <div className="chips">
-            <span className="badge fire"><Icon name="fire" size={14} />{st ? `${st}-day streak` : "Start a streak today"}</span>
-            <span className="badge"><Icon name="flag" size={14} />{perfect} perfect this month</span>
+            <span className="badge fire"><Icon name="fire" size={14} />{st ? `${st}-day streak` : 'Start a streak'}</span>
+            {c.penalty > 0 && <span className="badge bad">−{c.penalty} pts</span>}
           </div>
         </div>
       </section>
 
       <section className="card">
-        <div className="row-h"><h3>To do</h3><button className="link" onClick={() => setManage((m) => !m)}>{manage ? 'Done' : 'Edit'}</button></div>
-        <div className="tlist">{todo.map(row)}{!todo.length && <div className="empty">All done. That's a 100% day.</div>}</div>
-        {done.length > 0 && <>
-          <button className="done-h" onClick={() => setShowDone((x) => !x)} aria-expanded={showDone}>
-            <span>Done · {done.length}</span><span>{showDone ? 'Hide' : 'Show'}</span></button>
-          {showDone && <div className="tlist">{done.map(row)}</div>}
-        </>}
-        <div className="btn-row">
-          <button className="btn ghost sm" onClick={() => open('task')}>+ Add task</button>
-          <button className={`btn ghost sm${c.rest ? ' on' : ''}`} onClick={() => A.saveDay(today, { rest: !c.rest })} aria-pressed={c.rest}>
-            {c.rest ? 'Rest day: on' : 'Rest day'}</button>
+        <div className="row-h"><h3>Habits</h3><button className="link" onClick={() => setManage((m) => !m)}>{manage ? 'Done' : 'Edit'}</button></div>
+        <div className="hgrid">
+          {habits.map((s) => <HabitCard key={s.task.id} k={today} task={s.task} credit={s.credit} onEdit={manage ? (t) => open('task', { task: t }) : undefined} />)}
+          <button className="hcard add" onClick={() => open('task')}><Icon name="check" size={20} /><span>New habit</span></button>
         </div>
       </section>
 
-      <section className="card"><div className="row-h"><h3>Avoid</h3><span className="sub">{c.penalty ? `−${c.penalty} points today` : 'no points lost today'}</span></div>
+      <section className="card">
+        <div className="row-h"><h3>To-dos</h3><span className="sub">{todoOpen.length ? `${todoOpen.length} left · unfinished ones move to tomorrow` : todos.length ? 'All done' : 'One-time jobs for today'}</span></div>
+        <TodoAdd k={today} />
+        <div className="todos">{todoOpen.map((s) => <TodoRow key={s.task.id} k={today} task={s.task} credit={s.credit} manage={manage} />)}</div>
+        {todoDone.length > 0 && <>
+          <button className="done-h" onClick={() => setShowDone((x) => !x)} aria-expanded={showDone}><span>Done · {todoDone.length}</span><span>{showDone ? 'Hide' : 'Show'}</span></button>
+          {showDone && <div className="todos">{todoDone.map((s) => <TodoRow key={s.task.id} k={today} task={s.task} credit={s.credit} manage={manage} />)}</div>}
+        </>}
+      </section>
+
+      <section className="card"><div className="row-h"><h3>Detractors</h3><span className="sub">{c.penalty ? `−${c.penalty} pts today` : 'none today'}</span></div>
         <AvoidCards k={today} /></section>
 
-      <section className="card"><div className="row-h"><h3>{T.toLocaleDateString('en-IN', { month: 'long' })}</h3><span className="sub">tap a day to see it</span></div>
+      <section className="card"><div className="row-h"><h3>{parse(today).toLocaleDateString('en-IN', { month: 'long' })}</h3><span className="sub">tap a day</span></div>
         <MonthCalendar onPick={(k) => open('day', { k })} /></section>
     </>
   );

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { BigRings, MiniRings } from '../components/Rings.jsx';
-import { FoodSection, TaskSection, WorkoutSection } from '../components/TodayCards.jsx';
+import { IntakeSection, TaskSection, WorkoutSection } from '../components/TodayCards.jsx';
 import { Alerts, Glass, WaterButtons } from '../components/Nudges.jsx';
 import { Icon, IconTile } from '../components/Icons.jsx';
 import { MBar } from '../components/ui.jsx';
@@ -79,8 +79,8 @@ export default function Home({ goTab }) {
           <div className="hero-score"><b>{pct(c.score)}</b></div>
           <div className="sub">day score</div>
           <ul className="legend">
-            <li><i className="dot r1" /><span>Tasks</span><b>{pct(c.ringT)}</b></li>
-            <li><i className="dot r2" /><span>Deficit{c.open ? ' (so far)' : ''}</span><b>{pct(c.ringD)}</b></li>
+            <li><i className="dot r1" /><span>Habits</span><b>{pct(c.ringT)}</b></li>
+            <li><i className="dot r2" /><span>Intake</span><b>{pct(c.ringD)}</b></li>
             <li><i className="dot r3" /><span>Workout</span><b>{pct(c.ringW)}</b></li>
           </ul>
         </div>
@@ -106,10 +106,9 @@ export default function Home({ goTab }) {
         })}</div>
       </section>
       <Alerts k={today} />
-      <FocusCard />
+      <IntakeSection />
       <WorkoutSection />
       <TaskSection goTab={goTab} />
-      <FoodSection />
     </>
   );
 }

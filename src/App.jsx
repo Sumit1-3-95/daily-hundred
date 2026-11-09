@@ -13,7 +13,7 @@ import { Sheet, Toast } from './components/ui.jsx';
 const TABS = [
   ['home', 'Home', <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /></>],
   ['health', 'Health', <path d="M3 12h4l2-5 4 10 2-5h6" />],
-  ['today', 'Today', <><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8.5 12l2.5 2.5 4.5-5" /></>],
+  ['today', 'Habits', <><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8.5 12l2.5 2.5 4.5-5" /></>],
   ['lists', 'Lists', <><path d="M9 6h11M9 12h11M9 18h11" /><circle cx="4.5" cy="6" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="18" r="1" /></>],
 ];
 const NUDGE_SHEET = { sleep: 'sleep', weight: 'weight', water: 'water', routine: 'routine', close: 'closeDay' };
@@ -49,7 +49,7 @@ function Shell() {
     <button className="btn" onClick={() => window.location.reload()}>Try again</button></div></div>;
 
   const hello = S.profile.name ? `Hi ${S.profile.name.split(' ')[0].replace(/^./, (c) => c.toUpperCase())}` : 'Hi';
-  const title = { home: hello, health: 'Health', today: 'Today', lists: 'Lists' }[tab];
+  const title = { home: hello, health: 'Health', today: 'Habits', lists: 'Lists' }[tab];
   const Body = { home: Home, health: Health, today: Today, lists: Lists }[tab];
   const SheetBody = sheet && SHEETS[sheet.name];
   return (
@@ -64,12 +64,13 @@ function Shell() {
         </header>
         <main><Body goTab={go} /></main>
       </div>
-      <button className="fab" onClick={() => open('quick')} aria-label="Quick add">+</button>
       <nav className="tabs" aria-label="Main"><div className="tabs-in">
         {TABS.map(([id, l, icon]) => (
           <button key={id} className="tab" aria-current={tab === id ? 'page' : undefined} onClick={() => go(id)}>
             <svg viewBox="0 0 24 24">{icon}</svg>{l}</button>
         ))}
+        <button className="tab add" onClick={() => open('quick')} aria-label="Add">
+          <span className="tab-plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></span></button>
       </div></nav>
       {SheetBody && <Sheet><SheetBody {...sheet.props} /></Sheet>}
       <Toast />

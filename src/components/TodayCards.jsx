@@ -5,6 +5,7 @@ import { fmt } from './ui.jsx';
 import { AUTO_SHEET, taskIcon } from './TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
 import { PlanCard } from './Plan.jsx';
+import { Glass, WaterButtons } from './Nudges.jsx';
 import { MEALS } from '../lib/dates.js';
 
 /** Two labelled bars side by side. */
@@ -28,7 +29,7 @@ export function WorkoutSection() {
   const c = calc(today), t = S.targets;
   return (
     <section className="card sec">
-      <div className="row-h"><h3><Icon name="dumbbell" size={16} /> Workout</h3><button className="link" onClick={() => open('logWorkout')}>+ Log</button></div>
+      <div className="row-h"><h3><Icon name="dumbbell" size={16} /> Workout <span className="pct">{Math.round((c.rest ? 1 : c.pillars.workout.score ?? 0) * 100)}%</span></h3><button className="link" onClick={() => open('logWorkout')}>+ Log</button></div>
       <PlanCard k={today} compact />
       <Bars items={[['Time', c.rest ? t.workoutMin : c.wMin, t.workoutMin, 'min', 'r3'], ['Calories burned', c.active, t.activeKcal, 'kcal', 'r2']]} />
       {c.rest && <p className="hint">Rest day.</p>}
@@ -50,10 +51,11 @@ export function WorkoutSection() {
 export function TaskSection({ goTab }) {
   const { S, today, calc, A, open } = useStore();
   const c = calc(today), t = S.targets;
-  const order = [...c.scored].sort((a, b) => (a.credit >= 0.999) - (b.credit >= 0.999));
+  const order = c.scored.filter((s) => s.pillar === 'habits').sort((a, b) => (a.credit >= 0.999) - (b.credit >= 0.999));
+  const H = c.pillars.habits;
   const act = (task) => {
     const tl = c.d.tlogs[task.id] || {};
-    if (task.type === 'check') return A.setTaskLog(today, task, { done: !tl.done });
+    if (task.type === 'check' || task.type === 'todo') return A.setTaskLog(today, task, { done: !tl.done });
     if (task.type === 'checklist' || task.type === 'number') return open('taskOne', { id: task.id });
     const sheet = AUTO_SHEET[task.auto_key];
     if (sheet) open(sheet);
@@ -63,19 +65,19 @@ export function TaskSection({ goTab }) {
     if (credit >= 0.999) return <Icon name="check" size={18} />;
     if (task.type === 'number') return `${tl.value || 0}/${task.target}`;
     if (task.type === 'checklist') { const its = S.items.filter((i) => i.list_id === task.list_id); return `${Math.round(credit * its.length)}/${its.length}`; }
-    if (task.type === 'check') return `+${task.weight}`;
+    if (task.type === 'check' || task.type === 'todo') return `+${task.weight}`;
     return `${Math.round(credit * 100)}%`;
   };
   return (
     <section className="card sec">
-      <div className="row-h"><h3><Icon name="check" size={16} /> Tasks</h3>
-        <span className="sub">{c.done}/{c.total} done{c.penalty ? ` · −${c.penalty} pts` : ''} · <button className="link" onClick={() => goTab('today')}>Plan</button></span></div>
+      <div className="row-h"><h3><Icon name="check" size={16} /> Habits <span className="pct">{Math.round((H.score ?? 0) * 100)}%</span></h3>
+        <span className="sub">{H.done}/{H.total}{c.penalty ? ` · −${c.penalty} pts` : ''} · <button className="link" onClick={() => goTab('today')}>All</button></span></div>
       <div className="tgrid">{order.map(({ task, credit }) => {
         const st = credit >= 0.999 ? 'done' : credit > 0 ? 'part' : 'todo';
         return (
           <button key={task.id} className={`tcard ${st}`} onClick={() => act(task)}>
             <span className="tc-top"><span className="tc-num">{num(task, credit)}</span>{task.image_url ? <img className="thumb xs" src={task.image_url} alt="" /> : <Icon name={taskIcon(task)} size={16} />}</span>
-            <span className="tc-name">{taskName(task, t)}</span>
+            <span className="tc-name">{taskName(task, t)}</span>{task.type === 'todo' && <span className="tc-todo">to-do</span>}
             {st === 'part' && <span className="tbar"><i style={{ width: `${credit * 100}%` }} /></span>}
           </button>
         );
@@ -84,14 +86,18 @@ export function TaskSection({ goTab }) {
   );
 }
 
-export function FoodSection() {
+export function IntakeSection() {
   const { S, today, calc, open } = useStore();
   const c = calc(today), t = S.targets;
   const rows = MEALS.flatMap((m) => c.d.food.filter((f) => f.meal === m));
   return (
-    <section className="card sec">
-      <div className="row-h"><h3><Icon name="thali" size={16} /> Food</h3><button className="link" onClick={() => open('logFood')}>+ Add</button></div>
-      <Bars items={[['Calories', c.eaten, t.kcal, 'kcal', 'r2'], ['Protein', c.protein, t.protein, 'g', 'r3']]} />
+    <section className="card sec intake">
+      <div className="row-h"><h3><Icon name="bolt" size={16} /> Intake <span className="pct">{Math.round((c.pillars.intake.score ?? 0) * 100)}%</span></h3><button className="link" onClick={() => open('logFood')}>+ Food</button></div>
+      <div className="water-row">
+        <button className="focus-vis" onClick={() => open('water')} aria-label="Water"><Glass p={c.water / t.water} size={52} /></button>
+        <div className="wr-b"><span className="wr-n"><b>{(c.water / 1000).toFixed(2)}</b> / {t.water / 1000} L water</span><WaterButtons k={today} compact /></div>
+      </div>
+      <Bars items={[['Protein', c.protein, t.protein, 'g', 'r3'], ['Calories', c.eaten, t.kcal, 'kcal', 'r2']]} />
       {rows.length ? (
         <div className="strip">{rows.map((f) => {
           const x = S.foodsById[f.food_id] || { name: 'Deleted', kcal: 0 };

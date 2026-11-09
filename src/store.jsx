@@ -3,7 +3,7 @@
 // update the screen first and roll back if the save fails.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchAll, supabase } from './lib/supabase.js';
-import { addDays, key, todayKey } from './lib/dates.js';
+import { addDays, key, parse, todayKey } from './lib/dates.js';
 import { calcDay, emptyDay } from './lib/calc.js';
 import { MEAL_DUE, mealPlan } from './lib/mealplan.js';
 import { MEALS } from './lib/dates.js';
@@ -40,7 +40,7 @@ export function StoreProvider({ session, children }) {
   useEffect(() => {
     if (status !== 'ready' || filling.current) return;
     filling.current = true;
-    A.autofill().catch(() => {}).finally(() => { filling.current = false; });
+    A.autofill().catch(() => {}).then(() => A.rollover()).catch(() => {}).finally(() => { filling.current = false; });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, today, Math.floor(tick / 5)]);
 
@@ -117,7 +117,8 @@ export function StoreProvider({ session, children }) {
       if (!day(k).food.length) { toast('Log at least one meal before closing the day'); return false; }
       await A.saveDay(k, { closed: true });
       const c = calcDay(ref.current, k, today);
-      toast(`Day closed. Deficit: ${Math.round(c.deficit).toLocaleString('en-IN')} kcal`);
+      const moved = await A.carryTodos(k, key(addDays(parse(k), 1)));
+      toast(`Day closed. Deficit: ${Math.round(c.deficit).toLocaleString('en-IN')} kcal${moved ? ` · ${moved} to-do${moved > 1 ? 's' : ''} moved to tomorrow` : ''}`);
       track('day_closed', { deficit: Math.round(c.deficit) });
       return true;
     },
@@ -140,6 +141,33 @@ export function StoreProvider({ session, children }) {
       }
       commit(() => { row.qty = qty; });
       try { await q(supabase.from('food_logs').update({ qty, is_default: false }).eq('id', row.id)); row.is_default = false; } catch { commit(() => { row.qty = prevQty; }); }
+    },
+    // ---------- one-time to-dos ----------
+    addTodo: async (name, weight = 1, k = today) => {
+      const sort = Math.max(0, ...ref.current.tasks.map((x) => x.sort)) + 1;
+      const row = await q(supabase.from('tasks').insert({ user_id: uid, name, type: 'todo', weight, on_day: k, days: [0, 1, 2, 3, 4, 5, 6], sort }).select().single());
+      commit((S) => S.tasks.push(row));
+      track('todo_added', { weight });
+    },
+    /** Copy unfinished to-dos of `fromK` to `toK` (once each). */
+    carryTodos: async (fromK, toK) => {
+      const S = ref.current;
+      const open = S.tasks.filter((t) => t.type === 'todo' && !t.archived && t.on_day === fromK && !S.days[fromK]?.tlogs[t.id]?.done
+        && !S.tasks.some((x) => x.carried_from === t.id));
+      if (!open.length) return 0;
+      const rows = open.map((t) => ({ user_id: uid, name: t.name, type: 'todo', weight: t.weight, icon: t.icon, image_url: t.image_url,
+        on_day: toK, days: t.days, sort: t.sort, carried_from: t.id }));
+      const ins = await q(supabase.from('tasks').insert(rows).select());
+      commit((S2) => S2.tasks.push(...ins));
+      return ins.length;
+    },
+    /** When the date changes, bring forward anything left from earlier days. */
+    rollover: async () => {
+      const S = ref.current;
+      const past = [...new Set(S.tasks.filter((t) => t.type === 'todo' && !t.archived && t.on_day && t.on_day < today).map((t) => t.on_day))].sort();
+      let n = 0;
+      for (const d of past) n += await A.carryTodos(d, today);
+      if (n) toast(`${n} to-do${n > 1 ? 's' : ''} moved to today`);
     },
     autofill: async () => {
       const S = ref.current, plan = mealPlan(S), now = new Date();

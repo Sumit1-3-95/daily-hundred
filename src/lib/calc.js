@@ -2,6 +2,12 @@
 // No React or Supabase here, so it can be unit-tested with `npm test`.
 import { addDays, key, parse } from './dates.js';
 
+/** Which part of the day score a task belongs to. */
+export const pillarOf = (t) => (t.type === 'auto'
+  ? (['water', 'protein', 'calories', 'deficit'].includes(t.auto_key) ? 'intake' : ['workout', 'burn'].includes(t.auto_key) ? 'workout' : 'habits')
+  : 'habits');
+export const PILLARS = ['habits', 'intake', 'workout'];
+
 export const emptyDay = () => ({ log: null, food: [], workouts: [], tlogs: {} });
 export const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 
@@ -49,13 +55,13 @@ export function calcDay(S, k, today) {
   const water = log.water_ml || 0, sleep = Number(log.sleep_hours) || 0;
 
   const list = S.tasks
-    .filter((x) => !x.archived && x.type !== 'avoid' && x.days.includes(dow) && !(rest && x.auto_key === 'workout'))
+    .filter((x) => !x.archived && x.type !== 'avoid' && (x.type === 'todo' ? x.on_day === k : x.days.includes(dow)) && !(rest && x.auto_key === 'workout'))
     .sort((a, b) => a.sort - b.sort);
 
   const credit = (x) => {
     const tl = d.tlogs[x.id] || {};
     switch (x.type) {
-      case 'check': return tl.done ? 1 : 0;
+      case 'check': case 'todo': return tl.done ? 1 : 0;
       case 'number': return x.target ? clamp((Number(tl.value) || 0) / x.target) : (tl.done ? 1 : 0);
       case 'checklist': {
         const its = S.items.filter((i) => i.list_id === x.list_id);
@@ -78,7 +84,12 @@ export function calcDay(S, k, today) {
       default: return 0;
     }
   };
-  const scored = list.map((x) => ({ task: x, credit: credit(x) }));
+  const scored = list.map((x) => ({ task: x, credit: credit(x), pillar: pillarOf(x) }));
+  const pillars = Object.fromEntries(PILLARS.map((p) => {
+    const its = scored.filter((s) => s.pillar === p);
+    const max = its.reduce((a, s) => a + s.task.weight, 0), got = its.reduce((a, s) => a + s.task.weight * s.credit, 0);
+    return [p, { pts: got, max, score: max ? got / max : null, done: its.filter((s) => s.credit >= 0.999).length, total: its.length }];
+  }));
   const maxPts = scored.reduce((a, s) => a + s.task.weight, 0);
   // things to avoid (alcohol, smoking): each one logged takes its weight off the points
   const avoids = S.tasks.filter((x) => !x.archived && x.type === 'avoid' && x.days.includes(dow))
@@ -92,11 +103,12 @@ export function calcDay(S, k, today) {
   return {
     d, log, eaten, protein, wMin, wKcal, active, burned, deficit, closed, rest, open, proj, shownD, left,
     water, sleep, weight: log.weight != null ? Number(log.weight) : null, steps: log.steps ?? null,
-    scored, score, pts, maxPts, done, total: list.length, avoids, penalty,
+    scored, score, pts, maxPts, done, total: list.length, avoids, penalty, pillars,
     hasData: !!(d.log || d.food.length || d.workouts.length || Object.keys(d.tlogs).length),
-    ringT: score,
-    ringD: eaten ? clamp(shownD / t.deficit) : 0,
-    ringW: rest ? 1 : clamp(wMin / t.workoutMin),
+    // rings: habits, intake, workout
+    ringT: pillars.habits.score ?? 0,
+    ringD: pillars.intake.score ?? 0,
+    ringW: rest ? 1 : (pillars.workout.score ?? clamp(wMin / t.workoutMin)),
   };
 }
 

@@ -108,3 +108,20 @@ test('avoid tasks take points off', () => {
   S.days['2026-11-08'].tlogs.x.value = 3;
   assert.equal(calcDay(S, '2026-11-08', '2026-11-08').pts, 0);
 });
+
+test('pillars and one-time to-dos', () => {
+  const S = base();
+  S.tasks = [
+    { id: 'w', type: 'auto', auto_key: 'water', weight: 2, days: ALL, sort: 0 },
+    { id: 'r', type: 'check', weight: 1, days: ALL, sort: 1 },
+    { id: 'l', type: 'todo', weight: 2, days: ALL, on_day: '2026-11-08', sort: 2 },
+    { id: 'old', type: 'todo', weight: 5, days: ALL, on_day: '2026-11-07', sort: 3 },
+  ];
+  S.days['2026-11-08'] = { log: { water_ml: 1500 }, food: [], workouts: [], tlogs: { l: { done: true } } };
+  const c = calcDay(S, '2026-11-08', '2026-11-08');
+  assert.equal(c.total, 3);                  // yesterday's to-do isn't on today
+  assert.equal(c.pillars.intake.score, 0.5);
+  assert.equal(c.pillars.habits.pts, 2);
+  assert.equal(c.pillars.habits.max, 3);
+  assert.equal(c.ringD, 0.5);
+});
