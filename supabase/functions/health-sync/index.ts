@@ -59,7 +59,8 @@ Deno.serve(async (req) => {
       const start = typeof wk.start === 'string' ? wk.start : null;
       return {
         user_id, day, name, area, type_id: match?.id ?? null,
-        minutes: Math.round(num(wk.minutes) ?? 0),
+        // minutes, or seconds if the Shortcut sends the raw duration
+        minutes: Math.round(num(wk.minutes) ?? ((num(wk.duration_s) ?? 0) / 60)),
         kcal: Math.round(num(wk.kcal) ?? 0),
         source: 'apple_watch',
         started_at: start,

@@ -32,8 +32,13 @@ export function localNow(tz: string, d = new Date()) {
   return { date: `${p.year}-${p.month}-${p.day}`, time: `${hour}:${p.minute}`, dow };
 }
 
+/** Number from whatever Shortcuts sends: 8123, "8,123", "8,123 steps", "76,9" (decimal comma), "52 min". */
 export const num = (v: unknown) => {
   if (v === null || v === undefined || v === '') return undefined;
-  const n = Number(String(v).replace(',', '.').replace(/[^0-9.\-]/g, ''));
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  let s = String(v).trim().replace(/[^0-9.,\-]/g, '');
+  if (/^-?\d{1,3}(,\d{2,3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');   // thousands separators (8,123 or 1,23,456)
+  else s = s.replace(',', '.');                                               // decimal comma
+  const n = Number(s);
   return Number.isFinite(n) ? n : undefined;
 };

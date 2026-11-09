@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '../store.jsx';
 import { Field, fmt } from '../components/ui.jsx';
 import { IconTile } from '../components/Icons.jsx';
@@ -98,22 +98,35 @@ function Nudges() {
   );
 }
 
+export const SHORTCUT_NAME = 'Daily 100 Sync';
+export const runShortcut = () => { window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}`; };
+
 function HealthSync() {
   const { A, toast } = useStore();
   const [token, setToken] = useState('');
+  const [last, setLast] = useState(undefined);
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-sync`;
   const copy = async (txt) => { try { await navigator.clipboard.writeText(txt); toast('Copied'); } catch { toast('Select the text and copy it'); } };
+  useEffect(() => {
+    supabase.from('api_tokens').select('last_used_at').order('last_used_at', { ascending: false, nullsFirst: false }).limit(1)
+      .then(({ data }) => setLast(data?.[0]?.last_used_at || null));
+  }, []);
   return (
     <>
-      <p className="hint">An iPhone Shortcut reads Apple Health (weight, active energy, steps, sleep, workouts) and sends it here every night. The README has the step-by-step Shortcut setup.</p>
-      <Field label="Sync address" id="hsUrl"><div className="code" id="hsUrl">{url}</div></Field>
+      <div className="sync-card">
+        <IconTile name="steps" />
+        <div className="grow"><b>Apple Health</b>
+          <span className="sub">{last === undefined ? '…' : last ? `Last sync ${new Date(last).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}` : 'Not synced yet'}</span></div>
+        <button className="btn sm" onClick={runShortcut}>Sync now</button>
+      </div>
+      <p className="hint">Runs the "{SHORTCUT_NAME}" Shortcut, which sends steps, active calories, weight and workouts here.</p>
+      <Field label="1 · Address for the Shortcut" id="hsUrl"><div className="code" id="hsUrl" onClick={() => copy(url)}>{url}</div></Field>
       {token ? (
         <>
-          <div className="field"><span className="lb">Your token (shown once, keep it private)</span><div className="code">{token}</div></div>
-          <button className="btn" onClick={() => copy(token)}>Copy token</button>
+          <div className="field"><span className="lb">2 · Your token (shown once)</span><div className="code">{token}</div></div>
+          <button className="btn" onClick={() => copy(`Bearer ${token}`)}>Copy "Bearer token"</button>
         </>
-      ) : <button className="btn" onClick={async () => setToken(await A.createToken())}>Create a sync token</button>}
-      <p className="hint">In the Shortcut, add a header <b>Authorization</b> with the value <b>Bearer</b> followed by a space and your token.</p>
+      ) : <button className="btn ghost" onClick={async () => setToken(await A.createToken())}>2 · Create a sync token</button>}
     </>
   );
 }

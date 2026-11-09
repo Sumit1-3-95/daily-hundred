@@ -75,6 +75,19 @@ export function StoreProvider({ session, children }) {
     ref.current = S;
   }
 
+  // coming back to the app (e.g. after the Apple Health Shortcut ran): refresh, at most once a minute
+  useEffect(() => {
+    let last = Date.now();
+    const h = () => {
+      if (document.visibilityState !== 'visible' || Date.now() - last < 60000 || !ref.current) return;
+      last = Date.now();
+      load().then(render).catch(() => {});
+    };
+    document.addEventListener('visibilitychange', h);
+    return () => document.removeEventListener('visibilitychange', h);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     load().then(() => { setStatus('ready'); track('app_open'); })
       .catch((e) => { console.error(e); setStatus(e.message || 'Could not load your data'); });

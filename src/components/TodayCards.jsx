@@ -5,6 +5,7 @@ import { fmt } from './ui.jsx';
 import { AUTO_SHEET, taskIcon } from './TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
 import { PlanCard } from './Plan.jsx';
+import { runShortcut } from '../sheets/Settings.jsx';
 import { Glass, WaterButtons } from './Nudges.jsx';
 import { MEALS } from '../lib/dates.js';
 
@@ -29,7 +30,7 @@ export function WorkoutSection() {
   const c = calc(today), t = S.targets;
   return (
     <section className="card sec">
-      <div className="row-h"><h3><Icon name="dumbbell" size={16} /> Workout <span className="pct">{Math.round((c.rest ? 1 : c.pillars.workout.score ?? 0) * 100)}%</span></h3><button className="link" onClick={() => open('logWorkout')}>+ Log</button></div>
+      <div className="row-h"><h3><Icon name="dumbbell" size={16} /> Workout <span className="pct">{Math.round((c.rest ? 1 : c.pillars.workout.score ?? 0) * 100)}%</span></h3><span className="row-acts"><button className="link" onClick={runShortcut} aria-label="Sync from Apple Watch">↻ Watch</button><button className="link" onClick={() => open('logWorkout')}>+ Log</button></span></div>
       <PlanCard k={today} compact />
       <Bars items={[['Time', c.rest ? t.workoutMin : c.wMin, t.workoutMin, 'min', 'r3'], ['Calories burned', c.active, t.activeKcal, 'kcal', 'r2']]} />
       {c.rest && <p className="hint">Rest day.</p>}
