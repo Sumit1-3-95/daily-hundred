@@ -4,7 +4,7 @@ import { IconTile } from '../components/Icons.jsx';
 
 const ITEMS = [
   ['water', 'water', 'Water'], ['logFood', 'thali', 'Food'], ['logWorkout', 'dumbbell', 'Workout'], ['weight', 'scale', 'Weight'],
-  ['sleep', 'sun', 'Wake-up'], ['task', 'check', 'Task'], ['list', 'list', 'List'], ['closeDay', 'moon', 'Sign off'],
+  ['sleep', 'sun', 'Wake-up'], ['avoid', 'drink', 'Detractors'], ['task', 'check', 'Task'], ['closeDay', 'moon', 'Sign off'],
 ];
 
 export default function QuickAdd() {
@@ -14,7 +14,7 @@ export default function QuickAdd() {
       <h2>Add</h2>
       <div className="icon-grid">
         {ITEMS.map(([s, ic, l]) => (
-          <button key={s} onClick={() => open(s)} aria-label={l} title={l}><IconTile name={ic} size="lg" /></button>
+          <button key={s} onClick={() => open(s)}><IconTile name={ic} size="lg" /><span className="ig-l">{l}</span></button>
         ))}
       </div>
     </>

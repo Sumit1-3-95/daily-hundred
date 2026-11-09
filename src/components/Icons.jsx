@@ -35,6 +35,8 @@ const P = {
   steps: <><path d="M8 3.5c1.7 0 2.6 2 2.6 4.2S9.8 12 8 12s-2.5-2.2-2.5-4.4S6.4 3.5 8 3.5z" /><path d="M5.8 14.3h4.4M16 9c1.7 0 2.5 2 2.5 4.2S17.7 17.5 16 17.5s-2.6-2.1-2.6-4.3S14.3 9 16 9z" /><path d="M13.8 19.8h4.4" /></>,
   calories: <><path d="M12 3v3M4.5 7l2 2M19.5 7l-2 2" /><path d="M5 15a7 7 0 0 1 14 0z" /><path d="M3 18.5h18" /></>,
   flag: <><path d="M5 21V4M5 4.5h11l-2 3.5 2 3.5H5" /></>,
+  drink: <><path d="M6 3h12l-1.2 7.5A4.9 4.9 0 0 1 12 14.5a4.9 4.9 0 0 1-4.8-4L6 3z" /><path d="M6.6 7h10.8" /><path d="M12 14.5V20M8.5 21h7" /></>,
+  smoke: <><rect x="2.5" y="13" width="15" height="4" rx="1" /><path d="M14 13v4" /><path d="M20 13v4M17.8 3.5c0 2 2 2 2 4s-2 2-2 4M21 4.5c0 1.6 1 1.6 1 3" /></>,
   bed: <><path d="M3 18V7M3 14h18v4M21 14v-2.5a3 3 0 0 0-3-3h-7v5.5" /><circle cx="7" cy="11" r="1.8" /></>,
 };
 
@@ -44,7 +46,7 @@ export const FOOD_ICONS = ['thali', 'dalchawal', 'tikki', 'salad', 'paneer', 'sa
 const TONE = {
   water: 'blue', bottle: 'blue', moon: 'violet', sun: 'amber', bed: 'violet', scale: 'slate', bolt: 'teal', fire: 'orange',
   dumbbell: 'teal', shoe: 'teal', lotus: 'teal', target: 'orange', calories: 'orange', book: 'violet', list: 'slate',
-  check: 'violet', steps: 'teal', flag: 'violet', shake: 'teal', soya: 'teal', paneer: 'teal', egg: 'teal', sweet: 'pink',
+  check: 'violet', steps: 'teal', drink: 'pink', smoke: 'slate', flag: 'violet', shake: 'teal', soya: 'teal', paneer: 'teal', egg: 'teal', sweet: 'pink',
   chai: 'amber', fruit: 'green', salad: 'green',
 };
 

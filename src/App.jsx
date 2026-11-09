@@ -7,6 +7,7 @@ import Health from './screens/Health.jsx';
 import Today from './screens/Today.jsx';
 import Lists from './screens/Lists.jsx';
 import { SHEETS } from './sheets/index.jsx';
+import { weightTrend } from './sheets/WeightPage.jsx';
 import { Sheet, Toast } from './components/ui.jsx';
 
 const TABS = [
@@ -16,6 +17,18 @@ const TABS = [
   ['lists', 'Lists', <><path d="M9 6h11M9 12h11M9 18h11" /><circle cx="4.5" cy="6" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="18" r="1" /></>],
 ];
 const NUDGE_SHEET = { sleep: 'sleep', weight: 'weight', water: 'water', routine: 'routine', close: 'closeDay' };
+
+/** Latest weight with its 7-day change: green going down, amber flat, red going up. Opens the weight page. */
+function WeightChip() {
+  const { S, open } = useStore();
+  const tr = weightTrend(S, 7);
+  return (
+    <button className={`wchip ${tr?.status || 'flat'}`} onClick={() => open('weightPage')} aria-label="Weight details">
+      <b>{tr ? tr.now.toFixed(1) : '—'}<small> kg</small></b>
+      {tr?.delta != null && <span>{tr.delta > 0 ? '▲' : '▼'} {Math.abs(tr.delta).toFixed(1)}</span>}
+    </button>
+  );
+}
 
 function Shell() {
   const { S, status, sheet, open, track } = useStore();
@@ -44,7 +57,10 @@ function Shell() {
       <div className="app">
         <header className="top">
           <div><div className="date">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</div><h1>{title}</h1></div>
-          <button className="avatar" onClick={() => open('settings')} aria-label="Settings">{(S.profile.name || 'S')[0].toUpperCase()}</button>
+          <div className="top-r">
+            {tab === 'home' && <WeightChip />}
+            <button className="avatar" onClick={() => open('settings')} aria-label="Settings">{(S.profile.name || 'S')[0].toUpperCase()}</button>
+          </div>
         </header>
         <main><Body goTab={go} /></main>
       </div>

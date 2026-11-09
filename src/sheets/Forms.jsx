@@ -3,9 +3,10 @@ import { useStore } from '../store.jsx';
 import { Field, fmt } from '../components/ui.jsx';
 import { CloseBlock, RoutineBlock, WakeBlock, WaterBlock, WeightBlock } from '../components/Nudges.jsx';
 import FoodPicker from '../components/FoodPicker.jsx';
+import PhotoField from '../components/PhotoField.jsx';
 import { FOOD_ICONS, IconTile, iconForWorkout } from '../components/Icons.jsx';
 
-const TASK_ICONS = ['check', 'book', 'sun', 'moon', 'water', 'bolt', 'dumbbell', 'shoe', 'lotus', 'steps', 'fire', 'list', 'flag', 'chai', 'bed', 'target'];
+const TASK_ICONS = ['drink', 'smoke', 'check', 'book', 'sun', 'moon', 'water', 'bolt', 'dumbbell', 'shoe', 'lotus', 'steps', 'fire', 'list', 'flag', 'chai', 'bed', 'target'];
 import { DOW, MEALS, lastN, mealNow, parse } from '../lib/dates.js';
 import { AUTO_LABEL } from '../lib/calc.js';
 
@@ -51,7 +52,7 @@ export function NewFood({ name = '', meal }) {
           <div className="weights">{MEALS.map((m) => (
             <label key={m}><input type="checkbox" checked={meals.includes(m)} onChange={() => tog(m)} /><span>{m}</span></label>
           ))}</div></div>
-        <Field label="Photo link (optional)" id="nfImg"><input id="nfImg" name="img" type="url" placeholder="https://…" /></Field>
+        <Field label="Photo link (optional, add later)" id="nfImg"><input id="nfImg" name="img" type="text" inputMode="url" autoCapitalize="off" autoCorrect="off" placeholder="Leave empty to use the drawing" /></Field>
         <label className="toggle" htmlFor="nfQuick"><span>Show in quick picks</span><input id="nfQuick" name="quick" type="checkbox" defaultChecked /></label>
         <label className="toggle" htmlFor="nfLog"><span>Also log 1 serving now</span><input id="nfLog" name="log" type="checkbox" defaultChecked /></label>
         <button className="btn">Save food item</button>
@@ -60,7 +61,7 @@ export function NewFood({ name = '', meal }) {
   );
 }
 
-function frequentWorkouts(S, today, n = 4) {
+export function frequentWorkouts(S, today, n = 4) {
   const by = {};
   lastN(30, parse(today)).forEach((k) => (S.days[k]?.workouts || []).forEach((w) => {
     (by[w.name] ||= { name: w.name, area: w.area, type_id: w.type_id, mins: [], kcals: [] });
@@ -69,14 +70,14 @@ function frequentWorkouts(S, today, n = 4) {
   const med = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
   const ranked = Object.values(by).sort((a, b) => b.mins.length - a.mins.length).map((x) => ({ ...x, minutes: med(x.mins), kcal: med(x.kcals) }));
   if (ranked.length) return ranked.slice(0, n);
-  return S.wtypes.slice(0, n).map((w) => ({ name: w.name, area: w.area, type_id: w.id, minutes: 45, kcal: Math.round(45 * w.kcal_per_min) }));
+  return S.wtypes.filter((w) => !w.archived).slice(0, n).map((w) => ({ name: w.name, area: w.area, type_id: w.id, minutes: 45, kcal: Math.round(45 * w.kcal_per_min) }));
 }
 
 export function LogWorkout() {
   const { S, today, A, open, close, toast } = useStore();
   const [manual, setManual] = useState(false);
   const picks = frequentWorkouts(S, today);
-  const [typeId, setType] = useState(S.wtypes[0]?.id || '');
+  const [typeId, setType] = useState(S.wtypes.find((w) => !w.archived)?.id || '');
   const [min, setMin] = useState(45);
   const w = S.wtypes.find((x) => x.id === typeId);
   const est = Math.round((Number(min) || 0) * (w?.kcal_per_min || 6));
@@ -98,7 +99,7 @@ export function LogWorkout() {
         toast(`Logged ${w?.name || 'workout'}`); close();
       }}>
         <Field label="Workout" id="lwT"><select id="lwT" value={typeId} onChange={(e) => setType(e.target.value)}>
-          {S.wtypes.map((x) => <option key={x.id} value={x.id}>{x.name} · {x.area}</option>)}</select></Field>
+          {S.wtypes.filter((x) => !x.archived).map((x) => <option key={x.id} value={x.id}>{x.name} · {x.area}</option>)}</select></Field>
         <div className="two">
           <Field label="Minutes" id="lwM"><input id="lwM" type="number" inputMode="numeric" min="1" required value={min} onChange={(e) => setMin(e.target.value)} /></Field>
           <Field label="Calories burned" id="lwK"><input id="lwK" name="kcal" type="number" inputMode="numeric" min="0" placeholder={String(est)} /></Field>
@@ -145,6 +146,7 @@ export function TaskForm({ task, preset }) {
   const t0 = task || { name: '', type: 'check', weight: 1, days: [0, 1, 2, 3, 4, 5, 6], ...(preset || {}) };
   const [type, setType] = useState(t0.type);
   const [icon, setIcon] = useState(t0.icon || 'check');
+  const [img, setImg] = useState(t0.image_url || null);
   const [sure, setSure] = useState(false);
   const routines = S.lists;
   return (
@@ -156,11 +158,11 @@ export function TaskForm({ task, preset }) {
         if (!days.length) { toast('Pick at least one day'); return; }
         const autoKey = type === 'auto' ? fd.get('auto') : null;
         const row = {
-          ...(task ? { id: task.id } : {}), type, days, weight: Number(fd.get('weight')), icon,
+          ...(task ? { id: task.id } : {}), type, days, weight: Number(fd.get('weight')), icon, image_url: img,
           name: type === 'auto' ? (fd.get('name') || '').trim() || AUTO_LABEL[autoKey](S.targets) : fd.get('name').trim(),
           auto_key: autoKey,
           target: type === 'number' ? Number(fd.get('target')) || 1 : null,
-          unit: type === 'number' ? (fd.get('unit') || '').trim() : null,
+          unit: type === 'number' || type === 'avoid' ? (fd.get('unit') || '').trim() : null,
           list_id: type === 'checklist' ? fd.get('list') : null,
         };
         await A.saveTask(row); toast(task ? 'Task updated' : 'Task added'); close();
@@ -170,8 +172,10 @@ export function TaskForm({ task, preset }) {
           <option value="number">Number target (pages, minutes, steps)</option>
           <option value="checklist">Checklist from a list (e.g. morning routine)</option>
           <option value="auto">Automatic from my data</option>
+          <option value="avoid">Avoid (takes points off, e.g. alcohol)</option>
         </select></Field>
         {type !== 'auto' && <Field label="Task" id="tN"><input id="tN" name="name" required defaultValue={t0.name} placeholder="e.g. Read, 10 min meditation, no phone after 11" /></Field>}
+        {type === 'avoid' && <Field label="Counted in" id="tUa"><input id="tUa" name="unit" defaultValue={t0.unit || ''} placeholder="drinks, cigarettes" /></Field>}
         {type === 'number' && <div className="two">
           <Field label="Target" id="tG"><input id="tG" name="target" type="number" min="1" required defaultValue={t0.target || 25} /></Field>
           <Field label="Unit" id="tU"><input id="tU" name="unit" defaultValue={t0.unit || ''} placeholder="pages" /></Field></div>}
@@ -180,11 +184,12 @@ export function TaskForm({ task, preset }) {
           : <p className="hint">Create a list in the Lists tab first.</p>)}
         {type === 'auto' && <Field label="Completes when" id="tA"><select id="tA" name="auto" defaultValue={t0.auto_key || 'protein'}>
           {Object.entries(AUTO_LABEL).map(([k2, f]) => <option key={k2} value={k2}>{f(S.targets)}</option>)}</select></Field>}
+        <div className="field"><span className="lb">Picture</span><PhotoField value={img} onChange={setImg} icon={icon} kind="task" /></div>
         <div className="field"><span className="lb">Icon</span>
           <div className="iconpick">{TASK_ICONS.map((ic) => (
             <button type="button" key={ic} aria-pressed={icon === ic} onClick={() => setIcon(ic)} aria-label={ic}><IconTile name={ic} size="sm" /></button>
           ))}</div></div>
-        <div className="field"><span className="lb">Points in the day score</span>
+        <div className="field"><span className="lb">{type === 'avoid' ? 'Points taken off for each one' : 'Points in the day score'}</span>
           <div className="weights">{[1, 2, 3, 5].map((w) => (
             <label key={w}><input type="radio" name="weight" value={w} defaultChecked={(t0.weight || 1) === w} /><span>×{w}</span></label>
           ))}</div>

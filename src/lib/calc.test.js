@@ -93,3 +93,18 @@ test('calories and burn auto tasks', () => {
   c = calcDay(S, '2026-11-08', '2026-11-08');
   assert.equal(c.scored[0].credit, 1);      // 850 kcal < 2000
 });
+
+test('avoid tasks take points off', () => {
+  const S = base();
+  S.tasks = [
+    { id: 'a', type: 'check', weight: 4, days: ALL, sort: 0 },
+    { id: 'x', type: 'avoid', weight: 3, days: ALL, sort: 1 },
+  ];
+  S.days['2026-11-08'] = { log: {}, food: [], workouts: [], tlogs: { a: { done: true }, x: { value: 1 } } };
+  const c = calcDay(S, '2026-11-08', '2026-11-08');
+  assert.equal(c.maxPts, 4);
+  assert.equal(c.pts, 1);
+  assert.equal(c.total, 1);
+  S.days['2026-11-08'].tlogs.x.value = 3;
+  assert.equal(calcDay(S, '2026-11-08', '2026-11-08').pts, 0);
+});

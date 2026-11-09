@@ -12,17 +12,17 @@ function seed() {
     body_scans: [], blood_results: [], nudges: [], push_subscriptions: [], api_tokens: [], events: [] };
   const u = { user_id: UID };
   db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 8000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1 } });
-  const F = [['thali', 'Roti sabzi curd', '2 roti + 1 katori sabzi + curd', 380, 14, true], ['dalchawal', 'Dal chawal curd', '1 katori dal + rice + curd', 440, 18, true],
-    ['tikki', 'Aloo tikki salad', '2 tikki + salad', 350, 7, true], ['paneer', 'Paneer salad', '100 g paneer + veggies', 330, 20, true],
-    ['sandwich', 'Sub-style sandwich', '6-inch, veg or paneer', 380, 16, true], ['daliya', 'Daliya', '1 bowl', 220, 7, true],
-    ['shake', 'Protein shake', '1 scoop whey in water', 130, 25, true], ['soya', 'Soya dish', '1 katori', 250, 25, true],
-    ['sweet', 'Indian sweet', '1 piece', 150, 2, true], ['chai', 'Masala chai', '1 cup with sugar', 90, 3, true],
-    ['roti', 'Extra roti', '1 roti', 85, 3, false], ['egg', 'Boiled egg', '1 egg', 75, 6, false], ['fruit', 'Fruit', '1 medium', 100, 1, false]];
+  const F = [
+    ['poha', 'Poha', '1 plate', 250, 5, 'bowl', ['Breakfast'], 'poha'], ['coffee', 'Coffee', '1 cup with milk', 70, 3, 'chai', ['Breakfast', 'Snack'], 'coffee'],
+    ['shake', 'Protein shake', '1 scoop whey in water', 130, 25, 'shake', ['Breakfast', 'Snack'], 'shake'], ['chai', 'Masala chai', '1 cup with sugar', 90, 3, 'chai', ['Breakfast', 'Snack'], 'chai'],
+    ['bar', 'Protein bar', '1 bar (60 g)', 210, 20, 'bolt', ['Snack'], 'proteinbar'], ['csalad', 'Chicken salad', '1 bowl', 350, 35, 'salad', ['Lunch', 'Dinner'], 'chickensalad'],
+    ['csub', 'Chicken sandwich (Sub)', '6-inch', 400, 28, 'sandwich', ['Lunch', 'Dinner', 'Snack'], 'chickensandwich'], ['psub', 'Paneer sandwich (Sub)', '6-inch', 380, 16, 'sandwich', ['Lunch', 'Dinner', 'Snack'], 'sandwich'],
+    ['thali', 'Roti sabzi curd', '2 roti + sabzi + curd', 380, 14, 'thali', ['Lunch', 'Dinner'], 'thali'], ['dalchawal', 'Dal chawal curd', 'dal + rice + curd', 440, 18, 'dalchawal', ['Lunch', 'Dinner'], 'dalchawal'],
+    ['paneer', 'Paneer salad', '100 g paneer + veggies', 330, 20, 'paneer', ['Lunch', 'Dinner'], 'paneersalad'], ['soya', 'Soya dish', '1 katori', 250, 25, 'soya', ['Lunch', 'Dinner'], 'soya'],
+    ['tikki', 'Aloo tikki salad', '2 tikki + salad', 350, 7, 'tikki', ['Breakfast', 'Snack'], 'tikki'], ['daliya', 'Daliya', '1 bowl', 220, 7, 'daliya', ['Breakfast'], 'daliya'],
+    ['sweet', 'Indian sweet', '1 piece', 150, 2, 'sweet', ['Lunch', 'Snack', 'Dinner'], 'sweet']];
   const fid = {};
-  const MEALS_OF = { daliya: ['Breakfast'], sandwich: ['Breakfast', 'Lunch', 'Snack'], tikki: ['Breakfast', 'Snack'], chai: ['Breakfast', 'Snack'], shake: ['Breakfast', 'Snack'],
-    egg: ['Breakfast'], thali: ['Lunch', 'Dinner'], dalchawal: ['Lunch', 'Dinner'], paneer: ['Lunch', 'Dinner'], soya: ['Lunch', 'Dinner'], roti: ['Lunch', 'Dinner'],
-    sweet: ['Lunch', 'Snack', 'Dinner'], fruit: ['Breakfast', 'Snack'] };
-  F.forEach(([k, name, serving, kcal, protein, quick]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick, icon: k, meals: MEALS_OF[k] || [], image_url: null, archived: false }); });
+  F.forEach(([k, name, serving, kcal, protein, icon, meals, img]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick: true, icon, meals, image_url: `/food/${img}.svg`, archived: false }); });
   const W = [['Cult Strength', 'Full body', 7], ['Cult HRX', 'Full body', 9], ['Leg day', 'Lower body', 7], ['Outdoor walk', 'Cardio', 5]];
   const wt = W.map(([name, area, kpm]) => { const r = { id: uuid(), ...u, name, area, kcal_per_min: kpm }; db.workout_types.push(r); return r; });
   const routine = { id: uuid(), ...u, title: 'Morning routine', kind: 'routine', sort: 0 };
@@ -44,6 +44,9 @@ function seed() {
     { name: 'Log all meals and close the day', type: 'auto', auto_key: 'closed', weight: 1 },
   ].map((t, i) => ({ id: uuid(), ...u, days: ALL, auto_key: null, target: null, unit: null, list_id: null, archived: false, sort: i, ...t }));
   db.tasks.push(...T);
+  const AV = [{ id: uuid(), ...u, name: 'Alcohol', type: 'avoid', weight: 3, unit: 'drinks', icon: 'drink', days: ALL, sort: 90, archived: false },
+    { id: uuid(), ...u, name: 'Smoking', type: 'avoid', weight: 3, unit: 'cigarettes', icon: 'smoke', days: ALL, sort: 91, archived: false }];
+  db.tasks.push(...AV);
   [['sleep', '07:30:00'], ['weight', '08:00:00'], ['routine', '09:30:00'], ['water', '12:00:00'], ['water', '16:00:00'], ['close_day', '21:30:00']]
     .forEach(([kind, at_time]) => db.nudges.push({ id: uuid(), ...u, kind, at_time, enabled: true, days: ALL }));
   db.body_scans.push({ id: uuid(), ...u, date: '2026-11-04', source: 'InBody 260 at Cult', weight: 77.1, pbf: 25.8, fat_mass: 19.9, smm: 32.3, visceral: 8, whr: 0.96, bmr: 1605, score: 71, seg: { la: 1.2, ra: 1.1, tr: 11.0, ll: 2.7, rl: 2.7 } });
@@ -53,10 +56,9 @@ function seed() {
   for (let i = 40; i >= 1; i--) {
     const d = addDays(now, -i), k = key(d), good = r() < 0.3;
     const add = (f, qty, meal) => db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid[f], qty, meal });
-    add('chai', 1, 'Breakfast'); add(pick(['daliya', 'tikki', 'sandwich']), 1, 'Breakfast');
-    add(pick(['thali', 'dalchawal']), 1, 'Lunch'); if (good || r() < 0.5) add('shake', 1, 'Snack');
-    add(pick(['thali', 'paneer', 'soya', 'dalchawal']), 1, 'Dinner'); if (r() < 0.3) add('sweet', 1, 'Dinner');
-    if (good) add('soya', 1, 'Lunch');
+    add('coffee', 2, 'Breakfast'); add(pick(['poha', 'daliya']), 1, 'Breakfast'); if (good || r() < 0.6) add('shake', 1, 'Breakfast');
+    add(pick(['csalad', 'thali', 'dalchawal']), 1, 'Lunch'); add('chai', 1, 'Snack'); if (r() < 0.6) add('bar', 1, 'Snack');
+    add(pick(['csub', 'psub', 'paneer', 'soya']), 1, 'Dinner'); if (r() < 0.25) add('sweet', 1, 'Dinner');
     let wk = 0;
     if (d.getDay() !== 0 && (good || r() < 0.8)) { const w = pick(wt.slice(0, 3)), m = 40 + Math.floor(r() * 20); wk = Math.round(m * w.kcal_per_min);
       db.workouts.push({ id: uuid(), ...u, day: k, type_id: w.id, name: w.name, area: w.area, minutes: m, kcal: wk, source: pick(['apple_watch', 'cult']) }); }
@@ -69,8 +71,8 @@ function seed() {
     db.task_logs.push({ ...u, day: k, task_id: T[7].id, done: good, value: good ? 25 : Math.floor(r() * 30), items: [] });
   }
   const k = key(now);
-  db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid.daliya, qty: 1, meal: 'Breakfast' }, { id: uuid(), ...u, day: k, food_id: fid.chai, qty: 1, meal: 'Breakfast' });
-  db.day_logs.push({ ...u, day: k, water_ml: 1250, sleep_hours: null, weight: null, active_kcal: 220, steps: 3100, closed: false, rest: false });
+  db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid.poha, qty: 1, meal: 'Breakfast', is_default: true }, { id: uuid(), ...u, day: k, food_id: fid.coffee, qty: 2, meal: 'Breakfast', is_default: true }, { id: uuid(), ...u, day: k, food_id: fid.csalad, qty: 1, meal: 'Lunch' });
+  db.day_logs.push({ ...u, day: k, autofilled: ['Breakfast'], water_ml: 1250, sleep_hours: null, weight: null, active_kcal: 220, steps: 3100, closed: false, rest: false });
   return db;
 }
 
@@ -121,9 +123,15 @@ class Q {
 }
 
 const session = { user: { id: UID, email: 'demo@example.com' }, access_token: 'demo' };
+const BLOBS = {};
+const storage = { from: () => ({
+  upload: async (path, blob) => { BLOBS[path] = URL.createObjectURL(blob); return { data: { path }, error: null }; },
+  getPublicUrl: (path) => ({ data: { publicUrl: BLOBS[path] || '' } }),
+}) };
 export function createClient() {
   return {
     from: (t) => new Q(t),
+    storage,
     auth: {
       getSession: async () => ({ data: { session } }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),

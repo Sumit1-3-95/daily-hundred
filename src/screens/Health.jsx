@@ -6,6 +6,7 @@ import { periodStats } from '../lib/calc.js';
 import { METRICS } from '../lib/metrics.js';
 import { DOW, MEALS, addDays, key, lastN, parse, short } from '../lib/dates.js';
 import FoodPicker from '../components/FoodPicker.jsx';
+import { FoodThumb } from '../components/TodayCards.jsx';
 import { Icon, IconTile, iconForWorkout } from '../components/Icons.jsx';
 
 const SUBS = [['overview', 'Overview'], ['food', 'Food'], ['workout', 'Workout'], ['body', 'Body']];
@@ -118,35 +119,29 @@ function Food() {
   return (
     <>
       <section className="card"><h3>Add food</h3><FoodPicker k={today} /></section>
-      <section className="card"><h3>Today's log</h3><div className="list">
+      <section className="card"><div className="row-h"><h3>Today's log</h3><span className="sub">{fmt(c.eaten)} kcal · {fmt(c.protein)} g protein</span></div>
         {!c.d.food.length && <div className="empty">Nothing logged yet today.</div>}
         {MEALS.map((m) => {
           const rows = c.d.food.filter((f) => f.meal === m);
           if (!rows.length) return null;
           return (
             <div key={m}><div className="meal-h">{m}</div>
-              {rows.map((f) => {
+              <div className="logcards">{rows.map((f) => {
                 const x = S.foodsById[f.food_id] || { name: 'Deleted item', serving: '', kcal: 0, protein: 0 };
                 return (
-                  <div className="li" key={f.id}><IconTile name={x.icon || 'bowl'} size="sm" />
-                    <div className="grow"><div className="nm">{x.name}</div>
-                      <div className="mt">{Number(f.qty)} × {x.serving} · {fmt(x.protein * f.qty)} g protein</div></div>
+                  <div className={`lcard${f.is_default ? ' dflt' : ''}`} key={f.id}>
+                    <span className="sc-img"><FoodThumb f={x} />{Number(f.qty) > 1 && <span className="qtag">×{Number(f.qty)}</span>}</span>
+                    <div className="lc-b"><span className="lc-n">{x.name}{f.is_default && <span className="dtag">default</span>}</span>
+                      <span className="lc-k">{fmt(x.kcal * f.qty)} <small>kcal · {fmt(x.protein * f.qty)} g</small></span></div>
                     <div className="stepper">
-                      <button onClick={() => A.setFoodQty(today, f, Number(f.qty) - 1)} aria-label="Less">−</button>
-                      <span className="v">{fmt(x.kcal * f.qty)}</span>
-                      <button onClick={() => A.setFoodQty(today, f, Number(f.qty) + 1)} aria-label="More">+</button>
-                    </div></div>
+                      <button onClick={() => A.setFoodQty(today, f, Number(f.qty) - 1)} aria-label={`One less ${x.name}`}>−</button>
+                      <button onClick={() => A.setFoodQty(today, f, Number(f.qty) + 1)} aria-label={`One more ${x.name}`}>+</button>
+                    </div>
+                  </div>
                 );
-              })}</div>
+              })}</div></div>
           );
-        })}</div></section>
-      <section className="card"><div className="row-h"><h3>Your foods</h3><span className="sub">tick to show in quick picks</span></div>
-        <div className="list">{live.map((f) => (
-          <div className="li" key={f.id}><IconTile name={f.icon || 'bowl'} size="sm" />
-            <div className="grow"><div className="nm">{f.name}</div><div className="mt">{f.serving} · {fmt(f.kcal)} kcal · {f.protein} g</div></div>
-            <input type="checkbox" id={`q-${f.id}`} checked={!!f.quick} onChange={(e) => A.updateFood(f.id, { quick: e.target.checked })} aria-label={`Show ${f.name} in quick picks`} />
-          </div>
-        ))}</div></section>
+        })}</section>
     </>
   );
 }

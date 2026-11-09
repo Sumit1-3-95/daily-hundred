@@ -5,6 +5,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { fetchAll, supabase } from './lib/supabase.js';
 import { addDays, key, todayKey } from './lib/dates.js';
 import { calcDay, emptyDay } from './lib/calc.js';
+import { MEAL_DUE, mealPlan } from './lib/mealplan.js';
+import { MEALS } from './lib/dates.js';
 
 const DEFAULT_TARGETS = { bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, activeKcal: 400, steps: 8000, goalWeight: 71.5, startWeight: 77.1 };
 const HISTORY_DAYS = 120;
@@ -31,7 +33,16 @@ export function StoreProvider({ session, children }) {
   const track = (name, props = {}) => { supabase.from('events').insert({ user_id: uid, name, props }).then(() => {}); };
 
   // roll over to the new day while the app stays open
-  useEffect(() => { const i = setInterval(() => setToday(todayKey()), 60000); return () => clearInterval(i); }, []);
+  const [tick, setTick2] = useState(0);
+  useEffect(() => { const i = setInterval(() => { setToday(todayKey()); setTick2((n) => n + 1); }, 60000); return () => clearInterval(i); }, []);
+  const filling = useRef(false);
+  // log default meals once their time has passed (today, and yesterday if it wasn't closed)
+  useEffect(() => {
+    if (status !== 'ready' || filling.current) return;
+    filling.current = true;
+    A.autofill().catch(() => {}).finally(() => { filling.current = false; });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, today, Math.floor(tick / 5)]);
 
   async function load() {
     const since = key(addDays(new Date(), -HISTORY_DAYS));
@@ -124,7 +135,31 @@ export function StoreProvider({ session, children }) {
         return;
       }
       commit(() => { row.qty = qty; });
-      try { await q(supabase.from('food_logs').update({ qty }).eq('id', row.id)); } catch { commit(() => { row.qty = prevQty; }); }
+      try { await q(supabase.from('food_logs').update({ qty, is_default: false }).eq('id', row.id)); row.is_default = false; } catch { commit(() => { row.qty = prevQty; }); }
+    },
+    autofill: async () => {
+      const S = ref.current, plan = mealPlan(S), now = new Date();
+      const hour = now.getHours() + now.getMinutes() / 60;
+      const yday = key(addDays(new Date(), -1));
+      const added = [];
+      for (const [k, isToday] of [[yday, false], [today, true]]) {
+        const d = S.days[k];
+        if (!isToday && (!d || d.log?.closed)) continue;   // only fill yesterday if you were tracking it
+        const done = d?.log?.autofilled || [];
+        const fill = MEALS.filter((m) => (!isToday || hour >= MEAL_DUE[m]) && !done.includes(m)
+          && !(d?.food || []).some((f) => f.meal === m) && (plan[m] || []).length);
+        if (!fill.length) continue;
+        for (const m of fill) {
+          const rows = plan[m].filter((x) => S.foodsById[x.food_id] && !S.foodsById[x.food_id].archived)
+            .map((x) => ({ user_id: uid, day: k, food_id: x.food_id, qty: x.qty, meal: m, is_default: true }));
+          if (!rows.length) continue;
+          const ins = await q(supabase.from('food_logs').insert(rows).select());
+          commit(() => day(k).food.push(...ins));
+          if (isToday) added.push(m.toLowerCase());
+        }
+        await A.saveDay(k, { autofilled: [...done, ...fill] });
+      }
+      if (added.length) { toast(`Logged your usual ${added.join(', ')}. Tap Food to change.`); track('meals_autofilled', { meals: added }); }
     },
     repeatMeal: async (fromK, meal, toK) => {
       const src = day(fromK).food.filter((f) => f.meal === meal);
@@ -139,7 +174,8 @@ export function StoreProvider({ session, children }) {
       if (row) return A.setFoodQty(k, row, Number(row.qty) - 1);
     },
     createFood: async (f) => {
-      const row = await q(supabase.from('foods').insert({ user_id: uid, ...f }).select().single());
+      const clean = Object.fromEntries(Object.entries(f).filter(([, v]) => v !== null && v !== undefined && v !== ''));
+      const row = await q(supabase.from('foods').insert({ user_id: uid, ...clean }).select().single());
       commit((S) => { S.foods.push(row); S.foodsById[row.id] = row; });
       track('food_created');
       return row;
@@ -250,6 +286,24 @@ export function StoreProvider({ session, children }) {
     saveProfile: async (patch) => {
       const row = await q(supabase.from('profiles').update(patch).eq('id', uid).select().single());
       commit((S) => { S.profile = row; S.targets = { ...DEFAULT_TARGETS, ...(row.targets || {}) }; });
+    },
+    /** Shrink a photo on the device (max 480 px JPEG) and upload it to the public "photos" bucket. Returns its URL. */
+    uploadPhoto: async (file, kind = 'misc') => {
+      const bmp = await createImageBitmap(file);
+      const s = Math.min(1, 480 / Math.max(bmp.width, bmp.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(bmp.width * s); cv.height = Math.round(bmp.height * s);
+      cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+      const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.82));
+      const path = `${uid}/${kind}-${Date.now()}.jpg`;
+      const { error } = await supabase.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: true });
+      if (error) { toast(`Photo not uploaded: ${error.message}`); throw error; }
+      track('photo_uploaded', { kind });
+      return supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
+    },
+    updateWorkoutType: async (id, patch) => {
+      const row = await q(supabase.from('workout_types').update(patch).eq('id', id).select().single());
+      commit((S) => { S.wtypes = S.wtypes.map((x) => (x.id === id ? row : x)); });
     },
     savePrefs: (patch) => A.saveProfile({ prefs: { ...(ref.current.profile.prefs || {}), ...patch } }),
     updateFood: async (id, patch) => {

@@ -49,7 +49,7 @@ export function calcDay(S, k, today) {
   const water = log.water_ml || 0, sleep = Number(log.sleep_hours) || 0;
 
   const list = S.tasks
-    .filter((x) => !x.archived && x.days.includes(dow) && !(rest && x.auto_key === 'workout'))
+    .filter((x) => !x.archived && x.type !== 'avoid' && x.days.includes(dow) && !(rest && x.auto_key === 'workout'))
     .sort((a, b) => a.sort - b.sort);
 
   const credit = (x) => {
@@ -80,14 +80,19 @@ export function calcDay(S, k, today) {
   };
   const scored = list.map((x) => ({ task: x, credit: credit(x) }));
   const maxPts = scored.reduce((a, s) => a + s.task.weight, 0);
-  const pts = scored.reduce((a, s) => a + s.task.weight * s.credit, 0);
+  // things to avoid (alcohol, smoking): each one logged takes its weight off the points
+  const avoids = S.tasks.filter((x) => !x.archived && x.type === 'avoid' && x.days.includes(dow))
+    .map((task) => ({ task, count: Number(d.tlogs[task.id]?.value) || 0 }));
+  const penalty = avoids.reduce((a, x) => a + x.task.weight * x.count, 0);
+  const earned = scored.reduce((a, s) => a + s.task.weight * s.credit, 0);
+  const pts = Math.max(0, earned - penalty);
   const score = maxPts ? pts / maxPts : 0;
   const done = scored.filter((s) => s.credit >= 0.999).length;
 
   return {
     d, log, eaten, protein, wMin, wKcal, active, burned, deficit, closed, rest, open, proj, shownD, left,
     water, sleep, weight: log.weight != null ? Number(log.weight) : null, steps: log.steps ?? null,
-    scored, score, pts, maxPts, done, total: list.length,
+    scored, score, pts, maxPts, done, total: list.length, avoids, penalty,
     hasData: !!(d.log || d.food.length || d.workouts.length || Object.keys(d.tlogs).length),
     ringT: score,
     ringD: eaten ? clamp(shownD / t.deficit) : 0,

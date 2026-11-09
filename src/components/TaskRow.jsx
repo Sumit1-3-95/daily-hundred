@@ -7,12 +7,12 @@ import { Check, fmt } from './ui.jsx';
 import { IconTile } from './Icons.jsx';
 
 const AUTO_ICON = { workout: 'dumbbell', protein: 'bolt', water: 'water', sleep: 'moon', closed: 'flag', deficit: 'target', calories: 'calories', burn: 'fire' };
-const AUTO_SHEET = { water: 'water', protein: 'logFood', calories: 'logFood', workout: 'logWorkout', burn: 'logWorkout', sleep: 'sleep', closed: 'closeDay', deficit: 'closeDay' };
+export const AUTO_SHEET = { water: 'water', protein: 'logFood', calories: 'logFood', workout: 'logWorkout', burn: 'logWorkout', sleep: 'sleep', closed: 'closeDay', deficit: 'closeDay' };
 
 export const taskIcon = (task) => task.icon || AUTO_ICON[task.auto_key]
   || (task.type === 'checklist' ? 'sun' : /read|book/i.test(task.name) ? 'book' : 'check');
 
-function autoMeta(task, c, t) {
+export function autoMeta(task, c, t) {
   return ({
     workout: c.rest ? 'Rest day' : `${fmt(c.wMin)} of ${t.workoutMin} min`,
     protein: `${fmt(c.protein)} of ${t.protein} g`,
@@ -39,9 +39,9 @@ function PointsRing({ credit, weight }) {
   );
 }
 
-export default function TaskRow({ k, c, task, credit, manage, onEdit }) {
+export default function TaskRow({ k, c, task, credit, manage, onEdit, defaultExpand = false }) {
   const { S, A, open } = useStore();
-  const [expand, setExpand] = useState(false);
+  const [expand, setExpand] = useState(defaultExpand);
   const tl = c.d.tlogs[task.id] || {};
   const done = credit >= 0.999;
   const t = S.targets;

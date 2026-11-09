@@ -21,5 +21,5 @@ export const METRICS = {
   steps: { label: 'Steps', icon: 'steps', value: (c) => (c.steps != null ? f0(c.steps) : '—'), sub: (c, t) => `of ${f0(t.steps || 8000)}`,
     p: (c, t) => (c.steps || 0) / (t.steps || 8000), hit: (c, t) => (c.steps || 0) >= (t.steps || 8000), goal: (t) => `Walk ${f0(t.steps || 8000)} steps` },
 };
-export const DEFAULT_HOME = ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'];
+export const DEFAULT_HOME = ['water', 'protein', 'eaten', 'burned', 'deficit', 'sleep'];
 export const DEFAULT_FOCUS = { metric: 'water', days: 7 };

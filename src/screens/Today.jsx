@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import TaskRow from '../components/TaskRow.jsx';
+import { AvoidCards } from '../components/Avoid.jsx';
 import { Icon } from '../components/Icons.jsx';
 import { streak } from '../lib/calc.js';
 import { key, parse } from '../lib/dates.js';
@@ -81,6 +82,9 @@ export default function Today() {
             {c.rest ? 'Rest day: on' : 'Rest day'}</button>
         </div>
       </section>
+
+      <section className="card"><div className="row-h"><h3>Avoid</h3><span className="sub">{c.penalty ? `−${c.penalty} points today` : 'no points lost today'}</span></div>
+        <AvoidCards k={today} /></section>
 
       <section className="card"><div className="row-h"><h3>{T.toLocaleDateString('en-IN', { month: 'long' })}</h3><span className="sub">tap a day to see it</span></div>
         <MonthCalendar onPick={(k) => open('day', { k })} /></section>

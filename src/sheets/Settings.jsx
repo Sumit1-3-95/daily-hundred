@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
-import { Field } from '../components/ui.jsx';
+import { Field, fmt } from '../components/ui.jsx';
+import { IconTile } from '../components/Icons.jsx';
+import { MEALS } from '../lib/dates.js';
+import { MEAL_DUE, mealPlan } from '../lib/mealplan.js';
 import { pushSupport, subscribePush } from '../lib/push.js';
 import { supabase } from '../lib/supabase.js';
 
@@ -18,11 +21,12 @@ export default function Settings() {
     <>
       <h2>Settings</h2>
       <div className="seg" role="group" aria-label="Settings sections">
-        {[['targets', 'Targets'], ['nudges', 'Nudges'], ['health', 'Health sync'], ['account', 'Account']].map(([id, l]) => (
+        {[['targets', 'Targets'], ['meals', 'Meals'], ['nudges', 'Nudges'], ['health', 'Sync'], ['account', 'Account']].map(([id, l]) => (
           <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>{l}</button>
         ))}
       </div>
       {tab === 'targets' && <Targets />}
+      {tab === 'meals' && <MealPlan />}
       {tab === 'nudges' && <Nudges />}
       {tab === 'health' && <HealthSync />}
       {tab === 'account' && <Account />}
@@ -132,6 +136,49 @@ function Account() {
       </form>
       <button className="btn ghost" onClick={() => A.signOut()}>Sign out</button>
       <p className="hint">Daily Hundred v0.2</p>
+    </>
+  );
+}
+
+/** Default meals: logged for you when the meal time passes and nothing was logged. */
+function MealPlan() {
+  const { S, A, toast } = useStore();
+  const [plan, setPlan] = useState(() => JSON.parse(JSON.stringify(mealPlan(S))));
+  const live = S.foods.filter((f) => !f.archived);
+  const upd = (m, items) => setPlan((p) => ({ ...p, [m]: items }));
+  const hh = (h) => `${Math.floor(h)}:${h % 1 ? '30' : '00'}`;
+  return (
+    <>
+      <p className="hint">If a meal's time passes and you haven't logged it, these are logged for you and marked "default". Change them any time in Food.</p>
+      {MEALS.map((m) => {
+        const items = plan[m] || [];
+        const kcal = items.reduce((a, x) => a + (S.foodsById[x.food_id]?.kcal || 0) * x.qty, 0);
+        return (
+          <div key={m} className="mp">
+            <div className="row-h"><h3>{m}</h3><span className="sub">after {hh(MEAL_DUE[m])} · {fmt(kcal)} kcal</span></div>
+            {items.map((x, i) => {
+              const f = S.foodsById[x.food_id];
+              if (!f) return null;
+              return (
+                <div className="li" key={x.food_id}>
+                  {f.image_url ? <img className="thumb" src={f.image_url} alt="" /> : <IconTile name={f.icon || 'bowl'} size="sm" />}
+                  <div className="grow"><div className="nm">{f.name}</div><div className="mt">{fmt(f.kcal * x.qty)} kcal</div></div>
+                  <div className="stepper">
+                    <button onClick={() => upd(m, x.qty <= 1 ? items.filter((_, j) => j !== i) : items.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)))} aria-label="Less">−</button>
+                    <span className="v">{x.qty}</span>
+                    <button onClick={() => upd(m, items.map((y, j) => (j === i ? { ...y, qty: y.qty + 1 } : y)))} aria-label="More">+</button>
+                  </div>
+                </div>
+              );
+            })}
+            <select aria-label={`Add to ${m}`} value="" onChange={(e) => e.target.value && upd(m, [...items, { food_id: e.target.value, qty: 1 }])}>
+              <option value="">+ Add a food</option>
+              {live.filter((f) => !items.some((x) => x.food_id === f.id)).map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
+            </select>
+          </div>
+        );
+      })}
+      <button className="btn" onClick={async () => { await A.savePrefs({ meal_plan: plan }); toast('Default meals saved'); }}>Save default meals</button>
     </>
   );
 }

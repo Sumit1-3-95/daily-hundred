@@ -7,6 +7,7 @@ import { taskName } from '../lib/calc.js';
 import { MEALS, addDays, key, parse } from '../lib/dates.js';
 import { fmt } from '../components/ui.jsx';
 import { taskIcon } from '../components/TaskRow.jsx';
+import { FoodThumb } from '../components/TodayCards.jsx';
 
 const SRC = { apple_watch: 'Apple Watch', cult: 'Cult', manual: 'Manual' };
 
@@ -48,7 +49,7 @@ export default function DaySheet({ k: k0 }) {
           return (
             <div key={m} className="dmeal"><div className="meal-h"><span>{m}</span><span>{fmt(kc)} kcal</span></div>
               {rows.map((f) => { const x = S.foodsById[f.food_id] || { name: 'Deleted item', kcal: 0, protein: 0 };
-                return <div className="dline" key={f.id}><IconTile name={x.icon || 'bowl'} size="sm" /><span className="grow">{x.name}{Number(f.qty) !== 1 ? ` ×${Number(f.qty)}` : ''}</span><span className="sub">{fmt(x.kcal * f.qty)} · {fmt(x.protein * f.qty)} g</span></div>; })}
+                return <div className="dline" key={f.id}><FoodThumb f={x} /><span className="grow">{x.name}{Number(f.qty) !== 1 && <span className="qtag inl">×{Number(f.qty)}</span>}</span><span className="sub">{fmt(x.kcal * f.qty)} · {fmt(x.protein * f.qty)} g</span></div>; })}
             </div>
           );
         })}
@@ -62,6 +63,7 @@ export default function DaySheet({ k: k0 }) {
         ))}
         {c.active > c.wKcal && <p className="hint">Active energy for the day: {fmt(c.active)} kcal{c.steps != null ? ` · ${fmt(c.steps)} steps` : ''}</p>}
 
+        {c.penalty > 0 && <p className="hint">Avoid: {c.avoids.filter((a) => a.count).map((a) => `${a.count} ${a.task.unit || a.task.name}`).join(', ')} · −{c.penalty} pts</p>}
         <h3 className="dh">Tasks</h3>
         {c.scored.map(({ task, credit }) => (
           <div className={`dline${credit >= 0.999 ? ' ok' : ''}`} key={task.id}><IconTile name={taskIcon(task)} size="sm" tone={credit >= 0.999 ? 'teal' : 'slate'} />
