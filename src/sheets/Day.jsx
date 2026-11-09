@@ -61,6 +61,7 @@ export default function DaySheet({ k: k0 }) {
             <span className="grow">{w.name}<span className="sub"> · {w.area} · {SRC[w.source]}</span></span>
             <span className="sub">{fmt(w.minutes)} min · {fmt(w.kcal)} kcal</span></div>
         ))}
+        {c.watchMin > 0 && <p className="hint">Apple Watch exercise: {fmt(c.watchMin)} min</p>}
         {c.active > c.wKcal && <p className="hint">Active energy for the day: {fmt(c.active)} kcal{c.steps != null ? ` · ${fmt(c.steps)} steps` : ''}</p>}
 
         {c.penalty > 0 && <p className="hint">Avoid: {c.avoids.filter((a) => a.count).map((a) => `${a.count} ${a.task.unit || a.task.name}`).join(', ')} · −{c.penalty} pts</p>}

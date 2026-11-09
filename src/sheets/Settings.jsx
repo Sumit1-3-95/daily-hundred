@@ -119,7 +119,7 @@ function HealthSync() {
           <span className="sub">{last === undefined ? '…' : last ? `Last sync ${new Date(last).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}` : 'Not synced yet'}</span></div>
         <button className="btn sm" onClick={runShortcut}>Sync now</button>
       </div>
-      <p className="hint">Runs the "{SHORTCUT_NAME}" Shortcut, which sends steps, active calories, weight and workouts here.</p>
+      <p className="hint">Runs the "{SHORTCUT_NAME}" Shortcut, which sends steps, active calories, exercise minutes and weight here.</p>
       <Field label="1 · Address for the Shortcut" id="hsUrl"><div className="code" id="hsUrl" onClick={() => copy(url)}>{url}</div></Field>
       {token ? (
         <>

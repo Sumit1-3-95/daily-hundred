@@ -7,8 +7,11 @@ export const Check = () => (
 export const fmt = (n) => Math.round(n ?? 0).toLocaleString('en-IN');
 export const clampPct = (v) => `${Math.max(0, Math.min(1, v || 0)) * 100}%`;
 
-export function MBar({ v, cls = '' }) {
-  return <div className={`mbar ${cls}`}><i style={{ width: clampPct(v) }} /></div>;
+/** Progress status for colouring: none (red), part (yellow), done (green). */
+export const progState = (v) => (!(v > 0) ? 'st-none' : v >= 0.999 ? 'st-done' : 'st-part');
+
+export function MBar({ v }) {
+  return <div className={`mbar ${progState(v)}`}><i style={{ width: clampPct(v) }} /></div>;
 }
 
 export function Field({ label, id, children }) {

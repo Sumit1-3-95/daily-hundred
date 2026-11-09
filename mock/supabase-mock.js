@@ -51,6 +51,10 @@ function seed() {
   const yk = key(addDays(new Date(), -1));
   db.tasks.push({ id: uuid(), ...u, name: 'Laundry: fold and put away', type: 'todo', weight: 2, on_day: yk, days: ALL, sort: 95, archived: false, icon: 'check' },
     { id: uuid(), ...u, name: 'Pay electricity bill', type: 'todo', weight: 1, on_day: key(new Date()), days: ALL, sort: 96, archived: false, icon: 'check' });
+  const bk = (title, author, total, read, status, sort) => ({ id: uuid(), ...u, title, author, total_pages: total, pages_read: read, status, cover_url: null, sort });
+  db.books = [bk('Strategy Rules', 'David Yoffie & Michael Cusumano', 250, 150, 'reading', 0), bk('Meditations', 'Marcus Aurelius', 254, 0, 'next', 1),
+    bk('The Cold Start Problem', 'Andrew Chen', 368, 368, 'read', 2), bk('The Almanack of Naval Ravikant', 'Eric Jorgenson', 244, 244, 'read', 3)];
+  db.book_notes = [{ id: uuid(), ...u, book_id: db.books[0].id, day: key(addDays(new Date(), -1)), pages: 20, note: 'Look forward, reason back. Big bets, without betting the company.', created_at: new Date().toISOString() }];
   db.plan_days = PLAN.map((r) => ({ ...r, user_id: UID, checked: [], status: 'planned' }));
   [['sleep', '07:30:00'], ['weight', '08:00:00'], ['routine', '09:30:00'], ['water', '12:00:00'], ['water', '16:00:00'], ['close_day', '21:30:00']]
     .forEach(([kind, at_time]) => db.nudges.push({ id: uuid(), ...u, kind, at_time, enabled: true, days: ALL }));

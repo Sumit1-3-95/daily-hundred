@@ -8,6 +8,8 @@ export const pillarOf = (t) => (t.type === 'auto'
   : 'habits');
 export const PILLARS = ['habits', 'intake', 'workout'];
 
+const log_exercise = (d) => d.log?.exercise_min;
+
 export const emptyDay = () => ({ log: null, food: [], workouts: [], tlogs: {} });
 export const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 
@@ -42,7 +44,10 @@ export function calcDay(S, k, today) {
     eaten += x.kcal * f.qty;
     protein += x.protein * f.qty;
   }
-  const wMin = d.workouts.reduce((a, w) => a + Number(w.minutes), 0);
+  // workout time: logged workouts, or Apple Watch exercise minutes if those are higher (no double counting)
+  const loggedMin = d.workouts.reduce((a, w) => a + Number(w.minutes), 0);
+  const watchMin = Number(log_exercise(d)) || 0;
+  const wMin = Math.max(loggedMin, watchMin);
   const wKcal = d.workouts.reduce((a, w) => a + Number(w.kcal), 0);
   const active = Math.max(Number(log.active_kcal) || 0, wKcal);
   const burned = t.bmr + active;
@@ -102,7 +107,7 @@ export function calcDay(S, k, today) {
 
   return {
     d, log, eaten, protein, wMin, wKcal, active, burned, deficit, closed, rest, open, proj, shownD, left,
-    water, sleep, weight: log.weight != null ? Number(log.weight) : null, steps: log.steps ?? null,
+    water, sleep, weight: log.weight != null ? Number(log.weight) : null, steps: log.steps ?? null, watchMin, loggedMin,
     scored, score, pts, maxPts, done, total: list.length, avoids, penalty, pillars,
     hasData: !!(d.log || d.food.length || d.workouts.length || Object.keys(d.tlogs).length),
     // rings: habits, intake, workout

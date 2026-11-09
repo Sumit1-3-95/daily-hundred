@@ -6,6 +6,7 @@ import { Icon, IconTile, iconForWorkout } from '../components/Icons.jsx';
 import PhotoField from '../components/PhotoField.jsx';
 import { taskIcon } from '../components/TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
+import { Cover } from '../sheets/Books.jsx';
 import { DOW, MEALS } from '../lib/dates.js';
 
 const Ring = ({ p, size = 34 }) => {
@@ -54,6 +55,8 @@ function Overview({ open: go }) {
           {stack(foods.map((f) => ({ src: f.image_url, icon: f.icon || 'bowl' })))}<b>{foods.length}</b><span>Foods</span></button>
         <button className="lib-card t-teal" onClick={() => go('workouts')}>
           {stack(wts.map((w) => ({ src: w.image_url, icon: iconForWorkout(w.area) })))}<b>{wts.length}</b><span>Workouts</span></button>
+        <button className="lib-card t-amber" onClick={() => open('books')}>
+          <span className="lib-stack">{(S.books || []).slice(0, 3).map((b) => <span key={b.id}><Cover book={b} size="xs" /></span>)}</span><b>{(S.books || []).length}</b><span>Books</span></button>
         <button className="lib-card t-violet" onClick={() => go('tasks')}>
           {stack(tasks.map((t) => ({ src: t.image_url, icon: taskIcon(t) })))}<b>{tasks.length}</b><span>Tasks</span></button>
       </div>

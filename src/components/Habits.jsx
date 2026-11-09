@@ -1,12 +1,13 @@
 // Habits: recurring habit cards and one-time to-dos (laundry, chores) that roll over until done.
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
-import { Check } from './ui.jsx';
+import { Check, progState } from './ui.jsx';
 import { Icon, IconTile } from './Icons.jsx';
 import { AUTO_SHEET, autoMeta, taskIcon } from './TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
 import { DOW, parse } from '../lib/dates.js';
 
+export const isReading = (t) => t.type === 'number' && /read|book|page/i.test(t.name);
 const TONES = ['violet', 'teal', 'amber', 'blue', 'pink', 'green', 'orange'];
 const toneFor = (t) => TONES[[...t.id].reduce((a, ch) => a + ch.charCodeAt(0), 0) % TONES.length];
 
@@ -16,6 +17,7 @@ export function useTaskAct(k) {
   return (task) => {
     const tl = calc(k).d.tlogs[task.id] || {};
     if (task.type === 'check' || task.type === 'todo') return A.setTaskLog(k, task, { done: !tl.done });
+    if (isReading(task)) return open('books');
     if (task.type === 'checklist' || task.type === 'number') return open('taskOne', { id: task.id });
     const sheet = AUTO_SHEET[task.auto_key];
     if (sheet) open(sheet);
@@ -39,7 +41,7 @@ export function HabitCard({ k, task, credit, onEdit }) {
       </span>
       <span className="hc-n">{taskName(task, S.targets)}</span>
       <span className="hc-m">{onEdit ? 'Edit' : meta}</span>
-      {!done && credit > 0 && <span className="hc-bar"><i style={{ width: `${credit * 100}%` }} /></span>}
+      <span className={`hc-bar ${progState(credit)}`}><i style={{ width: `${credit * 100}%` }} /></span>
     </button>
   );
 }

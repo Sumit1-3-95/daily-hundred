@@ -125,3 +125,11 @@ test('pillars and one-time to-dos', () => {
   assert.equal(c.pillars.habits.max, 3);
   assert.equal(c.ringD, 0.5);
 });
+
+test('watch exercise minutes count without double counting', () => {
+  const S = base();
+  S.days['2026-11-08'] = { log: { exercise_min: 50 }, food: [], workouts: [{ minutes: 45, kcal: 300 }], tlogs: {} };
+  assert.equal(calcDay(S, '2026-11-08', '2026-11-08').wMin, 50);
+  S.days['2026-11-08'].log.exercise_min = 20;
+  assert.equal(calcDay(S, '2026-11-08', '2026-11-08').wMin, 45);
+});

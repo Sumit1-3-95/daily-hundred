@@ -59,6 +59,14 @@ export function StoreProvider({ session, children }) {
     // the plan table is optional (migration 0006); the app works without it
     let plan = [];
     try { plan = await fetchAll(() => supabase.from('plan_days').select('*').eq('user_id', uid).order('day')); } catch { plan = []; }
+    // books are optional too (migration 0009)
+    let books = [], bookNotes = [];
+    try {
+      [books, bookNotes] = await Promise.all([
+        fetchAll(() => supabase.from('books').select('*').eq('user_id', uid).order('sort')),
+        fetchAll(() => supabase.from('book_notes').select('*').eq('user_id', uid).order('created_at', { ascending: false })),
+      ]);
+    } catch { books = null; bookNotes = []; }
     const S = {
       uid, profile: profile || { id: uid, name: '' },
       targets: { ...DEFAULT_TARGETS, ...(profile?.targets || {}) },
@@ -66,6 +74,7 @@ export function StoreProvider({ session, children }) {
       wtypes, tasks, lists: lists.sort((a, b) => a.sort - b.sort), items: items.sort((a, b) => a.sort - b.sort),
       nudges: nudges.sort((a, b) => a.at_time.localeCompare(b.at_time)), scans, blood, days: {},
       plan: Object.fromEntries(plan.map((p) => [p.day, p])),
+      books, bookNotes,
     };
     const day = (k) => (S.days[k] ||= emptyDay());
     dayLogs.forEach((r) => { day(r.day).log = r; });
@@ -349,6 +358,43 @@ export function StoreProvider({ session, children }) {
     updateWorkoutType: async (id, patch) => {
       const row = await q(supabase.from('workout_types').update(patch).eq('id', id).select().single());
       commit((S) => { S.wtypes = S.wtypes.map((x) => (x.id === id ? row : x)); });
+    },
+    // ---------- books ----------
+    saveBook: async (b) => {
+      if (b.id) {
+        const { id, ...rest } = b;
+        const row = await q(supabase.from('books').update(rest).eq('id', id).select().single());
+        commit((S) => { S.books = S.books.map((x) => (x.id === id ? row : x)); });
+        return row;
+      }
+      const sort = Math.max(0, ...(ref.current.books || []).map((x) => x.sort)) + 1;
+      const row = await q(supabase.from('books').insert({ user_id: uid, sort, ...b }).select().single());
+      commit((S) => { S.books = [...(S.books || []), row]; });
+      track('book_added', { status: b.status });
+      return row;
+    },
+    deleteBook: async (id) => {
+      await q(supabase.from('books').delete().eq('id', id));
+      commit((S) => { S.books = S.books.filter((x) => x.id !== id); S.bookNotes = S.bookNotes.filter((n) => n.book_id !== id); });
+    },
+    /** A reading session: pages + a note. Moves the book forward, and adds the pages to today's Read habit. */
+    logReading: async (book, pages, note) => {
+      const S = ref.current;
+      const p = Math.max(0, Math.round(Number(pages) || 0));
+      const n = await q(supabase.from('book_notes').insert({ user_id: uid, book_id: book.id, day: today, pages: p, note: note?.trim() || null }).select().single());
+      commit((S2) => { S2.bookNotes = [n, ...S2.bookNotes]; });
+      const read = Math.min(book.total_pages || Infinity, (book.pages_read || 0) + p);
+      const done = book.total_pages > 0 && read >= book.total_pages;
+      await A.saveBook({ id: book.id, pages_read: read, status: done ? 'read' : 'reading',
+        started_on: book.started_on || today, ...(done ? { finished_on: today } : {}) });
+      const habit = S.tasks.find((t) => !t.archived && t.type === 'number' && /read|book|page/i.test(t.name));
+      if (habit && p) await A.setTaskLog(today, habit, { value: (Number(day(today).tlogs[habit.id]?.value) || 0) + p });
+      toast(done ? `Finished ${book.title}!` : `+${p} pages · ${book.title}`);
+      track('reading_logged', { pages: p, note: !!note });
+    },
+    deleteNote: async (id) => {
+      await q(supabase.from('book_notes').delete().eq('id', id));
+      commit((S) => { S.bookNotes = S.bookNotes.filter((n) => n.id !== id); });
     },
     // ---------- workout plan ----------
     savePlan: async (k, patch) => {

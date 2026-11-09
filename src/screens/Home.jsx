@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { BigRings, MiniRings } from '../components/Rings.jsx';
-import { IntakeSection, TaskSection, WorkoutSection } from '../components/TodayCards.jsx';
+import { HabitsSection, IntakeSection, WorkoutSection } from '../components/TodayCards.jsx';
 import { Alerts, Glass, WaterButtons } from '../components/Nudges.jsx';
 import { Icon, IconTile } from '../components/Icons.jsx';
-import { MBar } from '../components/ui.jsx';
+import { MBar, progState } from '../components/ui.jsx';
 import { DEFAULT_FOCUS, DEFAULT_HOME, METRICS } from '../lib/metrics.js';
 import { DOW, addDays, key, lastN, parse, short } from '../lib/dates.js';
 
@@ -100,15 +100,15 @@ export default function Home({ goTab }) {
             <button key={m} className={`gl t-${TONE[m] || 'slate'}${p != null && f >= 0.999 ? ' hit' : ''}`} onClick={() => tap && open(tap)}>
               <span className="gl-top"><b>{M.value(c, t)}</b><Icon name={M.icon} size={15} /></span>
               <span className="gl-l">{M.label}</span>
-              {p != null && <span className="gl-bar"><i style={{ width: `${f * 100}%` }} /></span>}
+              {p != null && <span className={`gl-bar ${progState(f)}`}><i style={{ width: `${f * 100}%` }} /></span>}
             </button>
           );
         })}</div>
       </section>
       <Alerts k={today} />
+      <HabitsSection goTab={goTab} />
       <IntakeSection />
       <WorkoutSection />
-      <TaskSection goTab={goTab} />
     </>
   );
 }

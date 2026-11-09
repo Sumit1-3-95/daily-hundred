@@ -1,9 +1,10 @@
 // Home "Today" sections: Workout, Tasks and Food. Each is a header, two progress bars and a strip of cards.
 import { useStore } from '../store.jsx';
 import { Icon, IconTile, iconForWorkout } from './Icons.jsx';
-import { fmt } from './ui.jsx';
+import { MBar, fmt, progState } from './ui.jsx';
 import { AUTO_SHEET, taskIcon } from './TaskRow.jsx';
-import { taskName } from '../lib/calc.js';
+import { streak, taskName } from '../lib/calc.js';
+import { HabitCard, TodoRow } from './Habits.jsx';
 import { PlanCard } from './Plan.jsx';
 import { runShortcut } from '../sheets/Settings.jsx';
 import { Glass, WaterButtons } from './Nudges.jsx';
@@ -15,7 +16,7 @@ function Bars({ items }) {
     <div className="bars2">{items.map(([label, val, of, unit, cls]) => (
       <div key={label} className="b2">
         <div className="b2-top"><span>{label}</span><span><b>{fmt(val)}</b> / {fmt(of)} {unit}</span></div>
-        <div className={`mbar ${cls}`}><i style={{ width: `${Math.max(0, Math.min(1, val / (of || 1))) * 100}%` }} /></div>
+        <MBar v={val / (of || 1)} />
       </div>
     ))}</div>
   );
@@ -57,6 +58,7 @@ export function TaskSection({ goTab }) {
   const act = (task) => {
     const tl = c.d.tlogs[task.id] || {};
     if (task.type === 'check' || task.type === 'todo') return A.setTaskLog(today, task, { done: !tl.done });
+    if (task.type === 'number' && /read|book|page/i.test(task.name)) return open('books');
     if (task.type === 'checklist' || task.type === 'number') return open('taskOne', { id: task.id });
     const sheet = AUTO_SHEET[task.auto_key];
     if (sheet) open(sheet);
@@ -79,7 +81,7 @@ export function TaskSection({ goTab }) {
           <button key={task.id} className={`tcard ${st}`} onClick={() => act(task)}>
             <span className="tc-top"><span className="tc-num">{num(task, credit)}</span>{task.image_url ? <img className="thumb xs" src={task.image_url} alt="" /> : <Icon name={taskIcon(task)} size={16} />}</span>
             <span className="tc-name">{taskName(task, t)}</span>{task.type === 'todo' && <span className="tc-todo">to-do</span>}
-            {st === 'part' && <span className="tbar"><i style={{ width: `${credit * 100}%` }} /></span>}
+            <span className={`tbar ${progState(credit)}`}><i style={{ width: `${credit * 100}%` }} /></span>
           </button>
         );
       })}</div>
@@ -112,6 +114,36 @@ export function IntakeSection() {
           );
         })}</div>
       ) : <p className="hint">Nothing logged yet.</p>}
+    </section>
+  );
+}
+
+/** Home habits: a ring, a nudge that changes with progress, habit cards and open to-dos. */
+export function HabitsSection({ goTab }) {
+  const { S, today, calc } = useStore();
+  const c = calc(today), H = c.pillars.habits;
+  const habits = c.scored.filter((x) => x.pillar === 'habits' && x.task.type !== 'todo');
+  const todos = c.scored.filter((x) => x.task.type === 'todo' && x.credit < 0.999);
+  const st = streak(S, today);
+  const left = habits.filter((x) => x.credit < 0.999).length;
+  const hs = H.score ?? 0;
+  const msg = hs >= 0.999 ? ['Every habit done today', 'That is how streaks are built.']
+    : hs >= 0.6 ? [`${left} to go. You're close`, 'Finish strong and keep the streak.']
+    : hs > 0 ? [`Good start. ${left} habits left`, 'One more now makes the next one easier.']
+    : ['Start with the easiest one', 'Small wins first. Tap a card when it is done.'];
+  const R = 22, C = 2 * Math.PI * R;
+  return (
+    <section className={`card sec habits-home${hs >= 0.999 ? ' all' : ''}`}>
+      <div className="hh-top">
+        <span className="hh-ring"><svg viewBox="0 0 52 52" width="52" height="52" aria-hidden="true"><circle cx="26" cy="26" r={R} className="hr-trk" />
+          {hs > 0 && <circle cx="26" cy="26" r={R} className={`hr-arc ${progState(hs)}`} strokeDasharray={`${(hs * C).toFixed(1)} ${C.toFixed(1)}`} transform="rotate(-90 26 26)" />}</svg>
+          <b>{Math.round(hs * 100)}</b></span>
+        <div className="hh-b"><b>{msg[0]}</b><span>{msg[1]}</span></div>
+        {st > 0 && <span className="badge fire"><Icon name="fire" size={13} />{st}</span>}
+      </div>
+      <div className="hgrid">{habits.map((x) => <HabitCard key={x.task.id} k={today} task={x.task} credit={x.credit} />)}</div>
+      {todos.length > 0 && <div className="todos">{todos.map((x) => <TodoRow key={x.task.id} k={today} task={x.task} credit={x.credit} />)}</div>}
+      <button className="link hh-all" onClick={() => goTab('today')}>All habits and to-dos ›</button>
     </section>
   );
 }

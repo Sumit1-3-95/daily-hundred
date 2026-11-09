@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { taskName } from '../lib/calc.js';
-import { Check, fmt } from './ui.jsx';
+import { Check, fmt, progState } from './ui.jsx';
 import { IconTile } from './Icons.jsx';
 
 const AUTO_ICON = { workout: 'dumbbell', protein: 'bolt', water: 'water', sleep: 'moon', closed: 'flag', deficit: 'target', calories: 'calories', burn: 'fire' };
@@ -59,6 +59,7 @@ export default function TaskRow({ k, c, task, credit, manage, onEdit, defaultExp
   const act = () => {
     if (manage) return onEdit(task);
     if (task.type === 'check') return A.setTaskLog(k, task, { done: !tl.done });
+    if (task.type === 'number' && /read|book|page/i.test(task.name)) return open('books');
     if (task.type === 'checklist' || task.type === 'number') return setExpand((x) => !x);
     const sheet = AUTO_SHEET[task.auto_key];
     if (sheet) open(sheet);
@@ -71,7 +72,7 @@ export default function TaskRow({ k, c, task, credit, manage, onEdit, defaultExp
         <span className="t-body">
           <span className="t-name">{name}</span>
           <span className="t-meta">{meta}</span>
-          {!done && credit > 0 && <span className="tbar"><i style={{ width: `${credit * 100}%` }} /></span>}
+          <span className={`tbar ${progState(credit)}`}><i style={{ width: `${credit * 100}%` }} /></span>
         </span>
         {manage ? <span className="link">Edit</span> : <PointsRing credit={credit} weight={task.weight} />}
       </button>
