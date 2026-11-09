@@ -6,6 +6,7 @@ import { Icon, IconTile, iconForWorkout } from '../components/Icons.jsx';
 import PhotoField from '../components/PhotoField.jsx';
 import { taskIcon } from '../components/TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
+import { Tile, TileGrid } from '../components/Tile.jsx';
 import { Cover } from '../sheets/Books.jsx';
 import { DOW, MEALS } from '../lib/dates.js';
 
@@ -61,20 +62,14 @@ function Overview({ open: go }) {
           {stack(tasks.map((t) => ({ src: t.image_url, icon: taskIcon(t) })))}<b>{tasks.length}</b><span>Tasks</span></button>
       </div>
       <h2 className="sec-h">Lists</h2>
-      <div className="lgrid">
+      <TileGrid>
         {S.lists.map((l) => {
           const { p, label } = listP(l);
-          return (
-            <button key={l.id} className={`lcard2 ${l.kind}`} onClick={() => go(l.id)}>
-              <span className="lc2-top">{l.image_url ? <img className="thumb md" src={l.image_url} alt="" /> : <IconTile name={l.icon || (l.kind === 'routine' ? 'sun' : 'list')} />}
-                <span className="lc2-ring"><Ring p={p} />{p >= 0.999 && <span className="lc2-ok"><Check /></span>}</span></span>
-              <span className="lc2-t">{l.title}</span>
-              <span className="lc2-m">{l.kind === 'routine' ? 'Routine · ' : ''}{label}</span>
-            </button>
-          );
+          return <Tile key={l.id} img={l.image_url} icon={l.icon || (l.kind === 'routine' ? 'sun' : 'list')} tone={l.kind === 'routine' ? 'amber' : 'blue'}
+            num={label.split(' ')[0]} label={l.title} sub={l.kind === 'routine' ? 'Routine' : 'List'} p={p} onClick={() => go(l.id)} />;
         })}
-        <button className="lcard2 add" onClick={() => open('list')}><Icon name="list" size={22} /><span>New list</span></button>
-      </div>
+        <button className="tile2 add" onClick={() => open('list')}><span>+</span>New list</button>
+      </TileGrid>
     </>
   );
 }
@@ -92,15 +87,13 @@ function Foods({ onBack }) {
       <Head title="Foods" onBack={onBack} action={<button className="link" onClick={() => open('foodView')}>Card view</button>} />
       <div className="chips scroll">{[['all', 'All'], ['quick', '★ Quick'], ...MEALS.map((m) => [m, m])].map(([k, l]) => (
         <button key={k} className={`chip${f === k ? ' on' : ''}`} onClick={() => setF(k)}>{l}</button>))}</div>
-      <div className="libgrid">
-        <button className="libitem add" onClick={() => open('foodEdit', { meal: MEALS.includes(f) ? f : undefined })}><span>+</span>New food</button>
+      <TileGrid>
+        <button className="tile2 add" onClick={() => open('foodEdit', { meal: MEALS.includes(f) ? f : undefined })}><span>+</span>New</button>
         {list.map((x) => (
-          <button key={x.id} className="libitem" onClick={() => open('foodEdit', { id: x.id })}>
-            <span className="li-img"><Thumb src={x.image_url} icon={x.icon || 'bowl'} />{x.quick && <span className="li-star">★</span>}</span>
-            <span className="li-n">{x.name}</span><span className="li-m">{fmt(x.kcal)} kcal · {x.protein} g</span>
-          </button>
+          <Tile key={x.id} img={x.image_url} icon={x.icon || 'bowl'} tone="orange" num={fmt(x.kcal)} badge={x.quick ? '★' : null}
+            label={x.name} sub={`${x.protein} g protein`} onClick={() => open('foodEdit', { id: x.id })} />
         ))}
-      </div>
+      </TileGrid>
     </>
   );
 }
@@ -110,15 +103,13 @@ function Workouts({ onBack }) {
   return (
     <>
       <Head title="Workouts" onBack={onBack} />
-      <div className="libgrid">
-        <button className="libitem add" onClick={() => open('workoutEdit')}><span>+</span>New workout</button>
+      <TileGrid>
+        <button className="tile2 add" onClick={() => open('workoutEdit')}><span>+</span>New</button>
         {S.wtypes.filter((w) => !w.archived).map((w) => (
-          <button key={w.id} className="libitem" onClick={() => open('workoutEdit', { id: w.id })}>
-            <span className="li-img"><Thumb src={w.image_url} icon={iconForWorkout(w.area)} /></span>
-            <span className="li-n">{w.name}</span><span className="li-m">{w.area} · {w.kcal_per_min}/min</span>
-          </button>
+          <Tile key={w.id} img={w.image_url} icon={iconForWorkout(w.area)} tone="teal" num={`${w.kcal_per_min}/m`}
+            label={w.name} sub={w.area} onClick={() => open('workoutEdit', { id: w.id })} />
         ))}
-      </div>
+      </TileGrid>
     </>
   );
 }
@@ -129,15 +120,13 @@ function Tasks({ onBack }) {
   return (
     <>
       <Head title="Tasks" onBack={onBack} />
-      <div className="libgrid">
-        <button className="libitem add" onClick={() => open('task')}><span>+</span>New task</button>
-        {S.tasks.filter((t) => !t.archived).sort((a, b) => a.sort - b.sort).map((t) => (
-          <button key={t.id} className={`libitem${t.type === 'avoid' ? ' avoid' : ''}`} onClick={() => open('task', { task: t })}>
-            <span className="li-img"><Thumb src={t.image_url} icon={taskIcon(t)} /><span className="li-star pts">{t.type === 'avoid' ? '−' : '+'}{t.weight}</span></span>
-            <span className="li-n">{taskName(t, S.targets)}</span><span className="li-m">{t.type === 'avoid' ? 'Detractor' : days(t.days)}</span>
-          </button>
+      <TileGrid>
+        <button className="tile2 add" onClick={() => open('task')}><span>+</span>New</button>
+        {S.tasks.filter((t) => !t.archived && t.type !== 'todo').sort((a, b) => a.sort - b.sort).map((t) => (
+          <Tile key={t.id} img={t.image_url} icon={taskIcon(t)} tone={t.type === 'avoid' ? 'pink' : 'violet'} num={`${t.type === 'avoid' ? '−' : '+'}${t.weight}`}
+            label={taskName(t, S.targets)} sub={t.type === 'avoid' ? 'Detractor' : days(t.days)} onClick={() => open('task', { task: t })} />
         ))}
-      </div>
+      </TileGrid>
     </>
   );
 }
