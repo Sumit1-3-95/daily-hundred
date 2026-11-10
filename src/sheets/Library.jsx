@@ -11,13 +11,14 @@ export const DEFAULT_VIEW = { size: 'm', kcal: true, protein: true, photo: true 
 export const foodView = (S) => ({ ...DEFAULT_VIEW, ...(S.profile.prefs?.food_view || {}) });
 
 /** Create or edit a food: photo, name, serving, calories, protein, meals, quick pick. */
-export function FoodEdit({ id, name: name0 = '', meal }) {
+export function FoodEdit({ id, name: name0 = '', meal, category: cat0 }) {
   const { S, today, A, close, toast } = useStore();
   const f0 = id ? S.foodsById[id] : null;
   const [img, setImg] = useState(f0?.image_url || null);
   const [icon, setIcon] = useState(f0?.icon || 'bowl');
   const [meals, setMeals] = useState(f0?.meals?.length ? f0.meals : [meal || mealNow()]);
   const [quick, setQuick] = useState(f0 ? !!f0.quick : true);
+  const [cat, setCat] = useState(f0 ? f0.category || '' : cat0 || '');
   const [sure, setSure] = useState(false);
   const tog = (m) => setMeals((x) => (x.includes(m) ? x.filter((y) => y !== m) : [...x, m]));
   return (
@@ -25,7 +26,7 @@ export function FoodEdit({ id, name: name0 = '', meal }) {
       <h2>{f0 ? 'Edit food' : 'New food'}</h2>
       <form onSubmit={async (e) => {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
-        const row = { name: fd.get('name').trim(), serving: fd.get('serving').trim(), kcal: Number(fd.get('kcal')), protein: Number(fd.get('protein')), meals, quick, icon, image_url: img };
+        const row = { name: fd.get('name').trim(), serving: fd.get('serving').trim(), kcal: Number(fd.get('kcal')), protein: Number(fd.get('protein')), meals, quick, icon, image_url: img, category: cat || null };
         if (f0) { await A.updateFood(f0.id, row); toast('Saved'); }
         else { const r = await A.createFood(row); if (fd.get('log')) await A.logFood(today, r.id, meals[0] || mealNow()); toast(`Added ${r.name}`); }
         close();
@@ -44,6 +45,10 @@ export function FoodEdit({ id, name: name0 = '', meal }) {
         <div className="chips" role="group" aria-label="Meals">{MEALS.map((m) => (
           <button type="button" key={m} className={`chip${meals.includes(m) ? ' on' : ''}`} aria-pressed={meals.includes(m)} onClick={() => tog(m)}>{m}</button>
         ))}</div>
+        <div className="seg3" role="group" aria-label="Type">
+          {[['', 'Meal'], ['drink', 'Drink'], ['street', 'Street food']].map(([k, l]) => (
+            <button type="button" key={k || 'meal'} aria-pressed={cat === k} onClick={() => setCat(k)}>{l}</button>))}
+        </div>
         <label className="toggle" htmlFor="feQ"><span>Quick pick</span><input id="feQ" type="checkbox" checked={quick} onChange={(e) => setQuick(e.target.checked)} /></label>
         {!img && <div className="iconpick">{FOOD_ICONS.map((ic) => (
           <button type="button" key={ic} aria-pressed={icon === ic} onClick={() => setIcon(ic)} aria-label={ic}><IconTile name={ic} size="sm" /></button>

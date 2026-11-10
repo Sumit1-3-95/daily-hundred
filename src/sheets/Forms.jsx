@@ -4,6 +4,7 @@ import { Field, fmt } from '../components/ui.jsx';
 import { CloseBlock, RoutineBlock, WakeBlock, WaterBlock, WeightBlock } from '../components/Nudges.jsx';
 import FoodPicker from '../components/FoodPicker.jsx';
 import PhotoField from '../components/PhotoField.jsx';
+import { TASK_ART } from '../lib/art.js';
 import { FOOD_ICONS, IconTile, iconForWorkout } from '../components/Icons.jsx';
 
 const TASK_ICONS = ['drink', 'smoke', 'check', 'book', 'sun', 'moon', 'water', 'bolt', 'dumbbell', 'shoe', 'lotus', 'steps', 'fire', 'list', 'flag', 'chai', 'bed', 'target'];
@@ -184,7 +185,12 @@ export function TaskForm({ task, preset }) {
           : <p className="hint">Create a list in the Lists tab first.</p>)}
         {type === 'auto' && <Field label="Completes when" id="tA"><select id="tA" name="auto" defaultValue={t0.auto_key || 'protein'}>
           {Object.entries(AUTO_LABEL).map(([k2, f]) => <option key={k2} value={k2}>{f(S.targets)}</option>)}</select></Field>}
-        <div className="field"><span className="lb">Picture</span><PhotoField value={img} onChange={setImg} icon={icon} kind="task" /></div>
+        <div className="field"><span className="lb">Picture</span>
+          <div className="art-pick">
+            {TASK_ART.map((a) => <button type="button" key={a} aria-pressed={img === a} onClick={() => setImg(a)}><img src={a} alt="" /></button>)}
+          </div>
+          <PhotoField value={img && !img.startsWith('/art/') ? img : null} onChange={setImg} icon={icon} kind="task" />
+        </div>
         <div className="field"><span className="lb">Icon</span>
           <div className="iconpick">{TASK_ICONS.map((ic) => (
             <button type="button" key={ic} aria-pressed={icon === ic} onClick={() => setIcon(ic)} aria-label={ic}><IconTile name={ic} size="sm" /></button>

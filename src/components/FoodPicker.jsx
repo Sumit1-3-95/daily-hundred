@@ -16,23 +16,26 @@ export default function FoodPicker({ k }) {
   const [qy, setQ] = useState('');
   const c = calc(k), t = S.targets, v = foodView(S);
   const live = S.foods.filter((f) => !f.archived);
-  const forMeal = live.filter((f) => f.quick && (!f.meals?.length || f.meals.includes(meal)));
+  const isCat = meal === 'drink' || meal === 'street';
+  const forMeal = isCat ? live.filter((f) => f.category === meal)
+    : live.filter((f) => f.quick && !f.category && (!f.meals?.length || f.meals.includes(meal)));
+  const logMeal = isCat ? mealNow() : meal;
   const rest = live.filter((f) => !forMeal.includes(f) && (!qy.trim() || f.name.toLowerCase().includes(qy.trim().toLowerCase())));
-  const countIn = (id) => c.d.food.filter((f) => f.food_id === id && f.meal === meal).reduce((a, f) => a + Number(f.qty), 0);
+  const countIn = (id) => c.d.food.filter((f) => f.food_id === id && (isCat || f.meal === meal)).reduce((a, f) => a + Number(f.qty), 0);
   const mealKcal = (m) => c.d.food.filter((f) => f.meal === m).reduce((a, f) => a + (S.foodsById[f.food_id]?.kcal || 0) * f.qty, 0);
 
   const Card = ({ f }) => {
     const n = countIn(f.id);
     return (
       <div className={`fcard${n ? ' on' : ''}`}>
-        <button className="fmain" onClick={() => A.logFood(k, f.id, meal)} aria-label={`Add ${f.name} to ${meal}`}>
+        <button className="fmain" onClick={() => A.logFood(k, f.id, logMeal)} aria-label={`Add ${f.name}`}>
           {v.photo && <span className={`fimg${f.image_url ? ' photo' : ''}`}>{f.image_url ? <img src={f.image_url} alt="" loading="lazy" /> : <IconTile name={f.icon || 'bowl'} size="lg" />}</span>}
           <span className="fname">{f.name}</span>
           {(v.kcal || v.protein) && <span className="fnum">{[v.kcal && `${fmt(f.kcal)} kcal`, v.protein && `${f.protein} g`].filter(Boolean).join(' · ')}</span>}
         </button>
         {n > 0 && <>
           <span className="fcount">×{n}</span>
-          <button className="fminus" onClick={() => A.removeOneFood(k, f.id, meal)} aria-label={`Remove one ${f.name}`}>−</button>
+          <button className="fminus" onClick={() => A.removeOneFood(k, f.id, logMeal)} aria-label={`Remove one ${f.name}`}>−</button>
         </>}
       </div>
     );
@@ -50,9 +53,11 @@ export default function FoodPicker({ k }) {
             <Icon name={MEAL_ICON[m]} size={18} /><span>{m}</span>{mealKcal(m) > 0 && <small>{fmt(mealKcal(m))}</small>}
           </button>
         ))}
+        <button role="tab" aria-selected={meal === 'drink'} onClick={() => setMeal('drink')}><Icon name="chai" size={18} /><span>Drinks</span></button>
+        <button role="tab" aria-selected={meal === 'street'} onClick={() => setMeal('street')}><Icon name="tikki" size={18} /><span>Street</span></button>
       </div>
       <div className={`fgrid sz-${v.size}`}>{forMeal.map((f) => <Card key={f.id} f={f} />)}</div>
-      {!forMeal.length && <div className="empty">No quick picks for {meal.toLowerCase()} yet.</div>}
+      {!forMeal.length && <div className="empty">Nothing here yet.</div>}
       <div className="btn-row">
         <button className="btn ghost sm" onClick={() => setAll((x) => !x)} aria-expanded={all}>{all ? 'Hide other foods' : 'Other foods'}</button>
         <button className="btn ghost sm" onClick={() => open('foodEdit', { name: qy, meal })}>+ New</button>
@@ -64,7 +69,7 @@ export default function FoodPicker({ k }) {
           <div className="li" key={f.id}><IconTile name={f.icon || 'bowl'} size="sm" />
             <div className="grow"><div className="nm">{f.name}{countIn(f.id) ? <span className="qtag inl">×{countIn(f.id)}</span> : null}</div>
               <div className="mt">{f.serving} · {fmt(f.kcal)} kcal · {f.protein} g</div></div>
-            <button className="add1" onClick={() => A.logFood(k, f.id, meal)} aria-label={`Add ${f.name}`}>+</button>
+            <button className="add1" onClick={() => A.logFood(k, f.id, logMeal)} aria-label={`Add ${f.name}`}>+</button>
           </div>
         ))}{!rest.length && <div className="empty">No match.</div>}</div>
       </>}

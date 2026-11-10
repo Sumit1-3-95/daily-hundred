@@ -21,9 +21,13 @@ function seed() {
     ['thali', 'Roti sabzi curd', '2 roti + sabzi + curd', 380, 14, 'thali', ['Lunch', 'Dinner'], 'thali'], ['dalchawal', 'Dal chawal curd', 'dal + rice + curd', 440, 18, 'dalchawal', ['Lunch', 'Dinner'], 'dalchawal'],
     ['paneer', 'Paneer salad', '100 g paneer + veggies', 330, 20, 'paneer', ['Lunch', 'Dinner'], 'paneersalad'], ['soya', 'Soya dish', '1 katori', 250, 25, 'soya', ['Lunch', 'Dinner'], 'soya'],
     ['tikki', 'Aloo tikki salad', '2 tikki + salad', 350, 7, 'tikki', ['Breakfast', 'Snack'], 'tikki'], ['daliya', 'Daliya', '1 bowl', 220, 7, 'daliya', ['Breakfast'], 'daliya'],
-    ['sweet', 'Indian sweet', '1 piece', 150, 2, 'sweet', ['Lunch', 'Snack', 'Dinner'], 'sweet']];
+    ['sweet', 'Indian sweet', '1 piece', 150, 2, 'sweet', ['Lunch', 'Snack', 'Dinner'], 'sweet'],
+    ['ptoast', 'Paneer toast', '2 slices HP bread + 100 g paneer', 400, 32, 'paneer', ['Breakfast', 'Snack'], 'paneertoast'], ['eggs4', 'Boiled eggs ×4', '4 eggs', 310, 25, 'egg', ['Breakfast'], 'eggs'],
+    ['chaat', 'Aloo tikki chaat', '1 plate', 350, 7, 'tikki', ['Snack'], 'tikkichaat', 'street'], ['pani', 'Pani puri', '6 puris', 220, 4, 'bowl', ['Snack'], 'panipuri', 'street'],
+    ['bhel', 'Bhel puri', '1 plate', 280, 6, 'bowl', ['Snack'], 'bhelpuri', 'street'], ['lemon', 'Lemonade', '1 glass', 90, 0, 'chai', ['Snack'], 'lemonade', 'drink'],
+    ['bshake', 'Banana shake', '1 glass', 250, 9, 'shake', ['Breakfast'], 'bananashake', 'drink'], ['chaas', 'Buttermilk', '1 glass', 60, 3, 'chai', ['Lunch'], 'buttermilk', 'drink']];
   const fid = {};
-  F.forEach(([k, name, serving, kcal, protein, icon, meals, img]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick: true, icon, meals, image_url: `/food/${img}.svg`, archived: false }); });
+  F.forEach(([k, name, serving, kcal, protein, icon, meals, img, category]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick: true, icon, meals, image_url: `/food/${img}.svg`, category: category || (['coffee', 'chai', 'shake'].includes(k) ? 'drink' : null), archived: false }); });
   const W = [['Cult Strength', 'Full body', 7], ['Cult HRX', 'Full body', 9], ['Leg day', 'Lower body', 7], ['Outdoor walk', 'Cardio', 5]];
   const wt = W.map(([name, area, kpm]) => { const r = { id: uuid(), ...u, name, area, kcal_per_min: kpm }; db.workout_types.push(r); return r; });
   const routine = { id: uuid(), ...u, title: 'Morning routine', kind: 'routine', sort: 0 };

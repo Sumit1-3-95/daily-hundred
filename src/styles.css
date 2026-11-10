@@ -1112,3 +1112,21 @@ h3{font-size:15px}
 .fgrid.sz-s{grid-template-columns:repeat(5,minmax(0,1fr))!important}
 .fgrid.sz-l{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .lib-card{min-height:88px}
+
+/* ---------- round 11: picture tiles, bigger numbers ---------- */
+.tile2.has-img::before{content:"";position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,0));z-index:1;pointer-events:none}
+.tile2.has-img .tl-foot{background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.62) 45%,rgba(0,0,0,.72));padding-top:22px;z-index:1}
+.tl-num{font-size:17px;z-index:2}
+.tile2.has-img .tl-num{background:none;color:#fff;font-size:19px;padding:0;text-shadow:0 1px 3px rgba(0,0,0,.45);letter-spacing:-.01em}
+.tl-badge{z-index:2}
+.tl-bar{z-index:2}
+.tile2.has-img .tl-s{opacity:.85}
+.tile2.dim{opacity:.5}
+.tile2.dim .tl-num{color:#fff}
+.art-pick{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.art-pick button{border:2px solid transparent;border-radius:10px;padding:0;overflow:hidden;aspect-ratio:3/4;background:none}
+.art-pick button[aria-pressed="true"]{border-color:var(--r1)}
+.art-pick img{width:100%;height:100%;object-fit:cover;display:block}
+.mealtabs{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.mealtabs button{font-size:10.5px;padding:7px 1px 5px}
+.pct.bad{color:var(--t-pink-i);background:var(--t-pink)}

@@ -38,10 +38,10 @@ export default function Home({ goTab }) {
         </div>
       </section>
       <WeekRings />
+      <WaterHome />
       <Glance />
       <HabitsHome goTab={goTab} />
       <BooksHome />
-      <WaterHome />
       <FoodHome />
       <WorkoutHome />
     </>

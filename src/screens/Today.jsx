@@ -3,8 +3,11 @@ import { useState } from 'react';
 import { useStore } from '../store.jsx';
 import { Icon } from '../components/Icons.jsx';
 import { AvoidCards } from '../components/Avoid.jsx';
-import { HabitCard, TodoAdd, TodoRow } from '../components/Habits.jsx';
-import { streak } from '../lib/calc.js';
+import { TodoAdd, TodoRow, useTaskAct } from '../components/Habits.jsx';
+import { Sec, Tile, TileGrid } from '../components/Tile.jsx';
+import { taskIcon } from '../components/TaskRow.jsx';
+import { habitArt } from '../lib/art.js';
+import { streak, taskName } from '../lib/calc.js';
 import { key, parse } from '../lib/dates.js';
 
 export function ScoreRing({ v, size = 92 }) {
@@ -38,16 +41,25 @@ export function MonthCalendar({ onPick }) {
 }
 
 export default function Today() {
-  const { S, today, calc, open } = useStore();
+  const { S, today, calc, open, A } = useStore();
+  const act = useTaskAct(today);
   const [manage, setManage] = useState(false);
-  const [showDone, setShowDone] = useState(false);
-  const c = calc(today), H = c.pillars.habits;
+  const c = calc(today), H = c.pillars.habits, t = S.targets;
   const st = streak(S, today);
-  const habits = c.scored.filter((s) => s.pillar === 'habits' && s.task.type !== 'todo');
-  const todos = c.scored.filter((s) => s.task.type === 'todo');
-  const todoOpen = todos.filter((s) => s.credit < 0.999), todoDone = todos.filter((s) => s.credit >= 0.999);
+  const habits = c.scored.filter((x) => x.pillar === 'habits' && x.task.type !== 'todo');
+  const todos = c.scored.filter((x) => x.task.type === 'todo');
+  const todoOpen = todos.filter((x) => x.credit < 0.999), todoDone = todos.filter((x) => x.credit >= 0.999);
   const hs = H.score ?? 0;
   const msg = hs >= 0.999 ? 'All habits done!' : hs >= 0.75 ? 'Almost there' : hs > 0 ? 'Keep going' : "Let's start";
+  const num = (task, credit) => {
+    const tl = c.d.tlogs[task.id] || {};
+    if (credit >= 0.999) return '✓';
+    if (task.type === 'number') return `${tl.value || 0}/${task.target}`;
+    if (task.type === 'checklist') { const n = S.items.filter((i) => i.list_id === task.list_id).length; return `${Math.round(credit * n)}/${n}`; }
+    if (task.type === 'auto') return `${Math.round(credit * 100)}%`;
+    return `+${task.weight}`;
+  };
+  const sorted = [...habits].sort((a, b) => (a.credit >= 0.999) - (b.credit >= 0.999));
 
   return (
     <>
@@ -63,29 +75,38 @@ export default function Today() {
         </div>
       </section>
 
-      <section className="card">
-        <div className="row-h"><h3>Habits</h3><button className="link" onClick={() => setManage((m) => !m)}>{manage ? 'Done' : 'Edit'}</button></div>
-        <div className="hgrid">
-          {habits.map((s) => <HabitCard key={s.task.id} k={today} task={s.task} credit={s.credit} onEdit={manage ? (t) => open('task', { task: t }) : undefined} />)}
-          <button className="hcard add" onClick={() => open('task')}><Icon name="check" size={20} /><span>New habit</span></button>
-        </div>
-      </section>
+      <Sec id="h-habits" title="Habits" icon="check" badge={<span className="pct">{H.done}/{H.total}</span>}
+        right={<button className="link" onClick={() => setManage((m) => !m)}>{manage ? 'Done' : 'Edit'}</button>}
+        summary={<span className="sub">{habits.filter((x) => x.credit < 0.999).map((x) => taskName(x.task, t)).join(' · ') || 'All done'}</span>}>
+        <TileGrid>
+          {sorted.map(({ task, credit }) => (
+            <Tile key={task.id} img={habitArt(task)} icon={taskIcon(task)} tone="violet" num={num(task, credit)} label={taskName(task, t)}
+              sub={manage ? 'Edit' : `+${task.weight} pts`} p={credit} dim={credit >= 0.999 && !manage}
+              onClick={() => (manage ? open('task', { task }) : act(task))} />
+          ))}
+          <button className="tile2 add" onClick={() => open('task')}><span>+</span>New habit</button>
+        </TileGrid>
+      </Sec>
 
-      <section className="card">
-        <div className="row-h"><h3>To-dos</h3><span className="sub">{todoOpen.length ? `${todoOpen.length} left · unfinished ones move to tomorrow` : todos.length ? 'All done' : 'One-time jobs for today'}</span></div>
+      <Sec id="h-todos" title="To-dos" icon="list" badge={todos.length ? <span className="pct">{todoDone.length}/{todos.length}</span> : null}
+        summary={<span className="sub">{todoOpen.length ? `${todoOpen.length} left · unfinished ones move to tomorrow` : 'Nothing pending'}</span>}>
         <TodoAdd k={today} />
-        <div className="todos">{todoOpen.map((s) => <TodoRow key={s.task.id} k={today} task={s.task} credit={s.credit} manage={manage} />)}</div>
-        {todoDone.length > 0 && <>
-          <button className="done-h" onClick={() => setShowDone((x) => !x)} aria-expanded={showDone}><span>Done · {todoDone.length}</span><span>{showDone ? 'Hide' : 'Show'}</span></button>
-          {showDone && <div className="todos">{todoDone.map((s) => <TodoRow key={s.task.id} k={today} task={s.task} credit={s.credit} manage={manage} />)}</div>}
-        </>}
-      </section>
+        {todoOpen.length > 0 && <TileGrid>{todoOpen.map(({ task, credit }) => (
+          <Tile key={task.id} img={habitArt(task)} icon="check" tone="blue" num={`+${task.weight}`} label={task.name}
+            sub={manage ? 'Tap to delete' : task.carried_from ? 'carried over' : 'to-do'} p={credit} onClick={() => (manage ? A.archiveTask(task.id) : act(task))} />
+        ))}</TileGrid>}
+        {todoDone.length > 0 && <div className="todos">{todoDone.map((x) => <TodoRow key={x.task.id} k={today} task={x.task} credit={x.credit} manage={manage} />)}</div>}
+      </Sec>
 
-      <section className="card"><div className="row-h"><h3>Detractors</h3><span className="sub">{c.penalty ? `−${c.penalty} pts today` : 'none today'}</span></div>
-        <AvoidCards k={today} /></section>
+      <Sec id="h-avoid" title="Detractors" icon="drink" defaultOpen={false} badge={c.penalty ? <span className="pct bad">−{c.penalty}</span> : null}
+        summary={<span className="sub">{c.penalty ? `−${c.penalty} points today` : 'None today'}</span>}>
+        <AvoidCards k={today} />
+      </Sec>
 
-      <section className="card"><div className="row-h"><h3>{parse(today).toLocaleDateString('en-IN', { month: 'long' })}</h3><span className="sub">tap a day</span></div>
-        <MonthCalendar onPick={(k) => open('day', { k })} /></section>
+      <Sec id="h-cal" title={parse(today).toLocaleDateString('en-IN', { month: 'long' })} icon="flag" defaultOpen={false}
+        summary={<span className="sub">Daily scores this month · tap to open</span>}>
+        <MonthCalendar onPick={(k) => open('day', { k })} />
+      </Sec>
     </>
   );
 }

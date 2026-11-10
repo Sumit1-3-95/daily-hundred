@@ -9,6 +9,7 @@ import { taskIcon, autoMeta } from './TaskRow.jsx';
 import { Cover } from '../sheets/Books.jsx';
 import { MBar, fmt } from './ui.jsx';
 import { DEFAULT_HOME, METRICS } from '../lib/metrics.js';
+import { METRIC_ART, habitArt } from '../lib/art.js';
 import { streak, taskName } from '../lib/calc.js';
 import { DOW, MEALS, lastN, parse, short } from '../lib/dates.js';
 
@@ -43,7 +44,7 @@ export function Glance() {
       summary={<span className="sub">{pinned.map((m) => `${METRICS[m].label} ${METRICS[m].value(c, t)}`).join(' · ')}</span>}>
       <TileGrid>{pinned.map((m) => {
         const M = METRICS[m], p = M.p(c, t);
-        return <Tile key={m} icon={M.icon} tone={TONE[m] || 'slate'} num={M.value(c, t)} label={M.label} p={p} onClick={() => TAP[m] && open(TAP[m])} />;
+        return <Tile key={m} img={METRIC_ART[m]} icon={M.icon} tone={TONE[m] || 'slate'} num={M.value(c, t)} label={M.label} sub={M.sub(c, t)} p={p} onClick={() => TAP[m] && open(TAP[m])} />;
       })}</TileGrid>
     </Sec>
   );
@@ -76,7 +77,7 @@ export function HabitsHome({ goTab }) {
       <div className="hh-msg"><b>{msg}</b><span>{H.done} of {H.total} done{c.penalty ? ` · −${c.penalty} pts` : ''}</span></div>
       {left.length ? (
         <TileGrid>{left.map(({ task, credit }) => (
-          <Tile key={task.id} img={task.image_url} icon={taskIcon(task)} tone={toneFor(task.id)} num={num(task, credit)}
+          <Tile key={task.id} img={habitArt(task)} icon={taskIcon(task)} tone={toneFor(task.id)} num={num(task, credit)}
             label={taskName(task, t)} sub={task.type === 'todo' ? 'to-do' : task.type === 'auto' ? autoMeta(task, c, t)?.split(' · ')[0] : null}
             p={credit} onClick={() => act(task)} />
         ))}</TileGrid>

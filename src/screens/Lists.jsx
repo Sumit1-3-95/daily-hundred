@@ -81,11 +81,11 @@ function Head({ title, onBack, action }) {
 function Foods({ onBack }) {
   const { S, open } = useStore();
   const [f, setF] = useState('all');
-  const list = S.foods.filter((x) => !x.archived && (f === 'all' || (f === 'quick' ? x.quick : (!x.meals?.length || x.meals.includes(f)))));
+  const list = S.foods.filter((x) => !x.archived && (f === 'all' || (f === 'quick' ? x.quick : f === 'drink' || f === 'street' ? x.category === f : (!x.category && (!x.meals?.length || x.meals.includes(f))))));
   return (
     <>
       <Head title="Foods" onBack={onBack} action={<button className="link" onClick={() => open('foodView')}>Card view</button>} />
-      <div className="chips scroll">{[['all', 'All'], ['quick', '★ Quick'], ...MEALS.map((m) => [m, m])].map(([k, l]) => (
+      <div className="chips scroll">{[['all', 'All'], ['quick', '★ Quick'], ...MEALS.map((m) => [m, m]), ['drink', 'Drinks'], ['street', 'Street food']].map(([k, l]) => (
         <button key={k} className={`chip${f === k ? ' on' : ''}`} onClick={() => setF(k)}>{l}</button>))}</div>
       <TileGrid>
         <button className="tile2 add" onClick={() => open('foodEdit', { meal: MEALS.includes(f) ? f : undefined })}><span>+</span>New</button>
