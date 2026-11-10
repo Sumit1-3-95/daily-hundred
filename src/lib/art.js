@@ -1,8 +1,7 @@
 // Pictures for tiles: metrics on At a glance, and habits (unless a habit has its own photo).
-export const METRIC_ART = {
-  water: '/art/water.svg', protein: '/art/protein.svg', eaten: '/art/eaten.svg', burned: '/art/burned.svg', deficit: '/art/deficit.svg',
-  workout: '/art/workout.svg', sleep: '/art/sleep.svg', steps: '/art/steps.svg', weight: '/art/weight.svg',
-};
+// light, outlined icons on solid pastel backgrounds (scripts/make-glance-art.py)
+export const METRIC_ART = Object.fromEntries(['water', 'protein', 'eaten', 'burned', 'deficit', 'workout', 'sleep', 'steps', 'weight']
+  .map((m) => [m, `/art/g-${m}.svg`]));
 /** Placeholder pictures you can pick for a habit or task. */
 export const TASK_ART = ['routine', 'read', 'write', 'meditate', 'laundry', 'plant', 'supplements', 'todo', 'sleep', 'closeday', 'workout', 'water']
   .map((n) => `/art/${n}.svg`);

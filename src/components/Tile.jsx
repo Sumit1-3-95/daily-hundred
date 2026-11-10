@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { Icon } from './Icons.jsx';
 import { progState } from './ui.jsx';
 
-export function Tile({ img, icon = 'check', tone = 'slate', num, label, sub, p, badge, onClick, className = '', dim }) {
+export function Tile({ img, icon = 'check', tone = 'slate', num, label, sub, p, badge, onClick, className = '', dim, light }) {
   const st = p == null ? '' : progState(p);
   return (
-    <button className={`tile2 t-${tone} ${st}${img ? ' has-img' : ''}${dim ? ' dim' : ''} ${className}`} onClick={onClick}>
+    <button className={`tile2 t-${tone} ${st}${img ? (light ? ' light-img' : ' has-img') : ''}${dim ? ' dim' : ''} ${className}`} onClick={onClick}>
       <span className="tl-media">{img ? <img src={img} alt="" loading="lazy" /> : <Icon name={icon} size={26} />}</span>
       {num != null && <span className="tl-num">{num}</span>}
       {badge != null && <span className="tl-badge">{badge}</span>}

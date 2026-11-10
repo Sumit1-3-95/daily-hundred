@@ -7,7 +7,7 @@ import { Glass } from './Nudges.jsx';
 import { useTaskAct } from './Habits.jsx';
 import { taskIcon, autoMeta } from './TaskRow.jsx';
 import { Cover } from '../sheets/Books.jsx';
-import { MBar, fmt } from './ui.jsx';
+import { MBar, fmt, progState } from './ui.jsx';
 import { DEFAULT_HOME, METRICS } from '../lib/metrics.js';
 import { METRIC_ART, habitArt } from '../lib/art.js';
 import { streak, taskName } from '../lib/calc.js';
@@ -27,7 +27,9 @@ export function WeekRings() {
     <Sec id="week" title="Last 7 days" icon="flag" defaultOpen={false}
       summary={<span className="sub">Average day score <b>{pct(avg)}</b> · tap to see each day</span>}>
       <div className="week">{days.map((k) => (
-        <button key={k} className={k === today ? 'is-today' : ''} onClick={() => open('day', { k })} aria-label={`Open ${short(k)}`}><MiniRings c={calc(k)} />{DOW[parse(k).getDay()].slice(0, 2)}</button>
+        <button key={k} className={k === today ? 'is-today' : ''} onClick={() => open('day', { k })} aria-label={`Open ${short(k)}`}>
+          <MiniRings c={calc(k)} /><span className="wk-d">{DOW[parse(k).getDay()].slice(0, 2)}</span>
+          <span className={`wk-p ${calc(k).hasData ? progState(calc(k).score) : ''}`}>{calc(k).hasData ? pct(calc(k).score) : '–'}</span></button>
       ))}</div>
     </Sec>
   );
@@ -44,7 +46,7 @@ export function Glance() {
       summary={<span className="sub">{pinned.map((m) => `${METRICS[m].label} ${METRICS[m].value(c, t)}`).join(' · ')}</span>}>
       <TileGrid>{pinned.map((m) => {
         const M = METRICS[m], p = M.p(c, t);
-        return <Tile key={m} img={METRIC_ART[m]} icon={M.icon} tone={TONE[m] || 'slate'} num={M.value(c, t)} label={M.label} sub={M.sub(c, t)} p={p} onClick={() => TAP[m] && open(TAP[m])} />;
+        return <Tile key={m} light img={METRIC_ART[m]} icon={M.icon} tone={TONE[m] || 'slate'} num={M.value(c, t)} label={M.label} sub={M.sub(c, t)} p={p} onClick={() => TAP[m] && open(TAP[m])} />;
       })}</TileGrid>
     </Sec>
   );
