@@ -1386,3 +1386,29 @@ input,select,textarea{scroll-margin:90px 0 120px}
 .pp-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .pp-new{aspect-ratio:auto;min-height:100px}
 .pp-set{align-self:center;display:inline-flex;align-items:center;gap:4px}
+
+/* ---------- round 16: sleep + weight strip, steps/jobs, livelier rows ---------- */
+.body-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bs-tile{position:relative;display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:10px;text-align:left;color:var(--ink);box-shadow:var(--shadow);overflow:hidden}
+.bs-tile:active{transform:scale(.97)}
+.bs-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none}
+.bs-tile.sleep .bs-ic{background:var(--t-violet,#ECE7FD);color:var(--t-violet-i,#5B45E0)}
+.bs-tile.weight .bs-ic{background:var(--t-teal);color:var(--t-teal-i)}
+.bs-b{display:flex;flex-direction:column;min-width:0}
+.bs-l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.bs-b b{font-family:var(--display);font-size:20px;font-weight:800;line-height:1.15;display:flex;align-items:baseline;gap:2px}
+.bs-b b small{font-size:12px;color:var(--muted)}
+.bs-b b em{font-style:normal;font-size:11px;font-weight:800;margin-left:6px;padding:1px 6px;border-radius:999px;align-self:center}
+.bs-b b em.good{background:var(--t-teal);color:var(--t-teal-i)}.bs-b b em.ok{background:var(--t-amber);color:var(--t-amber-i)}.bs-b b em.bad{background:var(--t-pink);color:var(--t-pink-i)}
+.bs-b .bs-add{font-size:15px;color:var(--r1)}
+.bs-s{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bs-tile.empty{border-style:dashed}
+.bs-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--surface-2)}
+.bs-bar i{display:block;height:100%;background:var(--r1)}
+.score-pick{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.score-pick input{width:86px;height:40px}
+.wake{display:flex;flex-direction:column;gap:12px}
+.hr-btn{transition:transform .12s ease}
+.hrow.done .hr-ok{animation:okPop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes okPop{from{transform:scale(0)}to{transform:scale(1)}}
+.hrow.done .hr-n{color:var(--good)}

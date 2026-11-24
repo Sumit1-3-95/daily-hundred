@@ -6,6 +6,7 @@ import { Icon } from '../components/Icons.jsx';
 import { isReading } from '../components/Habits.jsx';
 import { progState } from '../components/ui.jsx';
 import { habitArt } from '../lib/art.js';
+import { runShortcut } from '../sheets/Settings.jsx';
 import { habitStreaks, streak, taskName } from '../lib/calc.js';
 import { DOW, lastN, parse } from '../lib/dates.js';
 
@@ -37,12 +38,16 @@ function useHabit(task, credit) {
       case 'workout': return { line: c.rest ? 'Rest day' : `${f0(c.wMin)} of ${t.workoutMin} min${plan && plan.status !== 'done' ? ` · ${plan.title}` : ''}`, btn: done ? null : plan && plan.status === 'planned' ? 'Plan' : 'Log',
         act: () => (plan && plan.status === 'planned' ? open('planDay', { k: today }) : open('logWorkout')) };
       case 'sleep': return { line: `${c.sleep || 0} of ${t.sleep} h`, btn: 'Log', act: () => open('sleep') };
+      case 'steps': return { line: c.steps != null ? `${f0(c.steps)} of ${f0(t.steps || 10000)} · from Apple Watch` : 'Syncs from your Apple Watch', btn: done ? null : 'Sync', act: runShortcut };
       default: return { line: pct(credit), btn: null, act: () => {} };
     }
   }
   if (task.type === 'number') {
     const go = () => (isReading(task) ? open('books') : open('taskOne', { id: task.id }));
-    return { line: `${tl.value || 0} of ${task.target} ${task.unit || (isReading(task) ? 'pages' : '')}`, btn: done ? null : 'Log', act: go };
+    const line = `${tl.value || 0} of ${task.target} ${task.unit || (isReading(task) ? 'pages' : '')}`;
+    if (isReading(task)) return { line, btn: done ? null : 'Log', act: go };
+    const step = task.target >= 10 ? 5 : 1;      // jobs: +5 at a time; tap the row for the exact number
+    return { line, btn: done ? null : `+${step}`, act: () => A.setTaskLog(today, task, { value: (Number(tl.value) || 0) + step }), tap: go };
   }
   if (task.type === 'checklist') return { line: `${Math.round(credit * 100)}% of steps`, btn: 'Open', act: () => open('taskOne', { id: task.id }) };
   const toggle = () => A.setTaskLog(today, task, { done: !tl.done });
@@ -67,7 +72,7 @@ function HabitRow({ task, credit, st }) {
           <span className="hr-bar"><i style={{ width: `${Math.min(1, credit) * 100}%` }} /></span>
           <span className="hr-st">
             <span className={`hr-segs s${seg}`}>{Array.from({ length: seg }, (_, i) => <i key={i} className={i < into ? 'on' : ''} />)}</span>
-            <span className="hr-sl">{run ? <><b>{run} day{run > 1 ? 's' : ''}</b> · </> : null}{left === 1 && !done ? (goal === 7 ? 'today makes 7' : 'medal today') : `${left} to ${goal === 7 ? '7' : 'medal'}`}</span>
+            <span className="hr-sl">{run ? <><b>{run} day{run > 1 ? 's' : ''}</b> · </> : done ? null : 'Start today · '}{left === 1 && !done ? (goal === 7 ? 'today makes 7' : 'medal today') : (run ? `${left} to ${goal === 7 ? '7' : 'medal'}` : '7-day goal')}</span>
           </span>
         </span>
       </button>
@@ -98,16 +103,42 @@ function Celebrate({ list }) {
   );
 }
 
+/** Only shows once you've earned a medal. */
 function Medals({ list }) {
   const won = list.filter(({ st }) => st?.medals > 0);
-  const next = [...list].filter(({ st }) => st).sort((a, b) => (a.st.goal - a.st.run) - (b.st.goal - b.st.run))[0];
+  if (!won.length) return null;
   return (
     <section className="card medals">
       <div className="row-h"><h3>Medals</h3><span className="sub">21 days in a row = 1 medal</span></div>
-      {won.length ? <div className="md-row">{won.map(({ task, name, st }) => (
+      <div className="md-row">{won.map(({ task, name, st }) => (
         <div key={task.id} className="md"><Medal n={21} size={40} /><b>{name}</b><span>×{st.medals} · best {st.best} days</span></div>
-      ))}</div> : <div className="md-empty"><Medal n={21} size={40} dim /><span>No medals yet. Keep any habit going for 21 days to win your first.</span></div>}
-      {next && <p className="hint">Closest: <b>{next.name}</b>, {next.st.goal - next.st.run} more day{next.st.goal - next.st.run === 1 ? '' : 's'} to {next.st.goal === 7 ? 'a 7-day streak' : 'a medal'}.</p>}
+      ))}</div>
+    </section>
+  );
+}
+
+/** Last night's sleep and this morning's weight, one tap to log either. */
+function BodyStrip() {
+  const { S, today, calc, open } = useStore();
+  const c = calc(today), t = S.targets;
+  const lastW = Object.keys(S.days).sort().reverse().map((k) => [k, S.days[k].log?.weight]).find(([, w]) => w != null);
+  const sc = c.log.sleep_score;
+  const sp = c.sleep ? Math.min(1, c.sleep / (t.sleep || 8)) : 0;
+  return (
+    <section className="body-strip">
+      <button className={`bs-tile sleep${c.sleep ? '' : ' empty'}`} onClick={() => open('sleep')}>
+        <span className="bs-ic"><Icon name="moon" size={18} /></span>
+        <span className="bs-b"><span className="bs-l">Sleep</span>
+          {c.sleep ? <b>{c.sleep}<small> h</small>{sc != null && <em className={sc >= 80 ? 'good' : sc >= 60 ? 'ok' : 'bad'}>{sc}</em>}</b> : <b className="bs-add">Log sleep</b>}
+          <span className="bs-s">{c.log.wake_time ? `up at ${c.log.wake_time.slice(0, 5)}` : c.sleep ? `of ${t.sleep} h` : 'last night'}</span></span>
+        {c.sleep > 0 && <span className="bs-bar"><i style={{ width: `${sp * 100}%` }} /></span>}
+      </button>
+      <button className={`bs-tile weight${c.weight != null ? '' : ' empty'}`} onClick={() => open('weightPage')}>
+        <span className="bs-ic"><Icon name="scale" size={18} /></span>
+        <span className="bs-b"><span className="bs-l">Weight</span>
+          {c.weight != null ? <b>{c.weight.toFixed(1)}<small> kg</small></b> : <b className="bs-add">Weigh in</b>}
+          <span className="bs-s">{c.weight != null ? 'today' : lastW ? `last ${Number(lastW[1]).toFixed(1)} kg` : 'before breakfast'}</span></span>
+      </button>
     </section>
   );
 }
@@ -148,6 +179,8 @@ export default function Home() {
           })}</div>
         </div>
       </section>
+
+      <BodyStrip />
 
       <section className="hb-list" aria-label="Today's habits">
         {sorted.map((x) => <HabitRow key={x.task.id} task={x.task} credit={x.credit} st={x.st} />)}

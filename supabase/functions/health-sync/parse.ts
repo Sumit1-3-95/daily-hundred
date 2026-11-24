@@ -7,7 +7,7 @@
 import { num } from '../_shared/util.ts';
 
 type Obj = Record<string, unknown>;
-export type DayVals = { steps?: number; active_kcal?: number; exercise_min?: number; weight?: number; sleep_hours?: number; bed_time?: string; wake_time?: string };
+export type DayVals = { steps?: number; active_kcal?: number; exercise_min?: number; weight?: number; sleep_hours?: number; sleep_score?: number; bed_time?: string; wake_time?: string };
 export type Wk = { id?: string; day: string; name: string; minutes: number; kcal: number; start: string | null };
 
 /** A list of samples (array, or text with one value per line) → their sum; a single value → itself. */
@@ -82,6 +82,8 @@ export function parseShortcut(body: Obj, day: string) {
   if (a !== undefined) v.active_kcal = a;
   if (s !== undefined) v.steps = s;
   if (sl !== undefined) v.sleep_hours = sl;
+  const ss = first(body.sleep_score);
+  if (ss !== undefined) v.sleep_score = ss;
   if (typeof body.bed_time === 'string') v.bed_time = body.bed_time.slice(0, 5);
   if (typeof body.wake_time === 'string') v.wake_time = body.wake_time.slice(0, 5);
   const list = Array.isArray(body.workouts) ? body.workouts as Obj[] : [];
@@ -101,6 +103,7 @@ export function toRow(v: DayVals) {
   if (v.active_kcal !== undefined && v.active_kcal > 0) row.active_kcal = Math.round(v.active_kcal);
   if (v.steps !== undefined) row.steps = Math.round(v.steps);
   if (v.sleep_hours !== undefined && v.sleep_hours > 0) row.sleep_hours = Math.round(v.sleep_hours * 10) / 10;
+  if (v.sleep_score !== undefined && v.sleep_score > 0 && v.sleep_score <= 100) row.sleep_score = Math.round(v.sleep_score);
   if (v.bed_time) row.bed_time = v.bed_time;
   if (v.wake_time) row.wake_time = v.wake_time;
   return row;

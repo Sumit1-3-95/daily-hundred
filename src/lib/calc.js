@@ -4,7 +4,7 @@ import { addDays, key, parse } from './dates.js';
 
 /** Which part of the day score a task belongs to. */
 export const pillarOf = (t) => (t.type === 'auto'
-  ? (['water', 'protein', 'calories', 'deficit'].includes(t.auto_key) ? 'intake' : ['workout', 'burn'].includes(t.auto_key) ? 'workout' : 'habits')
+  ? (['water', 'protein', 'calories', 'deficit'].includes(t.auto_key) ? 'intake' : ['workout', 'burn', 'steps'].includes(t.auto_key) ? 'workout' : 'habits')
   : 'habits');
 export const PILLARS = ['habits', 'intake', 'workout'];
 
@@ -28,6 +28,7 @@ export const AUTO_LABEL = {
   deficit: (t) => `${t.deficit} kcal deficit`,
   calories: (t) => `Eat under ${Number(t.kcal).toLocaleString('en-IN')} kcal`,
   burn: (t) => `Burn ${t.activeKcal} active kcal`,
+  steps: (t) => `${Number(t.steps || 10000).toLocaleString('en-IN')} steps`,
 };
 export const taskName = (task, targets) =>
   task.type === 'auto' && AUTO_LABEL[task.auto_key] ? AUTO_LABEL[task.auto_key](targets) : task.name;
@@ -98,6 +99,7 @@ export function calcDay(S, k, today) {
           // under the calorie target, judged once the day is closed
           calories: closed ? (eaten <= t.kcal ? 1 : clamp(t.kcal / eaten)) : 0,
           burn: clamp(active / (t.activeKcal || 400)),
+          steps: clamp((Number(log.steps) || 0) / (t.steps || 10000)),
         })[x.auto_key] ?? 0;
       default: return 0;
     }

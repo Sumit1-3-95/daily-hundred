@@ -1,6 +1,6 @@
 // Receives Apple Health data, from our iOS Shortcut or from the Health Auto Export app.
 // POST /functions/v1/health-sync?token=<personal token from Settings>   (or header Authorization: Bearer <token>)
-// Shortcut body (all optional): { "date", "weight", "active_kcal", "steps", "exercise_min", "sleep_hours", "bed_time", "wake_time", "workouts": [...] }
+// Shortcut body (all optional): { "date", "weight", "active_kcal", "steps", "exercise_min", "sleep_hours", "sleep_score", "bed_time", "wake_time", "workouts": [...] }
 // Health Auto Export body: { "data": { "metrics": [...], "workouts": [...] } }  (see parse.ts)
 // Every value replaces the stored one for that day (never adds), so syncing twice is safe.
 import { admin, cors, json, localNow, sha256 } from '../_shared/util.ts';
@@ -38,9 +38,11 @@ Deno.serve(async (req) => {
     if (!Object.keys(cols).length) continue;
     const row = { user_id, day, updated_at: new Date().toISOString(), ...cols };
     let { error } = await db.from('day_logs').upsert(row, { onConflict: 'user_id,day' });
-    if (error && /exercise_min/.test(error.message)) {   // column not added yet: save the rest
-      delete (row as Record<string, unknown>).exercise_min;
-      ({ error } = await db.from('day_logs').upsert(row, { onConflict: 'user_id,day' }));
+    for (const col of ['exercise_min', 'sleep_score']) {   // column not added yet: save the rest
+      if (error && error.message.includes(col)) {
+        delete (row as Record<string, unknown>)[col];
+        ({ error } = await db.from('day_logs').upsert(row, { onConflict: 'user_id,day' }));
+      }
     }
     if (error) return json({ error: error.message }, 500);
     savedDays[day] = Object.keys(cols);

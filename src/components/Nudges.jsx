@@ -22,20 +22,32 @@ export function WakeBlock({ k, onDone }) {
   const log = calc(k).log;
   const bedLogged = calc(yesterday(k)).log.bed_time?.slice(0, 5);
   const [bed, setBed] = useState(bedLogged || '23:00');
-  const [wake, setWake] = useState(log.wake_time?.slice(0, 5) || nowHHMM());
+  const [wake, setWake] = useState(log.wake_time?.slice(0, 5) || (new Date().getHours() < 12 ? nowHHMM() : '07:00'));
+  const [score, setScore] = useState(log.sleep_score ?? '');
+  const synced = log.sleep_hours != null && !log.wake_time;
   const h = sleepHours(bed, wake);
   return (
-    <form onSubmit={async (e) => {
+    <form className="wake" onSubmit={async (e) => {
       e.preventDefault();
-      if (!bedLogged) await A.saveDay(yesterday(k), { bed_time: bed });
-      await A.saveDay(k, { wake_time: wake, sleep_hours: h });
+      if (!synced && (h == null || h > 14 || h < 1)) return;   // clearly wrong times
+      const sc = score === '' ? null : Math.max(0, Math.min(100, Math.round(Number(score))));
+      if (bed !== bedLogged) await A.saveDay(yesterday(k), { bed_time: bed });
+      await A.saveDay(k, { wake_time: wake, ...(synced ? {} : { sleep_hours: h }), ...(sc != null ? { sleep_score: sc } : {}) });
       onDone?.();
     }}>
-      {bedLogged
-        ? <p className="hint"><Icon name="moon" size={14} /> You went to bed at <b>{bedLogged}</b> last night.</p>
-        : <Field label="Went to bed last night" id="nbed"><input id="nbed" type="time" value={bed} onChange={(e) => setBed(e.target.value)} required /></Field>}
-      <Field label="Woke up at" id="nwake"><input id="nwake" type="time" value={wake} onChange={(e) => setWake(e.target.value)} required /></Field>
-      <button className="btn">Save · {h ?? '–'} h sleep</button>
+      {synced && <p className="hint"><Icon name="moon" size={14} /> Apple Watch says <b>{log.sleep_hours} h</b> of sleep.</p>}
+      <div className="two">
+        <Field label="Went to bed" id="nbed"><input id="nbed" type="time" value={bed} onChange={(e) => setBed(e.target.value)} required /></Field>
+        <Field label="Woke up" id="nwake"><input id="nwake" type="time" value={wake} onChange={(e) => setWake(e.target.value)} required /></Field>
+      </div>
+      <div className="field"><span className="lb">Sleep score from your watch (optional)</span>
+        <div className="score-pick">
+          <input type="number" inputMode="numeric" min="0" max="100" value={score} onChange={(e) => setScore(e.target.value)} placeholder="e.g. 82" aria-label="Sleep score" />
+          {[60, 70, 80, 90].map((n) => <button type="button" key={n} className={`chip${Number(score) === n ? ' on' : ''}`} onClick={() => setScore(n)}>{n}</button>)}
+        </div>
+        <span className="hint">Open the Health app → Sleep on your iPhone to see the score.</span></div>
+      {!synced && h != null && (h > 14 || h < 1) && <p className="err">That's {h} hours. Check the two times.</p>}
+      <button className="btn">Save · {synced ? log.sleep_hours : h ?? '–'} h{score !== '' ? ` · score ${score}` : ''}</button>
     </form>
   );
 }
@@ -187,15 +199,22 @@ export function Alerts({ k }) {
   const h = new Date().getHours();
   const dismissed = getDismissed(k);
   const list = [];
-  // kept short on purpose: only the morning weigh-in
+  // morning: sleep and weight · afternoon: water · evening: protein and any number habit left (jobs)
+  if (h >= 5 && h < 13 && !c.log.sleep_hours && !c.log.wake_time) list.push(['sleep', 'moon', 'How did you sleep? Log it', 'sleep']);
   if (h >= 5 && h < 12 && c.weight == null) list.push(['weight', 'scale', 'Weigh in before breakfast', 'weightPage']);
-  const show = list.filter(([id]) => !dismissed.includes(id)).slice(0, 3);
+  const S2 = S;
+  if (h >= 14 && c.water < S2.targets.water * Math.min(1, (h - 8) / 12) * 0.75) list.push(['water', 'water', `Water is behind: ${(c.water / 1000).toFixed(1)} of ${S2.targets.water / 1000} L`, 'water']);
+  const pt = c.scored.find((x) => x.task.auto_key === 'protein');
+  if (h >= 18 && pt && pt.credit < 0.999) list.push(['protein', 'bolt', `${Math.round(c.pExtraTarget - c.proteinExtra)} g protein to go. A shake?`, 'logFood']);
+  const job = c.scored.find((x) => x.task.type === 'number' && /job|appl/i.test(x.task.name) && x.credit < 0.999);
+  if (h >= 17 && job) { const v = Number(c.d.tlogs[job.task.id]?.value) || 0; list.push([`job`, 'flag', `Apply to ${job.task.target - v} more jobs today`, ['taskOne', { id: job.task.id }]]); }
+  const show = list.filter(([id]) => !dismissed.includes(id)).slice(0, 2);   // two at most, most urgent first
   if (!show.length) return null;
   return (
     <section className="alerts" aria-label="To do now">
       {show.map(([id, ic, text, sheet]) => (
         <div className="alert" key={id}>
-          <button className="alert-main" onClick={() => open(sheet)}><IconTile name={ic} size="sm" /><span>{text}</span><span className="chev" aria-hidden="true">›</span></button>
+          <button className="alert-main" onClick={() => (Array.isArray(sheet) ? open(...sheet) : open(sheet))}><IconTile name={ic} size="sm" /><span>{text}</span><span className="chev" aria-hidden="true">›</span></button>
           <button className="alert-x" onClick={() => { addDismissed(k, id); force((n) => n + 1); }} aria-label={`Hide: ${text}`}>×</button>
         </div>
       ))}

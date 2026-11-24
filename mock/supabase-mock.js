@@ -12,7 +12,7 @@ function seed() {
   const db = { profiles: [], foods: [], food_logs: [], workout_types: [], workouts: [], day_logs: [], lists: [], list_items: [], tasks: [], task_logs: [],
     body_scans: [], blood_results: [], nudges: [], push_subscriptions: [], api_tokens: [], events: [], plan_days: [] };
   const u = { user_id: UID };
-  db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 8000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1, proteinBase: 40, proteinSince: key(addDays(new Date(), -10)) } });
+  db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 10000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1, proteinBase: 40, proteinSince: key(addDays(new Date(), -10)) } });
   const F = [
     ['poha', 'Poha', '1 plate', 250, 5, 'bowl', ['Breakfast'], 'poha'], ['coffee', 'Coffee', '1 cup with milk', 70, 3, 'chai', ['Breakfast', 'Snack'], 'coffee'],
     ['shake', 'Protein shake', '1 scoop whey in water', 130, 25, 'shake', ['Breakfast', 'Snack'], 'shake'], ['chai', 'Masala chai', '1 cup with sugar', 90, 3, 'chai', ['Breakfast', 'Snack'], 'chai'],
@@ -47,8 +47,10 @@ function seed() {
     { name: 'Read', type: 'number', target: 25, unit: 'pages', weight: 1, icon: 'book' },
     { name: 'Sleep target', type: 'auto', auto_key: 'sleep', weight: 1 },
     { name: 'Log all meals and close the day', type: 'auto', auto_key: 'closed', weight: 1 },
+    { name: '10,000 steps', type: 'auto', auto_key: 'steps', image_url: '/art/steps.svg' },
+    { name: 'Apply to 20 jobs', type: 'number', target: 20, unit: 'jobs', image_url: '/art/jobs.svg' },
   ].map((t, i) => ({ id: uuid(), ...u, days: ALL, auto_key: null, target: null, unit: null, list_id: null, sort: i, ...t, weight: 1,
-    archived: !['Workout', 'Protein', 'Water', 'Read'].includes(t.name) }));
+    archived: !['Workout', 'Protein', 'Water', 'Read', '10,000 steps', 'Apply to 20 jobs'].includes(t.name) }));
   db.tasks.push(...T);
   const AV = [{ id: uuid(), ...u, name: 'Alcohol', type: 'avoid', weight: 3, unit: 'drinks', icon: 'drink', days: ALL, sort: 90, archived: false },
     { id: uuid(), ...u, name: 'Smoking', type: 'avoid', weight: 3, unit: 'cigarettes', icon: 'smoke', days: ALL, sort: 91, archived: false }];

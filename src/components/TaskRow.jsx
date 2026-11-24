@@ -6,7 +6,7 @@ import { taskName } from '../lib/calc.js';
 import { Check, fmt, progState } from './ui.jsx';
 import { IconTile } from './Icons.jsx';
 
-const AUTO_ICON = { workout: 'dumbbell', protein: 'bolt', water: 'water', sleep: 'moon', closed: 'flag', deficit: 'target', calories: 'calories', burn: 'fire' };
+const AUTO_ICON = { workout: 'dumbbell', protein: 'bolt', water: 'water', sleep: 'moon', closed: 'flag', deficit: 'target', calories: 'calories', burn: 'fire', steps: 'steps' };
 export const AUTO_SHEET = { water: 'water', protein: 'logFood', calories: 'logFood', workout: 'logWorkout', burn: 'logWorkout', sleep: 'sleep', closed: 'closeDay', deficit: 'closeDay' };
 
 export const taskIcon = (task) => task.icon || AUTO_ICON[task.auto_key]

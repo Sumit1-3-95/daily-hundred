@@ -6,8 +6,8 @@ export const METRIC_ART = Object.fromEntries(['water', 'protein', 'eaten', 'burn
 export const TASK_ART = ['routine', 'read', 'write', 'meditate', 'laundry', 'plant', 'supplements', 'todo', 'sleep', 'closeday', 'workout', 'water']
   .map((n) => `/art/${n}.svg`);
 
-const BY_AUTO = { water: 'water', protein: 'protein', workout: 'workout', burn: 'burned', calories: 'eaten', deficit: 'deficit', sleep: 'sleep', closed: 'closeday' };
-const BY_NAME = [[/read|book|page/i, 'read'], [/writ|journal|diary/i, 'write'], [/laundry|wash|cloth/i, 'laundry'], [/meditat|breath|mind/i, 'meditate'],
+const BY_AUTO = { water: 'water', protein: 'protein', workout: 'workout', burn: 'burned', calories: 'eaten', deficit: 'deficit', sleep: 'sleep', closed: 'closeday', steps: 'steps' };
+const BY_NAME = [[/job|appl|resume|cv\b/i, 'jobs'], [/read|book|page/i, 'read'], [/writ|journal|diary/i, 'write'], [/laundry|wash|cloth/i, 'laundry'], [/meditat|breath|mind/i, 'meditate'],
   [/supplement|vitamin|pill/i, 'supplements'], [/plant|garden/i, 'plant'], [/morning|routine|wake/i, 'routine'], [/night|sleep|bed/i, 'closeday']];
 
 export function habitArt(task) {
