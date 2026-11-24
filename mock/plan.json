@@ -5,65 +5,153 @@
   "title": "Upper body",
   "place": "GG Gym",
   "minutes": 65,
-  "kcal": 470,
+  "kcal": 495,
   "items": [
    {
-    "id": "1",
+    "act": "jumping-jack",
     "name": "Warm-up",
-    "detail": "5 min easy cardio + arm/hip circles"
+    "minutes": 10,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Dumbbell bench press",
-    "detail": "3 \u00d7 10"
+    "act": "press",
+    "name": "Strength",
+    "minutes": 30,
+    "focus": "Focus: upper body (chest, back, shoulders)",
+    "kcal": 230,
+    "area": "Upper body",
+    "tips": [
+     {
+      "ex": "pushup",
+      "name": "Bench press or push-ups",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "row",
+      "name": "Dumbbell row",
+      "how": "3 \u00d7 10 each arm"
+     },
+     {
+      "ex": "press",
+      "name": "Shoulder press",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "curl",
+      "name": "Biceps curl",
+      "how": "2 \u00d7 12"
+     }
+    ],
+    "log": {
+     "name": "Upper body strength",
+     "area": "Upper body",
+     "minutes": 30,
+     "kcal": 230
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Lat pulldown",
-    "detail": "3 \u00d7 10"
+    "act": "jog",
+    "name": "Run",
+    "minutes": 20,
+    "focus": "Treadmill intervals: jog / walk",
+    "kcal": 190,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk to start",
+      "how": "5 min at 5.5 km/h"
+     },
+     {
+      "ex": "jog",
+      "name": "Jog",
+      "how": "6 \u00d7 1 min at 8.5 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Walk between",
+      "how": "1 min after each jog"
+     },
+     {
+      "ex": "walk",
+      "name": "Cool down",
+      "how": "3 min easy"
+     }
+    ],
+    "log": {
+     "name": "Treadmill",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 190
+    },
+    "id": "3"
    },
    {
-    "id": "4",
-    "name": "Seated dumbbell shoulder press",
-    "detail": "3 \u00d7 10"
-   },
-   {
-    "id": "5",
-    "name": "Seated cable row",
-    "detail": "3 \u00d7 12"
-   },
-   {
-    "id": "6",
-    "name": "Biceps curl + triceps pushdown",
-    "detail": "2 \u00d7 12 each, back to back"
-   },
-   {
-    "id": "7",
-    "name": "Plank",
-    "detail": "3 \u00d7 30 s"
-   },
-   {
-    "id": "8",
-    "name": "Treadmill intervals \u00b7 20 min",
-    "detail": "5 min walk 5.5 km/h \u2192 6 \u00d7 (1 min jog 8.5 km/h + 1 min walk) \u2192 3 min easy"
-   },
-   {
-    "id": "9",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "10",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
    {
-    "name": "Upper body",
+    "name": "Upper body strength",
     "area": "Upper body",
-    "minutes": 45,
-    "kcal": 280
+    "minutes": 30,
+    "kcal": 230
    },
    {
     "name": "Treadmill",
@@ -80,71 +168,154 @@
   "title": "Lower body",
   "place": "GG Gym",
   "minutes": 65,
-  "kcal": 480,
+  "kcal": 495,
   "items": [
    {
-    "id": "1",
+    "act": "jumping-jack",
     "name": "Warm-up",
-    "detail": "5 min easy cardio + arm/hip circles"
+    "minutes": 10,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Goblet squat",
-    "detail": "3 \u00d7 10"
+    "act": "squat",
+    "name": "Strength",
+    "minutes": 30,
+    "focus": "Focus: legs and glutes",
+    "kcal": 250,
+    "area": "Lower body",
+    "tips": [
+     {
+      "ex": "goblet",
+      "name": "Goblet squat",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "deadlift",
+      "name": "Romanian deadlift",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "lunge",
+      "name": "Walking lunges",
+      "how": "2 \u00d7 10 each leg"
+     },
+     {
+      "ex": "bridge",
+      "name": "Glute bridge",
+      "how": "3 \u00d7 12"
+     }
+    ],
+    "log": {
+     "name": "Leg day",
+     "area": "Lower body",
+     "minutes": 30,
+     "kcal": 250
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Dumbbell Romanian deadlift",
-    "detail": "3 \u00d7 10"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 20,
+    "focus": "Steady fat-burn zone",
+    "kcal": 170,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 170
+    },
+    "id": "3"
    },
    {
-    "id": "4",
-    "name": "Leg press",
-    "detail": "3 \u00d7 12"
-   },
-   {
-    "id": "5",
-    "name": "Walking lunges",
-    "detail": "2 \u00d7 10 each leg"
-   },
-   {
-    "id": "6",
-    "name": "Lying leg curl",
-    "detail": "2 \u00d7 12"
-   },
-   {
-    "id": "7",
-    "name": "Dead bug",
-    "detail": "3 \u00d7 10"
-   },
-   {
-    "id": "8",
-    "name": "Incline walk \u00b7 20 min",
-    "detail": "12% incline, 5.2 km/h, steady breathing"
-   },
-   {
-    "id": "9",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "10",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
    {
-    "name": "Lower body",
+    "name": "Leg day",
     "area": "Lower body",
-    "minutes": 45,
-    "kcal": 290
+    "minutes": 30,
+    "kcal": 250
    },
    {
-    "name": "Treadmill",
+    "name": "Incline walk",
     "area": "Cardio",
     "minutes": 20,
-    "kcal": 190
+    "kcal": 170
    }
   ],
   "note": null
@@ -155,50 +326,153 @@
   "title": "Full-body circuit",
   "place": "GG Gym",
   "minutes": 65,
-  "kcal": 500,
+  "kcal": 545,
   "items": [
    {
-    "id": "1",
+    "act": "jumping-jack",
     "name": "Warm-up",
-    "detail": "5 min easy cardio + arm/hip circles"
+    "minutes": 10,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Circuit \u00d7 3 rounds",
-    "detail": "15 kettlebell swings \u00b7 10 push-ups \u00b7 12 goblet squats \u00b7 30 s mountain climbers \u00b7 40 s plank, 90 s rest"
+    "act": "kb-swing",
+    "name": "Functional circuit",
+    "minutes": 30,
+    "focus": "Focus: full body \u00b7 3 rounds, 90 s rest",
+    "kcal": 280,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "kb-swing",
+      "name": "Kettlebell swings",
+      "how": "15"
+     },
+     {
+      "ex": "pushup",
+      "name": "Push-ups",
+      "how": "10"
+     },
+     {
+      "ex": "squat",
+      "name": "Bodyweight squats",
+      "how": "12"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "30 s"
+     }
+    ],
+    "log": {
+     "name": "Functional strength",
+     "area": "Full body",
+     "minutes": 30,
+     "kcal": 280
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Bike",
-    "detail": "10 min, moderate"
+    "act": "jog",
+    "name": "Run",
+    "minutes": 20,
+    "focus": "Treadmill intervals: jog / walk",
+    "kcal": 190,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk to start",
+      "how": "5 min at 5.5 km/h"
+     },
+     {
+      "ex": "jog",
+      "name": "Jog",
+      "how": "6 \u00d7 1 min at 8.5 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Walk between",
+      "how": "1 min after each jog"
+     },
+     {
+      "ex": "walk",
+      "name": "Cool down",
+      "how": "3 min easy"
+     }
+    ],
+    "log": {
+     "name": "Treadmill",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 190
+    },
+    "id": "3"
    },
    {
-    "id": "4",
-    "name": "Side plank",
-    "detail": "2 \u00d7 25 s each side"
-   },
-   {
-    "id": "5",
-    "name": "Treadmill intervals \u00b7 20 min",
-    "detail": "5 min walk 5.5 km/h \u2192 6 \u00d7 (1 min jog 8.5 km/h + 1 min walk) \u2192 3 min easy"
-   },
-   {
-    "id": "6",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "7",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
    {
-    "name": "Full-body circuit",
+    "name": "Functional strength",
     "area": "Full body",
-    "minutes": 45,
-    "kcal": 310
+    "minutes": 30,
+    "kcal": 280
    },
    {
     "name": "Treadmill",
@@ -215,71 +489,154 @@
   "title": "Upper body",
   "place": "GG Gym",
   "minutes": 65,
-  "kcal": 460,
+  "kcal": 475,
   "items": [
    {
-    "id": "1",
+    "act": "jumping-jack",
     "name": "Warm-up",
-    "detail": "5 min easy cardio + arm/hip circles"
+    "minutes": 10,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Dumbbell bench press",
-    "detail": "3 \u00d7 10"
+    "act": "press",
+    "name": "Strength",
+    "minutes": 30,
+    "focus": "Focus: upper body (chest, back, shoulders)",
+    "kcal": 230,
+    "area": "Upper body",
+    "tips": [
+     {
+      "ex": "pushup",
+      "name": "Bench press or push-ups",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "row",
+      "name": "Dumbbell row",
+      "how": "3 \u00d7 10 each arm"
+     },
+     {
+      "ex": "press",
+      "name": "Shoulder press",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "curl",
+      "name": "Biceps curl",
+      "how": "2 \u00d7 12"
+     }
+    ],
+    "log": {
+     "name": "Upper body strength",
+     "area": "Upper body",
+     "minutes": 30,
+     "kcal": 230
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Lat pulldown",
-    "detail": "3 \u00d7 10"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 20,
+    "focus": "Steady fat-burn zone",
+    "kcal": 170,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 170
+    },
+    "id": "3"
    },
    {
-    "id": "4",
-    "name": "Seated dumbbell shoulder press",
-    "detail": "3 \u00d7 10"
-   },
-   {
-    "id": "5",
-    "name": "Seated cable row",
-    "detail": "3 \u00d7 12"
-   },
-   {
-    "id": "6",
-    "name": "Biceps curl + triceps pushdown",
-    "detail": "2 \u00d7 12 each, back to back"
-   },
-   {
-    "id": "7",
-    "name": "Plank",
-    "detail": "3 \u00d7 30 s"
-   },
-   {
-    "id": "8",
-    "name": "Incline walk \u00b7 20 min",
-    "detail": "12% incline, 5.2 km/h, steady breathing"
-   },
-   {
-    "id": "9",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "10",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
    {
-    "name": "Upper body",
+    "name": "Upper body strength",
     "area": "Upper body",
-    "minutes": 45,
-    "kcal": 270
+    "minutes": 30,
+    "kcal": 230
    },
    {
-    "name": "Treadmill",
+    "name": "Incline walk",
     "area": "Cardio",
     "minutes": 20,
-    "kcal": 190
+    "kcal": 170
    }
   ],
   "note": null
@@ -290,65 +647,153 @@
   "title": "Lower body",
   "place": "GG Gym",
   "minutes": 65,
-  "kcal": 490,
+  "kcal": 515,
   "items": [
    {
-    "id": "1",
+    "act": "jumping-jack",
     "name": "Warm-up",
-    "detail": "5 min easy cardio + arm/hip circles"
+    "minutes": 10,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Goblet squat",
-    "detail": "3 \u00d7 10"
+    "act": "squat",
+    "name": "Strength",
+    "minutes": 30,
+    "focus": "Focus: legs and glutes",
+    "kcal": 250,
+    "area": "Lower body",
+    "tips": [
+     {
+      "ex": "goblet",
+      "name": "Goblet squat",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "deadlift",
+      "name": "Romanian deadlift",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "lunge",
+      "name": "Walking lunges",
+      "how": "2 \u00d7 10 each leg"
+     },
+     {
+      "ex": "bridge",
+      "name": "Glute bridge",
+      "how": "3 \u00d7 12"
+     }
+    ],
+    "log": {
+     "name": "Leg day",
+     "area": "Lower body",
+     "minutes": 30,
+     "kcal": 250
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Dumbbell Romanian deadlift",
-    "detail": "3 \u00d7 10"
+    "act": "jog",
+    "name": "Run",
+    "minutes": 20,
+    "focus": "Treadmill intervals: jog / walk",
+    "kcal": 190,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk to start",
+      "how": "5 min at 5.5 km/h"
+     },
+     {
+      "ex": "jog",
+      "name": "Jog",
+      "how": "6 \u00d7 1 min at 8.5 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Walk between",
+      "how": "1 min after each jog"
+     },
+     {
+      "ex": "walk",
+      "name": "Cool down",
+      "how": "3 min easy"
+     }
+    ],
+    "log": {
+     "name": "Treadmill",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 190
+    },
+    "id": "3"
    },
    {
-    "id": "4",
-    "name": "Leg press",
-    "detail": "3 \u00d7 12"
-   },
-   {
-    "id": "5",
-    "name": "Walking lunges",
-    "detail": "2 \u00d7 10 each leg"
-   },
-   {
-    "id": "6",
-    "name": "Lying leg curl",
-    "detail": "2 \u00d7 12"
-   },
-   {
-    "id": "7",
-    "name": "Dead bug",
-    "detail": "3 \u00d7 10"
-   },
-   {
-    "id": "8",
-    "name": "Treadmill intervals \u00b7 20 min",
-    "detail": "5 min walk 5.5 km/h \u2192 6 \u00d7 (1 min jog 8.5 km/h + 1 min walk) \u2192 3 min easy"
-   },
-   {
-    "id": "9",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "10",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
    {
-    "name": "Lower body",
+    "name": "Leg day",
     "area": "Lower body",
-    "minutes": 45,
-    "kcal": 300
+    "minutes": 30,
+    "kcal": 250
    },
    {
     "name": "Treadmill",
@@ -364,18 +809,67 @@
   "kind": "cardio",
   "title": "Travel day \u00b7 walk",
   "place": "",
-  "minutes": 30,
-  "kcal": 150,
+  "minutes": 40,
+  "kcal": 180,
   "items": [
    {
-    "id": "1",
+    "act": "walk",
     "name": "Walk",
-    "detail": "30 min, any time today"
+    "minutes": 30,
+    "focus": "Any time today",
+    "kcal": 150,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk",
+      "how": "30 min"
+     },
+     {
+      "ex": "steps",
+      "name": "Or split it",
+      "how": "3 \u00d7 10 min"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk",
+     "area": "Cardio",
+     "minutes": 30,
+     "kcal": 150
+    },
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "10 min after the drive"
+    "minutes": 10,
+    "focus": "After the drive: back and hips",
+    "kcal": 30,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "2"
    }
   ],
   "logs": [
@@ -397,14 +891,38 @@
   "kcal": 0,
   "items": [
    {
-    "id": "1",
+    "act": "steps",
     "name": "Easy steps",
-    "detail": "8,000 steps"
+    "minutes": 0,
+    "focus": "8,000 steps",
+    "kcal": 0,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk after meals",
+      "how": "10 min each"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "class",
     "name": "Plan the Cult week",
-    "detail": "Book Mon\u2013Fri classes in the Cult app"
+    "minutes": 0,
+    "focus": "Book Mon\u2013Fri classes in the Cult app",
+    "kcal": 0,
+    "area": "Other",
+    "tips": [
+     {
+      "ex": "class",
+      "name": "Book classes",
+      "how": "Strength, HRX, Yoga"
+     }
+    ],
+    "log": null,
+    "id": "2"
    }
   ],
   "logs": [],
@@ -413,35 +931,143 @@
  {
   "day": "2026-11-16",
   "kind": "class",
-  "title": "Cult Strength + walk",
+  "title": "Cult Strength",
   "place": "Cult, Noida",
-  "minutes": 60,
-  "kcal": 410,
+  "minutes": 75,
+  "kcal": 485,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult Strength class \u00b7 50 min",
-    "detail": "Upper-body focus. Pick weights where the last 2 reps are hard."
+    "act": "class",
+    "name": "Cult Strength",
+    "minutes": 50,
+    "focus": "Focus: upper body. Last 2 reps should be hard.",
+    "kcal": 330,
+    "area": "Upper body",
+    "tips": [
+     {
+      "ex": "press",
+      "name": "Presses",
+      "how": "shoulders and chest"
+     },
+     {
+      "ex": "row",
+      "name": "Rows",
+      "how": "back"
+     },
+     {
+      "ex": "pushup",
+      "name": "Push-ups",
+      "how": "chest"
+     },
+     {
+      "ex": "plank",
+      "name": "Core finisher",
+      "how": "plank holds"
+     }
+    ],
+    "log": {
+     "name": "Cult Strength",
+     "area": "Upper body",
+     "minutes": 50,
+     "kcal": 330
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Incline walk \u00b7 10 min",
-    "detail": "10% incline, 5.2 km/h, after class"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 10,
+    "focus": "Right after class, 10% incline",
+    "kcal": 80,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 10,
+     "kcal": 80
+    },
+    "id": "3"
    },
    {
-    "id": "4",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "5",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -465,28 +1091,109 @@
   "kind": "class",
   "title": "Cult HRX",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 450,
+  "minutes": 65,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult HRX class \u00b7 50 min",
-    "detail": "Push the intervals, recover fully in the rests."
+    "act": "class",
+    "name": "Cult HRX",
+    "minutes": 50,
+    "focus": "Focus: full body intervals. Push the work, rest fully.",
+    "kcal": 450,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "jumping-jack",
+      "name": "Jumps",
+      "how": "fast feet"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "core + cardio"
+     },
+     {
+      "ex": "kb-swing",
+      "name": "Swings",
+      "how": "hips"
+     },
+     {
+      "ex": "squat",
+      "name": "Squat jumps",
+      "how": "legs"
+     }
+    ],
+    "log": {
+     "name": "Cult HRX",
+     "area": "Full body",
+     "minutes": 50,
+     "kcal": 450
+    },
+    "id": "2"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "4",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [
@@ -502,35 +1209,143 @@
  {
   "day": "2026-11-18",
   "kind": "class",
-  "title": "Cult Strength + walk",
+  "title": "Cult Strength",
   "place": "Cult, Noida",
-  "minutes": 60,
-  "kcal": 420,
+  "minutes": 75,
+  "kcal": 495,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult Strength class \u00b7 50 min",
-    "detail": "Lower-body focus. Slow on the way down."
+    "act": "class",
+    "name": "Cult Strength",
+    "minutes": 50,
+    "focus": "Focus: legs. Slow on the way down.",
+    "kcal": 340,
+    "area": "Lower body",
+    "tips": [
+     {
+      "ex": "squat",
+      "name": "Squats",
+      "how": "legs"
+     },
+     {
+      "ex": "deadlift",
+      "name": "Deadlifts",
+      "how": "hamstrings"
+     },
+     {
+      "ex": "lunge",
+      "name": "Lunges",
+      "how": "glutes"
+     },
+     {
+      "ex": "bridge",
+      "name": "Bridges",
+      "how": "glutes"
+     }
+    ],
+    "log": {
+     "name": "Cult Strength",
+     "area": "Lower body",
+     "minutes": 50,
+     "kcal": 340
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Incline walk \u00b7 10 min",
-    "detail": "10% incline, 5.2 km/h, after class"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 10,
+    "focus": "Right after class, 10% incline",
+    "kcal": 80,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 10,
+     "kcal": 80
+    },
+    "id": "3"
    },
    {
-    "id": "4",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "5",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -554,18 +1369,72 @@
   "kind": "mobility",
   "title": "Cult Yoga",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 180,
+  "minutes": 70,
+  "kcal": 280,
   "items": [
    {
-    "id": "1",
-    "name": "Yoga class \u00b7 50 min",
-    "detail": "Recovery day: go easy, focus on hips and back"
+    "act": "tree",
+    "name": "Yoga class",
+    "minutes": 50,
+    "focus": "Recovery: hips and lower back",
+    "kcal": 180,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "tree",
+      "name": "Balance poses",
+      "how": "tree pose"
+     },
+     {
+      "ex": "cobra",
+      "name": "Back bends",
+      "how": "cobra"
+     },
+     {
+      "ex": "child",
+      "name": "Resting pose",
+      "how": "child's pose"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "slow, through the nose"
+     }
+    ],
+    "log": {
+     "name": "Cult Yoga",
+     "area": "Mobility",
+     "minutes": 50,
+     "kcal": 180
+    },
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "walk",
     "name": "Evening walk",
-    "detail": "20 min, easy"
+    "minutes": 20,
+    "focus": "Easy pace, after dinner",
+    "kcal": 100,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk",
+      "how": "20 min, relaxed"
+     },
+     {
+      "ex": "steps",
+      "name": "Steps",
+      "how": "helps you reach 8,000"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 100
+    },
+    "id": "2"
    }
   ],
   "logs": [
@@ -574,6 +1443,12 @@
     "area": "Mobility",
     "minutes": 50,
     "kcal": 180
+   },
+   {
+    "name": "Outdoor walk",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 100
    }
   ],
   "note": null
@@ -583,28 +1458,109 @@
   "kind": "class",
   "title": "Cult HRX",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 450,
+  "minutes": 65,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult HRX class \u00b7 50 min",
-    "detail": "Or a Burn class if HRX is full."
+    "act": "class",
+    "name": "Cult HRX",
+    "minutes": 50,
+    "focus": "Focus: full body. Or a Burn class if HRX is full.",
+    "kcal": 450,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "jumping-jack",
+      "name": "Jumps",
+      "how": "fast feet"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "core + cardio"
+     },
+     {
+      "ex": "kb-swing",
+      "name": "Swings",
+      "how": "hips"
+     },
+     {
+      "ex": "squat",
+      "name": "Squat jumps",
+      "how": "legs"
+     }
+    ],
+    "log": {
+     "name": "Cult HRX",
+     "area": "Full body",
+     "minutes": 50,
+     "kcal": 450
+    },
+    "id": "2"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "4",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [
@@ -620,25 +1576,143 @@
  {
   "day": "2026-11-21",
   "kind": "cardio",
-  "title": "Long easy cardio \u00b7 40 min",
+  "title": "Long easy cardio",
   "place": "Outdoors",
-  "minutes": 50,
-  "kcal": 320,
+  "minutes": 60,
+  "kcal": 365,
   "items": [
    {
-    "id": "1",
-    "name": "Brisk walk or easy jog",
-    "detail": "40 min at a pace you can still talk"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 5,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 30,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "0 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "jog",
+    "name": "Easy jog or brisk walk",
+    "minutes": 40,
+    "focus": "You should be able to talk the whole time",
+    "kcal": 280,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Start with a walk",
+      "how": "5 min"
+     },
+     {
+      "ex": "jog",
+      "name": "Easy jog",
+      "how": "mix with walking if needed"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathe",
+      "how": "in through the nose"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk / jog",
+     "area": "Cardio",
+     "minutes": 40,
+     "kcal": 280
+    },
+    "id": "2"
+   },
+   {
+    "act": "plank",
     "name": "Core",
-    "detail": "10 min: dead bug, side plank, bird dog"
+    "minutes": 10,
+    "focus": "Belly and lower back",
+    "kcal": 40,
+    "area": "Core",
+    "tips": [
+     {
+      "ex": "plank",
+      "name": "Plank",
+      "how": "3 \u00d7 30 s"
+     },
+     {
+      "ex": "dead-bug",
+      "name": "Dead bug",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "side-plank",
+      "name": "Side plank",
+      "how": "2 \u00d7 25 s each side"
+     },
+     {
+      "ex": "bird-dog",
+      "name": "Bird dog",
+      "how": "2 \u00d7 10 each side"
+     }
+    ],
+    "log": {
+     "name": "Core",
+     "area": "Core",
+     "minutes": 10,
+     "kcal": 40
+    },
+    "id": "3"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -662,18 +1736,74 @@
   "kind": "rest",
   "title": "Rest day",
   "place": "",
-  "minutes": 0,
-  "kcal": 0,
+  "minutes": 10,
+  "kcal": 30,
   "items": [
    {
-    "id": "1",
+    "act": "steps",
     "name": "Easy steps",
-    "detail": "8,000 steps through the day"
+    "minutes": 0,
+    "focus": "8,000 steps through the day",
+    "kcal": 0,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk after meals",
+      "how": "10 min each"
+     },
+     {
+      "ex": "steps",
+      "name": "Take the stairs",
+      "how": "whenever you can"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "hamstring",
     "name": "Mobility",
-    "detail": "10 min stretching before bed"
+    "minutes": 10,
+    "focus": "Before bed, slow and gentle",
+    "kcal": 30,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "1 min"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "2 min"
+     }
+    ],
+    "log": null,
+    "id": "2"
+   },
+   {
+    "act": "sleep",
+    "name": "Sleep",
+    "minutes": 0,
+    "focus": "Aim for 8 hours",
+    "kcal": 0,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "sleep",
+      "name": "Lights out by 11",
+      "how": "phone away 30 min before"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [],
@@ -682,35 +1812,143 @@
  {
   "day": "2026-11-23",
   "kind": "class",
-  "title": "Cult Strength + walk",
+  "title": "Cult Strength",
   "place": "Cult, Noida",
-  "minutes": 65,
-  "kcal": 450,
+  "minutes": 80,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult Strength class \u00b7 50 min",
-    "detail": "Upper-body focus. Pick weights where the last 2 reps are hard."
+    "act": "class",
+    "name": "Cult Strength",
+    "minutes": 50,
+    "focus": "Focus: upper body. Last 2 reps should be hard.",
+    "kcal": 330,
+    "area": "Upper body",
+    "tips": [
+     {
+      "ex": "press",
+      "name": "Presses",
+      "how": "shoulders and chest"
+     },
+     {
+      "ex": "row",
+      "name": "Rows",
+      "how": "back"
+     },
+     {
+      "ex": "pushup",
+      "name": "Push-ups",
+      "how": "chest"
+     },
+     {
+      "ex": "plank",
+      "name": "Core finisher",
+      "how": "plank holds"
+     }
+    ],
+    "log": {
+     "name": "Cult Strength",
+     "area": "Upper body",
+     "minutes": 50,
+     "kcal": 330
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Incline walk \u00b7 15 min",
-    "detail": "10% incline, 5.2 km/h, after class"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 15,
+    "focus": "Right after class, 10% incline",
+    "kcal": 120,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 15,
+     "kcal": 120
+    },
+    "id": "3"
    },
    {
-    "id": "4",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "5",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -734,28 +1972,109 @@
   "kind": "class",
   "title": "Cult HRX",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 450,
+  "minutes": 65,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult HRX class \u00b7 50 min",
-    "detail": "Push the intervals, recover fully in the rests."
+    "act": "class",
+    "name": "Cult HRX",
+    "minutes": 50,
+    "focus": "Focus: full body intervals. Push the work, rest fully.",
+    "kcal": 450,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "jumping-jack",
+      "name": "Jumps",
+      "how": "fast feet"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "core + cardio"
+     },
+     {
+      "ex": "kb-swing",
+      "name": "Swings",
+      "how": "hips"
+     },
+     {
+      "ex": "squat",
+      "name": "Squat jumps",
+      "how": "legs"
+     }
+    ],
+    "log": {
+     "name": "Cult HRX",
+     "area": "Full body",
+     "minutes": 50,
+     "kcal": 450
+    },
+    "id": "2"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "4",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [
@@ -771,35 +2090,143 @@
  {
   "day": "2026-11-25",
   "kind": "class",
-  "title": "Cult Strength + walk",
+  "title": "Cult Strength",
   "place": "Cult, Noida",
-  "minutes": 65,
-  "kcal": 460,
+  "minutes": 80,
+  "kcal": 535,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult Strength class \u00b7 50 min",
-    "detail": "Lower-body focus. Slow on the way down."
+    "act": "class",
+    "name": "Cult Strength",
+    "minutes": 50,
+    "focus": "Focus: legs. Slow on the way down.",
+    "kcal": 340,
+    "area": "Lower body",
+    "tips": [
+     {
+      "ex": "squat",
+      "name": "Squats",
+      "how": "legs"
+     },
+     {
+      "ex": "deadlift",
+      "name": "Deadlifts",
+      "how": "hamstrings"
+     },
+     {
+      "ex": "lunge",
+      "name": "Lunges",
+      "how": "glutes"
+     },
+     {
+      "ex": "bridge",
+      "name": "Bridges",
+      "how": "glutes"
+     }
+    ],
+    "log": {
+     "name": "Cult Strength",
+     "area": "Lower body",
+     "minutes": 50,
+     "kcal": 340
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Incline walk \u00b7 15 min",
-    "detail": "10% incline, 5.2 km/h, after class"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 15,
+    "focus": "Right after class, 10% incline",
+    "kcal": 120,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 15,
+     "kcal": 120
+    },
+    "id": "3"
    },
    {
-    "id": "4",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "5",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -823,18 +2250,72 @@
   "kind": "mobility",
   "title": "Cult Yoga",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 180,
+  "minutes": 70,
+  "kcal": 280,
   "items": [
    {
-    "id": "1",
-    "name": "Yoga class \u00b7 50 min",
-    "detail": "Recovery day: go easy, focus on hips and back"
+    "act": "tree",
+    "name": "Yoga class",
+    "minutes": 50,
+    "focus": "Recovery: hips and lower back",
+    "kcal": 180,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "tree",
+      "name": "Balance poses",
+      "how": "tree pose"
+     },
+     {
+      "ex": "cobra",
+      "name": "Back bends",
+      "how": "cobra"
+     },
+     {
+      "ex": "child",
+      "name": "Resting pose",
+      "how": "child's pose"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "slow, through the nose"
+     }
+    ],
+    "log": {
+     "name": "Cult Yoga",
+     "area": "Mobility",
+     "minutes": 50,
+     "kcal": 180
+    },
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "walk",
     "name": "Evening walk",
-    "detail": "20 min, easy"
+    "minutes": 20,
+    "focus": "Easy pace, after dinner",
+    "kcal": 100,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk",
+      "how": "20 min, relaxed"
+     },
+     {
+      "ex": "steps",
+      "name": "Steps",
+      "how": "helps you reach 8,000"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 100
+    },
+    "id": "2"
    }
   ],
   "logs": [
@@ -843,6 +2324,12 @@
     "area": "Mobility",
     "minutes": 50,
     "kcal": 180
+   },
+   {
+    "name": "Outdoor walk",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 100
    }
   ],
   "note": null
@@ -852,28 +2339,109 @@
   "kind": "class",
   "title": "Cult HRX",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 450,
+  "minutes": 65,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult HRX class \u00b7 50 min",
-    "detail": "Or a Burn class if HRX is full."
+    "act": "class",
+    "name": "Cult HRX",
+    "minutes": 50,
+    "focus": "Focus: full body. Or a Burn class if HRX is full.",
+    "kcal": 450,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "jumping-jack",
+      "name": "Jumps",
+      "how": "fast feet"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "core + cardio"
+     },
+     {
+      "ex": "kb-swing",
+      "name": "Swings",
+      "how": "hips"
+     },
+     {
+      "ex": "squat",
+      "name": "Squat jumps",
+      "how": "legs"
+     }
+    ],
+    "log": {
+     "name": "Cult HRX",
+     "area": "Full body",
+     "minutes": 50,
+     "kcal": 450
+    },
+    "id": "2"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "4",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [
@@ -889,25 +2457,143 @@
  {
   "day": "2026-11-28",
   "kind": "cardio",
-  "title": "Long easy cardio \u00b7 45 min",
+  "title": "Long easy cardio",
   "place": "Outdoors",
-  "minutes": 55,
-  "kcal": 355,
+  "minutes": 65,
+  "kcal": 400,
   "items": [
    {
-    "id": "1",
-    "name": "Brisk walk or easy jog",
-    "detail": "45 min at a pace you can still talk"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 5,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 30,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "0 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "jog",
+    "name": "Easy jog or brisk walk",
+    "minutes": 45,
+    "focus": "You should be able to talk the whole time",
+    "kcal": 315,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Start with a walk",
+      "how": "5 min"
+     },
+     {
+      "ex": "jog",
+      "name": "Easy jog",
+      "how": "mix with walking if needed"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathe",
+      "how": "in through the nose"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk / jog",
+     "area": "Cardio",
+     "minutes": 45,
+     "kcal": 315
+    },
+    "id": "2"
+   },
+   {
+    "act": "plank",
     "name": "Core",
-    "detail": "10 min: dead bug, side plank, bird dog"
+    "minutes": 10,
+    "focus": "Belly and lower back",
+    "kcal": 40,
+    "area": "Core",
+    "tips": [
+     {
+      "ex": "plank",
+      "name": "Plank",
+      "how": "3 \u00d7 30 s"
+     },
+     {
+      "ex": "dead-bug",
+      "name": "Dead bug",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "side-plank",
+      "name": "Side plank",
+      "how": "2 \u00d7 25 s each side"
+     },
+     {
+      "ex": "bird-dog",
+      "name": "Bird dog",
+      "how": "2 \u00d7 10 each side"
+     }
+    ],
+    "log": {
+     "name": "Core",
+     "area": "Core",
+     "minutes": 10,
+     "kcal": 40
+    },
+    "id": "3"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -931,18 +2617,74 @@
   "kind": "rest",
   "title": "Rest day",
   "place": "",
-  "minutes": 0,
-  "kcal": 0,
+  "minutes": 10,
+  "kcal": 30,
   "items": [
    {
-    "id": "1",
+    "act": "steps",
     "name": "Easy steps",
-    "detail": "8,000 steps through the day"
+    "minutes": 0,
+    "focus": "8,000 steps through the day",
+    "kcal": 0,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk after meals",
+      "how": "10 min each"
+     },
+     {
+      "ex": "steps",
+      "name": "Take the stairs",
+      "how": "whenever you can"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "hamstring",
     "name": "Mobility",
-    "detail": "10 min stretching before bed"
+    "minutes": 10,
+    "focus": "Before bed, slow and gentle",
+    "kcal": 30,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "1 min"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "2 min"
+     }
+    ],
+    "log": null,
+    "id": "2"
+   },
+   {
+    "act": "sleep",
+    "name": "Sleep",
+    "minutes": 0,
+    "focus": "Aim for 8 hours",
+    "kcal": 0,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "sleep",
+      "name": "Lights out by 11",
+      "how": "phone away 30 min before"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [],
@@ -951,35 +2693,143 @@
  {
   "day": "2026-11-30",
   "kind": "class",
-  "title": "Cult Strength + walk",
+  "title": "Cult Strength",
   "place": "Cult, Noida",
-  "minutes": 65,
-  "kcal": 450,
+  "minutes": 80,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult Strength class \u00b7 50 min",
-    "detail": "Upper-body focus. Pick weights where the last 2 reps are hard."
+    "act": "class",
+    "name": "Cult Strength",
+    "minutes": 50,
+    "focus": "Focus: upper body. Last 2 reps should be hard.",
+    "kcal": 330,
+    "area": "Upper body",
+    "tips": [
+     {
+      "ex": "press",
+      "name": "Presses",
+      "how": "shoulders and chest"
+     },
+     {
+      "ex": "row",
+      "name": "Rows",
+      "how": "back"
+     },
+     {
+      "ex": "pushup",
+      "name": "Push-ups",
+      "how": "chest"
+     },
+     {
+      "ex": "plank",
+      "name": "Core finisher",
+      "how": "plank holds"
+     }
+    ],
+    "log": {
+     "name": "Cult Strength",
+     "area": "Upper body",
+     "minutes": 50,
+     "kcal": 330
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Incline walk \u00b7 15 min",
-    "detail": "10% incline, 5.2 km/h, after class"
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 15,
+    "focus": "Right after class, 10% incline",
+    "kcal": 120,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 15,
+     "kcal": 120
+    },
+    "id": "3"
    },
    {
-    "id": "4",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "5",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -1003,28 +2853,109 @@
   "kind": "class",
   "title": "Cult HRX",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 450,
+  "minutes": 65,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult HRX class \u00b7 50 min",
-    "detail": "Push the intervals, recover fully in the rests."
+    "act": "class",
+    "name": "Cult HRX",
+    "minutes": 50,
+    "focus": "Focus: full body intervals. Push the work, rest fully.",
+    "kcal": 450,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "jumping-jack",
+      "name": "Jumps",
+      "how": "fast feet"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "core + cardio"
+     },
+     {
+      "ex": "kb-swing",
+      "name": "Swings",
+      "how": "hips"
+     },
+     {
+      "ex": "squat",
+      "name": "Squat jumps",
+      "how": "legs"
+     }
+    ],
+    "log": {
+     "name": "Cult HRX",
+     "area": "Full body",
+     "minutes": 50,
+     "kcal": 450
+    },
+    "id": "2"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "4",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [
@@ -1040,40 +2971,143 @@
  {
   "day": "2026-12-02",
   "kind": "class",
-  "title": "Cult Strength + walk",
+  "title": "Cult Strength",
   "place": "Cult, Noida",
-  "minutes": 65,
-  "kcal": 460,
+  "minutes": 80,
+  "kcal": 535,
   "items": [
    {
-    "id": "1",
-    "name": "InBody re-scan",
-    "detail": "Morning, before breakfast and water, at Cult"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "class",
+    "name": "Cult Strength",
+    "minutes": 50,
+    "focus": "Focus: legs. Slow on the way down.",
+    "kcal": 340,
+    "area": "Lower body",
+    "tips": [
+     {
+      "ex": "squat",
+      "name": "Squats",
+      "how": "legs"
+     },
+     {
+      "ex": "deadlift",
+      "name": "Deadlifts",
+      "how": "hamstrings"
+     },
+     {
+      "ex": "lunge",
+      "name": "Lunges",
+      "how": "glutes"
+     },
+     {
+      "ex": "bridge",
+      "name": "Bridges",
+      "how": "glutes"
+     }
+    ],
+    "log": {
+     "name": "Cult Strength",
+     "area": "Lower body",
+     "minutes": 50,
+     "kcal": 340
+    },
+    "id": "2"
    },
    {
-    "id": "3",
-    "name": "Cult Strength class \u00b7 50 min",
-    "detail": "Lower-body focus. Slow on the way down."
+    "act": "incline",
+    "name": "Incline walk",
+    "minutes": 15,
+    "focus": "Right after class, 10% incline",
+    "kcal": 120,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "incline",
+      "name": "Incline walk",
+      "how": "12% incline, 5.2 km/h"
+     },
+     {
+      "ex": "walk",
+      "name": "Hands off the rails",
+      "how": "swing your arms"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "you should still be able to talk"
+     }
+    ],
+    "log": {
+     "name": "Incline walk",
+     "area": "Cardio",
+     "minutes": 15,
+     "kcal": 120
+    },
+    "id": "3"
    },
    {
-    "id": "4",
-    "name": "Incline walk \u00b7 15 min",
-    "detail": "10% incline, 5.2 km/h, after class"
-   },
-   {
-    "id": "5",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "6",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -1090,25 +3124,79 @@
     "kcal": 120
    }
   ],
-  "note": "4 weeks since the last scan"
+  "note": "InBody re-scan in the morning, before breakfast and water"
  },
  {
   "day": "2026-12-03",
   "kind": "mobility",
   "title": "Cult Yoga",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 180,
+  "minutes": 70,
+  "kcal": 280,
   "items": [
    {
-    "id": "1",
-    "name": "Yoga class \u00b7 50 min",
-    "detail": "Recovery day: go easy, focus on hips and back"
+    "act": "tree",
+    "name": "Yoga class",
+    "minutes": 50,
+    "focus": "Recovery: hips and lower back",
+    "kcal": 180,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "tree",
+      "name": "Balance poses",
+      "how": "tree pose"
+     },
+     {
+      "ex": "cobra",
+      "name": "Back bends",
+      "how": "cobra"
+     },
+     {
+      "ex": "child",
+      "name": "Resting pose",
+      "how": "child's pose"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "slow, through the nose"
+     }
+    ],
+    "log": {
+     "name": "Cult Yoga",
+     "area": "Mobility",
+     "minutes": 50,
+     "kcal": 180
+    },
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "walk",
     "name": "Evening walk",
-    "detail": "20 min, easy"
+    "minutes": 20,
+    "focus": "Easy pace, after dinner",
+    "kcal": 100,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk",
+      "how": "20 min, relaxed"
+     },
+     {
+      "ex": "steps",
+      "name": "Steps",
+      "how": "helps you reach 8,000"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk",
+     "area": "Cardio",
+     "minutes": 20,
+     "kcal": 100
+    },
+    "id": "2"
    }
   ],
   "logs": [
@@ -1117,6 +3205,12 @@
     "area": "Mobility",
     "minutes": 50,
     "kcal": 180
+   },
+   {
+    "name": "Outdoor walk",
+    "area": "Cardio",
+    "minutes": 20,
+    "kcal": 100
    }
   ],
   "note": null
@@ -1126,28 +3220,109 @@
   "kind": "class",
   "title": "Cult HRX",
   "place": "Cult, Noida",
-  "minutes": 50,
-  "kcal": 450,
+  "minutes": 65,
+  "kcal": 525,
   "items": [
    {
-    "id": "1",
-    "name": "Get there 10 min early",
-    "detail": "Fill water bottle, light warm-up"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 10,
+    "focus": "Get there 10 min early, fill your bottle",
+    "kcal": 60,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "5 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
-    "name": "Cult HRX class \u00b7 50 min",
-    "detail": "Or a Burn class if HRX is full."
+    "act": "class",
+    "name": "Cult HRX",
+    "minutes": 50,
+    "focus": "Focus: full body. Or a Burn class if HRX is full.",
+    "kcal": 450,
+    "area": "Full body",
+    "tips": [
+     {
+      "ex": "jumping-jack",
+      "name": "Jumps",
+      "how": "fast feet"
+     },
+     {
+      "ex": "mountain",
+      "name": "Mountain climbers",
+      "how": "core + cardio"
+     },
+     {
+      "ex": "kb-swing",
+      "name": "Swings",
+      "how": "hips"
+     },
+     {
+      "ex": "squat",
+      "name": "Squat jumps",
+      "how": "legs"
+     }
+    ],
+    "log": {
+     "name": "Cult HRX",
+     "area": "Full body",
+     "minutes": 50,
+     "kcal": 450
+    },
+    "id": "2"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
-   },
-   {
-    "id": "4",
-    "name": "Protein after",
-    "detail": "Shake within 45 min"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [
@@ -1163,25 +3338,143 @@
  {
   "day": "2026-12-05",
   "kind": "cardio",
-  "title": "Long easy cardio \u00b7 50 min",
+  "title": "Long easy cardio",
   "place": "Outdoors",
-  "minutes": 60,
-  "kcal": 390,
+  "minutes": 70,
+  "kcal": 435,
   "items": [
    {
-    "id": "1",
-    "name": "Brisk walk or easy jog",
-    "detail": "50 min at a pace you can still talk"
+    "act": "jumping-jack",
+    "name": "Warm-up",
+    "minutes": 5,
+    "focus": "Raise the heart rate, loosen hips and shoulders",
+    "kcal": 30,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Brisk walk or easy bike",
+      "how": "0 min"
+     },
+     {
+      "ex": "jumping-jack",
+      "name": "Jumping jacks",
+      "how": "2 \u00d7 30 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip circles",
+      "how": "10 each way"
+     },
+     {
+      "ex": "arm-circle",
+      "name": "Arm circles",
+      "how": "10 forward, 10 back"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "jog",
+    "name": "Easy jog or brisk walk",
+    "minutes": 50,
+    "focus": "You should be able to talk the whole time",
+    "kcal": 350,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Start with a walk",
+      "how": "5 min"
+     },
+     {
+      "ex": "jog",
+      "name": "Easy jog",
+      "how": "mix with walking if needed"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathe",
+      "how": "in through the nose"
+     }
+    ],
+    "log": {
+     "name": "Outdoor walk / jog",
+     "area": "Cardio",
+     "minutes": 50,
+     "kcal": 350
+    },
+    "id": "2"
+   },
+   {
+    "act": "plank",
     "name": "Core",
-    "detail": "10 min: dead bug, side plank, bird dog"
+    "minutes": 10,
+    "focus": "Belly and lower back",
+    "kcal": 40,
+    "area": "Core",
+    "tips": [
+     {
+      "ex": "plank",
+      "name": "Plank",
+      "how": "3 \u00d7 30 s"
+     },
+     {
+      "ex": "dead-bug",
+      "name": "Dead bug",
+      "how": "3 \u00d7 10"
+     },
+     {
+      "ex": "side-plank",
+      "name": "Side plank",
+      "how": "2 \u00d7 25 s each side"
+     },
+     {
+      "ex": "bird-dog",
+      "name": "Bird dog",
+      "how": "2 \u00d7 10 each side"
+     }
+    ],
+    "log": {
+     "name": "Core",
+     "area": "Core",
+     "minutes": 10,
+     "kcal": 40
+    },
+    "id": "3"
    },
    {
-    "id": "3",
+    "act": "hamstring",
     "name": "Stretch",
-    "detail": "5 min: hamstrings, hips, chest"
+    "minutes": 5,
+    "focus": "Hamstrings, hips, chest",
+    "kcal": 15,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each side"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "45 s"
+     },
+     {
+      "ex": "cobra",
+      "name": "Cobra",
+      "how": "3 \u00d7 15 s"
+     },
+     {
+      "ex": "hip-circle",
+      "name": "Hip opener",
+      "how": "30 s each side"
+     }
+    ],
+    "log": null,
+    "id": "4"
    }
   ],
   "logs": [
@@ -1205,18 +3498,74 @@
   "kind": "rest",
   "title": "Rest day",
   "place": "",
-  "minutes": 0,
-  "kcal": 0,
+  "minutes": 10,
+  "kcal": 30,
   "items": [
    {
-    "id": "1",
+    "act": "steps",
     "name": "Easy steps",
-    "detail": "8,000 steps through the day"
+    "minutes": 0,
+    "focus": "8,000 steps through the day",
+    "kcal": 0,
+    "area": "Cardio",
+    "tips": [
+     {
+      "ex": "walk",
+      "name": "Walk after meals",
+      "how": "10 min each"
+     },
+     {
+      "ex": "steps",
+      "name": "Take the stairs",
+      "how": "whenever you can"
+     }
+    ],
+    "log": null,
+    "id": "1"
    },
    {
-    "id": "2",
+    "act": "hamstring",
     "name": "Mobility",
-    "detail": "10 min stretching before bed"
+    "minutes": 10,
+    "focus": "Before bed, slow and gentle",
+    "kcal": 30,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "hamstring",
+      "name": "Hamstring stretch",
+      "how": "30 s each"
+     },
+     {
+      "ex": "child",
+      "name": "Child's pose",
+      "how": "1 min"
+     },
+     {
+      "ex": "breathe",
+      "name": "Breathing",
+      "how": "2 min"
+     }
+    ],
+    "log": null,
+    "id": "2"
+   },
+   {
+    "act": "sleep",
+    "name": "Sleep",
+    "minutes": 0,
+    "focus": "Aim for 8 hours",
+    "kcal": 0,
+    "area": "Mobility",
+    "tips": [
+     {
+      "ex": "sleep",
+      "name": "Lights out by 11",
+      "how": "phone away 30 min before"
+     }
+    ],
+    "log": null,
+    "id": "3"
    }
   ],
   "logs": [],

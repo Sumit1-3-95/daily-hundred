@@ -4,16 +4,16 @@ import { StoreProvider, useStore } from './store.jsx';
 import { Login, NotConfigured } from './screens/Auth.jsx';
 import Home from './screens/Home.jsx';
 import Health from './screens/Health.jsx';
-import Today from './screens/Today.jsx';
+import Todos from './screens/Todos.jsx';
 import Lists from './screens/Lists.jsx';
 import { SHEETS } from './sheets/index.jsx';
 import { weightTrend } from './sheets/WeightPage.jsx';
 import { Sheet, Toast } from './components/ui.jsx';
 
 const TABS = [
-  ['home', 'Home', <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /></>],
+  ['home', 'Habits', <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /></>],
   ['health', 'Health', <path d="M3 12h4l2-5 4 10 2-5h6" />],
-  ['today', 'Habits', <><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8.5 12l2.5 2.5 4.5-5" /></>],
+  ['todo', 'To-do', <><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8.5 12l2.5 2.5 4.5-5" /></>],
   ['lists', 'Lists', <><path d="M9 6h11M9 12h11M9 18h11" /><circle cx="4.5" cy="6" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="18" r="1" /></>],
 ];
 const NUDGE_SHEET = { sleep: 'sleep', weight: 'weight', water: 'water', routine: 'routine', close: 'closeDay' };
@@ -32,8 +32,23 @@ function WeightChip() {
 
 function Shell() {
   const { S, status, sheet, open, track } = useStore();
-  const [tab, setTab] = useState(() => { try { return localStorage.getItem('dh.tab') || 'home'; } catch { return 'home'; } });
+  const [tab, setTab] = useState(() => { try { const v = localStorage.getItem('dh.tab'); return ['home', 'health', 'todo', 'lists'].includes(v) ? v : 'home'; } catch { return 'home'; } });
   const go = (t) => { setTab(t); try { localStorage.setItem('dh.tab', t); } catch { /* ignore */ } window.scrollTo(0, 0); };
+
+  // Typing: hide the bottom bar and bring the field above the keyboard.
+  useEffect(() => {
+    const isField = (el) => el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'submit', 'file', 'range'].includes(el.type)) || el.tagName === 'SELECT');
+    let tm;
+    const onIn = (e) => {
+      if (!isField(e.target)) return;
+      document.documentElement.classList.add('kb-open');
+      clearTimeout(tm);
+      tm = setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320);   // after the keyboard has slid up
+    };
+    const onOut = () => setTimeout(() => { if (!isField(document.activeElement)) document.documentElement.classList.remove('kb-open'); }, 80);
+    document.addEventListener('focusin', onIn); document.addEventListener('focusout', onOut);
+    return () => { document.removeEventListener('focusin', onIn); document.removeEventListener('focusout', onOut); clearTimeout(tm); };
+  }, []);
 
   // a tapped push notification opens /?nudge=<kind>
   useEffect(() => {
@@ -49,8 +64,8 @@ function Shell() {
     <button className="btn" onClick={() => window.location.reload()}>Try again</button></div></div>;
 
   const hello = S.profile.name ? `Hi ${S.profile.name.split(' ')[0].replace(/^./, (c) => c.toUpperCase())}` : 'Hi';
-  const title = { home: hello, health: 'Health', today: 'Habits', lists: 'Lists' }[tab];
-  const Body = { home: Home, health: Health, today: Today, lists: Lists }[tab];
+  const title = { home: hello, health: 'Health', todo: 'To-do', lists: 'Lists' }[tab];
+  const Body = { home: Home, health: Health, todo: Todos, lists: Lists }[tab];
   const SheetBody = sheet && SHEETS[sheet.name];
   return (
     <>

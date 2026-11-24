@@ -9,10 +9,10 @@ import { supabase } from '../lib/supabase.js';
 
 const NUDGE_LABEL = { sleep: 'Wake-up time (morning)', weight: 'Morning weight', routine: 'Morning routine', water: 'Water check', close_day: 'Sign off and bedtime (night)' };
 const TARGETS = [
-  ['deficit', 'Daily deficit (kcal)', '10'], ['workoutMin', 'Workout (min / day)', '5'], ['kcal', 'Calories to eat (kcal)', '10'],
-  ['protein', 'Protein (g)', '1'], ['water', 'Water (ml)', '250'], ['sleep', 'Sleep (hours)', '0.5'],
+  ['protein', 'Protein a day (g)', '1'], ['proteinBase', 'Protein from regular meals (g)', '1'],
+  ['water', 'Water (ml)', '250'], ['workoutMin', 'Workout (min / day)', '5'],
   ['activeKcal', 'Active burn (kcal)', '10'], ['steps', 'Steps', '500'],
-  ['bmr', 'Resting burn (kcal)', '1'], ['startWeight', 'Start weight (kg)', '0.1'], ['goalWeight', 'Goal weight (kg)', '0.1'],
+  ['sleep', 'Sleep (hours)', '0.5'], ['goalWeight', 'Goal weight (kg)', '0.1'], ['startWeight', 'Start weight (kg)', '0.1'],
 ];
 
 export default function Settings() {
@@ -41,16 +41,17 @@ function Targets() {
       e.preventDefault(); const fd = new FormData(e.currentTarget);
       const targets = { ...S.targets };
       TARGETS.forEach(([k]) => { targets[k] = Number(fd.get(k)); });
+      if (targets.proteinBase > 0 && !targets.proteinSince) targets.proteinSince = new Date().toISOString().slice(0, 10);
       await A.saveProfile({ name: fd.get('name').trim(), targets });
       toast('Targets saved');
     }}>
       <Field label="Your name" id="sName"><input id="sName" name="name" defaultValue={S.profile.name || ''} /></Field>
       {Array.from({ length: Math.ceil(TARGETS.length / 2) }, (_, i) => (
         <div className="two" key={i}>{TARGETS.slice(i * 2, i * 2 + 2).map(([k, l, st]) => (
-          <Field key={k} label={l} id={`s_${k}`}><input id={`s_${k}`} name={k} type="number" step={st} defaultValue={S.targets[k]} required /></Field>
+          <Field key={k} label={l} id={`s_${k}`}><input id={`s_${k}`} name={k} type="number" step={st} defaultValue={S.targets[k] ?? 0} required /></Field>
         ))}</div>
       ))}
-      <p className="hint">Deficit = resting burn + active calories − food eaten. Take resting burn from your latest InBody report.</p>
+      <p className="hint">Regular meals are counted as {S.targets.proteinBase || 0} g of protein without logging them. You only log what you add on top: {Math.max(0, (S.targets.protein || 0) - (S.targets.proteinBase || 0))} g a day from shakes, eggs, paneer and so on. Set it to 0 to log every meal instead.</p>
       <button className="btn">Save targets</button>
     </form>
   );

@@ -4,12 +4,13 @@ import { Sec, Tile, TileGrid } from './Tile.jsx';
 import { Icon, iconForWorkout } from './Icons.jsx';
 import { MiniRings } from './Rings.jsx';
 import { Glass } from './Nudges.jsx';
-import { useTaskAct } from './Habits.jsx';
+import { TodoAdd, useTaskAct } from './Habits.jsx';
+import { useState } from 'react';
 import { taskIcon, autoMeta } from './TaskRow.jsx';
 import { Cover } from '../sheets/Books.jsx';
 import { MBar, fmt, progState } from './ui.jsx';
 import { DEFAULT_HOME, METRICS } from '../lib/metrics.js';
-import { METRIC_ART, habitArt } from '../lib/art.js';
+import { METRIC_ART, habitArt, workoutArt } from '../lib/art.js';
 import { streak, taskName } from '../lib/calc.js';
 import { DOW, MEALS, lastN, parse, short } from '../lib/dates.js';
 
@@ -52,12 +53,14 @@ export function Glance() {
   );
 }
 
-/** Habits and to-dos as tiles. Finished ones drop out so only what's left shows. */
+/** Habits as tiles. Finished ones drop out so only what's left shows. */
 export function HabitsHome({ goTab }) {
   const { S, today, calc } = useStore();
   const act = useTaskAct(today);
-  const c = calc(today), H = c.pillars.habits, t = S.targets;
-  const all = c.scored.filter((x) => x.pillar === 'habits');
+  const c = calc(today), t = S.targets;
+  const all = c.scored.filter((x) => x.pillar === 'habits' && x.task.type !== 'todo');
+  const H = { done: all.filter((x) => x.credit >= 0.999).length, total: all.length,
+    score: all.length ? all.reduce((a, x) => a + x.task.weight * x.credit, 0) / all.reduce((a, x) => a + x.task.weight, 0) : null };
   const left = all.filter((x) => x.credit < 0.999);
   const st = streak(S, today);
   const hs = H.score ?? 0;
@@ -80,10 +83,36 @@ export function HabitsHome({ goTab }) {
       {left.length ? (
         <TileGrid>{left.map(({ task, credit }) => (
           <Tile key={task.id} img={habitArt(task)} icon={taskIcon(task)} tone={toneFor(task.id)} num={num(task, credit)}
-            label={taskName(task, t)} sub={task.type === 'todo' ? 'to-do' : task.type === 'auto' ? autoMeta(task, c, t)?.split(' · ')[0] : null}
+            label={taskName(task, t)} sub={task.type === 'auto' ? autoMeta(task, c, t)?.split(' · ')[0] : null}
             p={credit} onClick={() => act(task)} />
         ))}</TileGrid>
       ) : <div className="all-done"><Icon name="check" size={22} /><span>All {H.total} done today</span></div>}
+    </Sec>
+  );
+}
+
+/** One-time to-dos for today (unfinished ones roll over). Separate from habits. */
+export function TodosHome() {
+  const { S, today, calc } = useStore();
+  const act = useTaskAct(today);
+  const [adding, setAdding] = useState(false);
+  const c = calc(today);
+  const all = c.scored.filter((x) => x.task.type === 'todo');
+  const left = all.filter((x) => x.credit < 0.999);
+  const done = all.length - left.length;
+  const dow = (k) => DOW[parse(k).getDay()];
+  return (
+    <Sec id="todos" title="Tasks" icon="list" className="todos-home"
+      badge={all.length ? <span className="pct">{done}/{all.length}</span> : null}
+      right={<button className="link" onClick={() => setAdding((a) => !a)}>{adding ? 'Done' : '+ Add'}</button>}
+      summary={<span className="sub">{left.length ? `${left.length} left: ${left.slice(0, 3).map((x) => x.task.name).join(', ')}` : all.length ? 'All done' : 'No tasks today'}</span>}>
+      {adding && <TodoAdd k={today} />}
+      {left.length ? <TileGrid>{left.map(({ task, credit }) => {
+        const from = task.carried_from && S.tasks.find((x) => x.id === task.carried_from);
+        return <Tile key={task.id} img={habitArt(task)} icon="check" tone={toneFor(task.id)} num={`+${task.weight}`} label={task.name}
+          sub={from?.on_day ? `from ${dow(from.on_day).slice(0, 3)}` : 'today'} p={credit} onClick={() => act(task)} />;
+      })}</TileGrid>
+        : <div className="all-done"><Icon name="check" size={22} /><span>{all.length ? `All ${all.length} tasks done` : 'Nothing on the list. Add one if you need to.'}</span></div>}
     </Sec>
   );
 }
@@ -179,7 +208,7 @@ export function WorkoutHome() {
         {c.watchMin > c.loggedMin && <span className="sub">Apple Watch</span>}</div>
       {c.d.workouts.length ? <TileGrid>{c.d.workouts.map((w) => {
         const type = S.wtypes.find((x) => x.id === w.type_id);
-        return <Tile key={w.id} img={type?.image_url} icon={iconForWorkout(w.area)} tone="teal" num={fmt(w.kcal)} label={w.name} sub={`${fmt(w.minutes)} min`} onClick={() => open('day', { k: today })} />;
+        return <Tile key={w.id} img={workoutArt(type || w)} light className={type?.image_url && !type.image_url.startsWith('/ex/') ? '' : 'ex-tile'} icon={iconForWorkout(w.area)} tone="teal" num={fmt(w.kcal)} label={w.name} sub={`${fmt(w.minutes)} min`} onClick={() => open('day', { k: today })} />;
       })}</TileGrid> : <p className="hint">{c.rest ? 'Rest day.' : plan ? `Today: ${plan.title}. Tap Plan to start.` : 'No workout yet.'}</p>}
     </Sec>
   );

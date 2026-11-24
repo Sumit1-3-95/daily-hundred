@@ -29,6 +29,20 @@ export function Sheet({ children }) {
     document.documentElement.classList.add('noscroll');
     return () => { document.removeEventListener('keydown', h); document.documentElement.classList.remove('noscroll'); };
   }, [close]);
+  // Keep the sheet inside the part of the screen the keyboard leaves visible (iOS doesn't resize the page).
+  const root = useRef(null);
+  useEffect(() => {
+    const vv = window.visualViewport, el = root.current;
+    if (!vv || !el) return undefined;
+    const fit = () => {
+      el.style.top = `${vv.offsetTop}px`;
+      el.style.height = `${vv.height}px`;
+      el.style.setProperty('--vvh', `${vv.height}px`);
+    };
+    fit();
+    vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit);
+    return () => { vv.removeEventListener('resize', fit); vv.removeEventListener('scroll', fit); };
+  }, []);
   const onStart = (e) => { startY.current = panel.current.scrollTop <= 0 ? e.touches[0].clientY : null; };
   const onMove = (e) => {
     if (startY.current == null) return;
@@ -42,7 +56,7 @@ export function Sheet({ children }) {
     if (dy > 90) close(); else panel.current.style.transform = '';
   };
   return (
-    <div className="sheet">
+    <div className="sheet" ref={root}>
       <div className="scrim" onClick={close} />
       <div className="panel" ref={panel} role="dialog" aria-modal="true" onTouchStart={onStart} onTouchMove={onMove} onTouchEnd={onEnd}>
         <div className="grab" />

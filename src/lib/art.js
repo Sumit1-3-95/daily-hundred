@@ -18,3 +18,16 @@ export function habitArt(task) {
   if (hit) return `/art/${hit[1]}.svg`;
   return task.type === 'todo' ? '/art/todo.svg' : '/art/plant.svg';
 }
+
+/** Stick-figure pictures (scripts/make-exercise-art.py) for workouts and plan activities. */
+export const EX = (n) => `/ex/${n}.svg`;
+const WORKOUT_ART = [[/badminton|tennis|squash|pickle/i, 'badminton'], [/cricket/i, 'cricket'], [/swim/i, 'swim'], [/cycl|bike|spin/i, 'bike'],
+  [/incline/i, 'incline'], [/run|jog|treadmill|hrx|hiit/i, 'jog'], [/walk|hike|steps/i, 'walk'], [/yoga/i, 'tree'], [/stretch|mobil|pilates/i, 'hamstring'],
+  [/core|abs|plank/i, 'plank'], [/lower|leg|squat/i, 'squat'], [/upper|chest|press|arm/i, 'press'], [/dance|zumba|burn|class|boxing/i, 'class'],
+  [/circuit|functional|cross|kettle/i, 'kb-swing'], [/strength|gym|weight/i, 'deadlift']];
+const AREA_ART = { Cardio: 'jog', Mobility: 'hamstring', Core: 'plank', 'Lower body': 'squat', 'Upper body': 'press', 'Full body': 'kb-swing', Sport: 'badminton' };
+export function workoutArt(w = {}) {
+  if (w.image_url) return w.image_url;
+  const hit = WORKOUT_ART.find(([re]) => re.test(w.name || ''));
+  return EX(hit ? hit[1] : AREA_ART[w.area] || 'jumping-jack');
+}

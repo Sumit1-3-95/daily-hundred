@@ -6,7 +6,7 @@ import { FOOD_ICONS, IconTile } from '../components/Icons.jsx';
 import { Field } from '../components/ui.jsx';
 import { MEALS, mealNow } from '../lib/dates.js';
 
-const AREAS = ['Full body', 'Upper body', 'Lower body', 'Core', 'Cardio', 'Mobility', 'Other'];
+const AREAS = ['Full body', 'Upper body', 'Lower body', 'Core', 'Cardio', 'Mobility', 'Sport', 'Other'];
 export const DEFAULT_VIEW = { size: 'm', kcal: true, protein: true, photo: true };
 export const foodView = (S) => ({ ...DEFAULT_VIEW, ...(S.profile.prefs?.food_view || {}) });
 
@@ -46,7 +46,7 @@ export function FoodEdit({ id, name: name0 = '', meal, category: cat0 }) {
           <button type="button" key={m} className={`chip${meals.includes(m) ? ' on' : ''}`} aria-pressed={meals.includes(m)} onClick={() => tog(m)}>{m}</button>
         ))}</div>
         <div className="seg3" role="group" aria-label="Type">
-          {[['', 'Meal'], ['drink', 'Drink'], ['street', 'Street food']].map(([k, l]) => (
+          {[['protein', 'Protein'], ['', 'Meal'], ['drink', 'Drink'], ['street', 'Street']].map(([k, l]) => (
             <button type="button" key={k || 'meal'} aria-pressed={cat === k} onClick={() => setCat(k)}>{l}</button>))}
         </div>
         <label className="toggle" htmlFor="feQ"><span>Quick pick</span><input id="feQ" type="checkbox" checked={quick} onChange={(e) => setQuick(e.target.checked)} /></label>
@@ -63,8 +63,8 @@ export function FoodEdit({ id, name: name0 = '', meal, category: cat0 }) {
   );
 }
 
-export function WorkoutEdit({ id }) {
-  const { S, A, close, toast } = useStore();
+export function WorkoutEdit({ id, back }) {
+  const { S, A, close, open, toast } = useStore();
   const w0 = id ? S.wtypes.find((w) => w.id === id) : null;
   const [img, setImg] = useState(w0?.image_url || null);
   const [sure, setSure] = useState(false);
@@ -75,7 +75,7 @@ export function WorkoutEdit({ id }) {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
         const row = { name: fd.get('name').trim(), area: fd.get('area'), kcal_per_min: Number(fd.get('kpm')), image_url: img };
         if (w0) await A.updateWorkoutType(w0.id, row); else await A.createWorkoutType(row);
-        toast('Saved'); close();
+        toast(back ? `Saved. Tap ${row.name} to log it.` : 'Saved'); back ? open(back) : close();
       }}>
         <div className="edit-top">
           <PhotoField value={img} onChange={setImg} icon="dumbbell" kind="workout" />

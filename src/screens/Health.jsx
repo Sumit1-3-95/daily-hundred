@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useStore } from '../store.jsx';
-import { BarChart, LineChart } from '../components/Charts.jsx';
+import { BarChart, ComboChart, LineChart, WeightChart } from '../components/Charts.jsx';
 import { MBar, fmt } from '../components/ui.jsx';
 import { periodStats } from '../lib/calc.js';
 import { METRICS } from '../lib/metrics.js';
 import { DOW, MEALS, addDays, key, lastN, parse, short } from '../lib/dates.js';
-import FoodPicker from '../components/FoodPicker.jsx';
+import { ProteinPicker } from '../sheets/ProteinPicker.jsx';
 import { PlanCalendar, PlanCard } from '../components/Plan.jsx';
 import { FoodThumb } from '../components/TodayCards.jsx';
 import { Icon, IconTile, iconForWorkout } from '../components/Icons.jsx';
@@ -58,7 +58,6 @@ function Overview() {
     ['protein', P.protein != null ? `${fmt(P.protein)} g` : '—'],
     ['water', P.water != null ? `${(P.water / 1000).toFixed(1)} L` : '—'],
     ['sleep', P.sleep != null ? `${P.sleep.toFixed(1)} h` : '—'],
-    ['eaten', P.kcal != null ? `${fmt(P.kcal)} kcal` : '—'],
     ['steps', P.steps != null ? fmt(P.steps) : '—'],
   ].filter(([m]) => m !== 'steps' || P.steps != null);
 
@@ -76,9 +75,9 @@ function Overview() {
           <div><b>{wchg != null ? `${wchg > 0 ? '+' : ''}${wchg.toFixed(1)}` : '—'}</b><span>kg change</span></div>
         </div>
         <div className="ov-tiles">
-          <div className="tile"><div className="stat-h"><IconTile name="target" size="sm" /><span>Deficit</span></div>
-            <b>{P.deficit != null ? fmt(P.deficit) : '—'}</b><small>avg kcal on {P.closedDays} closed days</small>
-            <small>≈ {(P.deficitTotal / 7700).toFixed(2)} kg fat burned</small></div>
+          <div className="tile"><div className="stat-h"><IconTile name="bolt" size="sm" /><span>Protein</span></div>
+            <b>{P.protein != null ? `${fmt(P.protein)} g` : '—'}</b><small>a day · target {t.protein} g</small>
+            <small>hit on {P.proteinHit} day{P.proteinHit === 1 ? '' : 's'}</small></div>
           <div className="tile"><div className="stat-h"><IconTile name="dumbbell" size="sm" /><span>Workout</span></div>
             <b>{fmt(P.workoutMin)} min</b><small>{P.sessions} sessions · {fmt(P.activeKcal)} active kcal</small>
             <Delta cur={P.workoutMin} prev={Q.workoutMin} unit=" min" /></div>
@@ -99,11 +98,14 @@ function Overview() {
             </div>
           );
         })}</div>
-        <p className="hint">Dots show the last {Math.min(n, 14)} days. Calories count as on target when a closed day stays under {fmt(t.kcal)} kcal.</p>
+        <p className="hint">Dots show the last {Math.min(n, 14)} days.</p>
       </section>
 
+      <ProteinCard />
+      <WorkoutTrendCard />
+
       <section className="card"><div className="row-h"><h3>Weight</h3><span className="sub">kg · 30 days</span></div>
-        <LineChart pts={k30.map((k) => ({ label: short(k), v: calc(k).weight }))} aria="Weight over 30 days" goal={t.goalWeight} />
+        <WeightChart pts={k30.map((k) => ({ label: parse(k).getDate(), title: dayTitle(k), v: calc(k).weight }))} goal={t.goalWeight} />
         {pace && <p className="hint">Losing {Math.abs(pace.perWeek).toFixed(2)} kg a week. At this pace you reach {t.goalWeight} kg around {pace.eta.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}.</p>}</section>
 
       <section className="card"><div className="row-h"><h3>Day score</h3><span className="sub">% · 14 days</span></div>
@@ -112,37 +114,76 @@ function Overview() {
   );
 }
 
-// ---------- Food ----------
+const dayTitle = (k) => parse(k).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+
+function Range({ n, setN }) {
+  return <div className="period" role="group" aria-label="Days shown">{[14, 30].map((d) => <button key={d} aria-pressed={n === d} onClick={() => setN(d)}>{d}d</button>)}</div>;
+}
+function Avgs({ items }) {
+  return <div className="avgs">{items.map(([lbl, v, u], i) => <div key={i}><span>{lbl}</span><b>{v == null ? '—' : fmt(v)}<small>{u}</small></b></div>)}</div>;
+}
+
+/** Protein each day: bars, target line and a 7-day average line. */
+function ProteinCard() {
+  const { S, today, calc } = useStore();
+  const [n, setN] = useState(14);
+  const t = S.targets;
+  const days = (m) => lastN(m, parse(today)).map(calc).filter((c) => c.pMode || c.d.food.length);
+  const a7 = mean(days(7).map((c) => c.protein)), a30 = mean(days(30).map((c) => c.protein));
+  const hit = days(7).filter((c) => c.protein >= t.protein).length;
+  const rows = lastN(n, parse(today)).map((k) => { const c = calc(k); return { label: parse(k).getDate(), title: dayTitle(k), bar: c.pMode || c.d.food.length ? c.protein : null }; });
+  return (
+    <section className="card">
+      <div className="row-h"><h3>Protein</h3><Range n={n} setN={setN} /></div>
+      <Avgs items={[['7-day avg', a7, ' g'], ['30-day avg', a30, ' g'], ['Target', t.protein, ' g'], ['Hit, last 7', hit, ' days']]} />
+      <ComboChart rows={rows} target={t.protein} barColor="var(--r3)" barUnit=" g" barName="protein" avgLine aria={`Protein per day, last ${n} days`} />
+      <p className="hint">Bars are each day's protein, the dashed line is your {t.protein} g target and the thin line is the 7-day average.</p>
+    </section>
+  );
+}
+
+/** Workout each day: active calories as bars, minutes as a line. */
+function WorkoutTrendCard() {
+  const { S, today, calc } = useStore();
+  const [n, setN] = useState(14);
+  const t = S.targets;
+  const per = (m) => lastN(m, parse(today)).map(calc);
+  const avg = (m, f) => mean(per(m).map(f));
+  const rows = lastN(n, parse(today)).map((k) => { const c = calc(k); return { label: parse(k).getDate(), title: dayTitle(k), bar: c.active, line: c.wMin }; });
+  return (
+    <section className="card">
+      <div className="row-h"><h3>Workout</h3><Range n={n} setN={setN} /></div>
+      <Avgs items={[['7-day avg', avg(7, (c) => c.wMin), ' min'], ['30-day avg', avg(30, (c) => c.wMin), ' min'],
+        ['7-day avg', avg(7, (c) => c.active), ' kcal'], ['30-day avg', avg(30, (c) => c.active), ' kcal']]} />
+      <ComboChart rows={rows} barColor="var(--r2)" lineColor="var(--r1)" barUnit=" kcal" lineUnit=" min" barName="burned" lineName="worked out" aria={`Workout per day, last ${n} days`} />
+      <div className="dc-key"><span><i style={{ background: 'var(--r2)' }} />Active calories</span><span><i className="ln" style={{ background: 'var(--r1)' }} />Minutes (right scale)</span><span className="sub">Goal {t.workoutMin} min · {t.activeKcal} kcal</span></div>
+    </section>
+  );
+}
+
+// ---------- Food: protein only ----------
 function Food() {
   const { S, today, calc, A } = useStore();
   const c = calc(today);
-  const live = S.foods.filter((f) => !f.archived);
+  const rows = c.d.food.filter((f) => !f.is_default);
   return (
     <>
-      <section className="card"><h3>Add food</h3><FoodPicker k={today} /></section>
-      <section className="card"><div className="row-h"><h3>Today's log</h3><span className="sub">{fmt(c.eaten)} kcal · {fmt(c.protein)} g protein</span></div>
-        {!c.d.food.length && <div className="empty">Nothing logged yet today.</div>}
-        {MEALS.map((m) => {
-          const rows = c.d.food.filter((f) => f.meal === m);
-          if (!rows.length) return null;
+      <section className="card"><ProteinPicker k={today} /></section>
+      {rows.length > 0 && <section className="card"><div className="row-h"><h3>Added today</h3><span className="sub">{fmt(c.proteinExtra)} g protein</span></div>
+        <div className="logcards">{rows.map((f) => {
+          const x = S.foodsById[f.food_id] || { name: 'Deleted item', serving: '', kcal: 0, protein: 0 };
           return (
-            <div key={m}><div className="meal-h">{m}</div>
-              <div className="logcards">{rows.map((f) => {
-                const x = S.foodsById[f.food_id] || { name: 'Deleted item', serving: '', kcal: 0, protein: 0 };
-                return (
-                  <div className={`lcard${f.is_default ? ' dflt' : ''}`} key={f.id}>
-                    <span className="sc-img"><FoodThumb f={x} />{Number(f.qty) > 1 && <span className="qtag">×{Number(f.qty)}</span>}</span>
-                    <div className="lc-b"><span className="lc-n">{x.name}{f.is_default && <span className="dtag">default</span>}</span>
-                      <span className="lc-k">{fmt(x.kcal * f.qty)} <small>kcal · {fmt(x.protein * f.qty)} g</small></span></div>
-                    <div className="stepper">
-                      <button onClick={() => A.setFoodQty(today, f, Number(f.qty) - 1)} aria-label={`One less ${x.name}`}>−</button>
-                      <button onClick={() => A.setFoodQty(today, f, Number(f.qty) + 1)} aria-label={`One more ${x.name}`}>+</button>
-                    </div>
-                  </div>
-                );
-              })}</div></div>
+            <div className="lcard" key={f.id}>
+              <span className="sc-img"><FoodThumb f={x} />{Number(f.qty) > 1 && <span className="qtag">×{Number(f.qty)}</span>}</span>
+              <div className="lc-b"><span className="lc-n">{x.name}</span><span className="lc-k">{fmt(x.protein * f.qty)} <small>g protein</small></span></div>
+              <div className="stepper">
+                <button onClick={() => A.setFoodQty(today, f, Number(f.qty) - 1)} aria-label={`One less ${x.name}`}>−</button>
+                <button onClick={() => A.setFoodQty(today, f, Number(f.qty) + 1)} aria-label={`One more ${x.name}`}>+</button>
+              </div>
+            </div>
           );
-        })}</section>
+        })}</div></section>}
     </>
   );
 }

@@ -3,8 +3,8 @@ import { useStore } from '../store.jsx';
 import { IconTile } from '../components/Icons.jsx';
 
 const ITEMS = [
-  ['water', 'water', 'Water'], ['logFood', 'thali', 'Food'], ['logWorkout', 'dumbbell', 'Workout'], ['weight', 'scale', 'Weight'],
-  ['sleep', 'sun', 'Wake-up'], ['avoid', 'drink', 'Detractors'], ['task', 'check', 'Task'], ['closeDay', 'moon', 'Sign off'],
+  ['logFood', 'shake', 'Protein'], ['water', 'water', 'Water'], ['logWorkout', 'dumbbell', 'Workout'], ['books', 'book', 'Reading'],
+  ['todoAdd', 'list', 'To-do'], ['weightPage', 'scale', 'Weight'], ['task', 'check', 'New habit'], ['avoid', 'drink', 'Detractors'],
 ];
 
 export default function QuickAdd() {

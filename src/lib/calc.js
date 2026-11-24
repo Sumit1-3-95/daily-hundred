@@ -8,6 +8,12 @@ export const pillarOf = (t) => (t.type === 'auto'
   : 'habits');
 export const PILLARS = ['habits', 'intake', 'workout'];
 
+/** From targets.proteinSince on, protein = assumed regular meals + what you log on top. */
+export const isProteinMode = (t, k) => t.proteinBase != null && Number(t.proteinBase) > 0 && (!t.proteinSince || k >= t.proteinSince);
+
+/** Shown on screen but never part of the day score: only protein counts for food. */
+export const NOT_SCORED = ['calories', 'deficit'];
+
 const log_exercise = (d) => d.log?.exercise_min;
 
 export const emptyDay = () => ({ log: null, food: [], workouts: [], tlogs: {} });
@@ -37,13 +43,20 @@ export function calcDay(S, k, today) {
   const log = d.log || {};
   const dow = parse(k).getDay();
 
-  let eaten = 0, protein = 0;
+  let eaten = 0, logged = 0, extra = 0;
   for (const f of d.food) {
     const x = S.foodsById[f.food_id];
     if (!x) continue;
     eaten += x.kcal * f.qty;
-    protein += x.protein * f.qty;
+    logged += x.protein * f.qty;
+    if (!f.is_default) extra += x.protein * f.qty;
   }
+  // Protein mode: regular meals are assumed to give `proteinBase` g; you only log what you add on top (shake, eggs…).
+  const pMode = isProteinMode(t, k);
+  const pBase = pMode ? Number(t.proteinBase) : 0;
+  const pExtraTarget = pMode ? Math.max(1, t.protein - pBase) : t.protein;
+  const protein = pMode ? pBase + extra : logged;
+  const proteinExtra = pMode ? extra : logged;
   // workout time: logged workouts, or Apple Watch exercise minutes if those are higher (no double counting)
   const loggedMin = d.workouts.reduce((a, w) => a + Number(w.minutes), 0);
   const watchMin = Number(log_exercise(d)) || 0;
@@ -60,7 +73,7 @@ export function calcDay(S, k, today) {
   const water = log.water_ml || 0, sleep = Number(log.sleep_hours) || 0;
 
   const list = S.tasks
-    .filter((x) => !x.archived && x.type !== 'avoid' && (x.type === 'todo' ? x.on_day === k : x.days.includes(dow)) && !(rest && x.auto_key === 'workout'))
+    .filter((x) => !x.archived && x.type !== 'avoid' && x.type !== 'todo' && !(x.type === 'auto' && NOT_SCORED.includes(x.auto_key)) && x.days.includes(dow) && !(rest && x.auto_key === 'workout'))
     .sort((a, b) => a.sort - b.sort);
 
   const credit = (x) => {
@@ -77,7 +90,7 @@ export function calcDay(S, k, today) {
       case 'auto':
         return ({
           workout: clamp(wMin / t.workoutMin),
-          protein: clamp(protein / t.protein),
+          protein: clamp(proteinExtra / pExtraTarget),
           water: clamp(water / t.water),
           sleep: clamp(sleep / t.sleep),
           closed: closed ? 1 : 0,
@@ -106,7 +119,7 @@ export function calcDay(S, k, today) {
   const done = scored.filter((s) => s.credit >= 0.999).length;
 
   return {
-    d, log, eaten, protein, wMin, wKcal, active, burned, deficit, closed, rest, open, proj, shownD, left,
+    d, log, eaten, protein, proteinExtra, pExtraTarget, pBase, pMode, wMin, wKcal, active, burned, deficit, closed, rest, open, proj, shownD, left,
     water, sleep, weight: log.weight != null ? Number(log.weight) : null, steps: log.steps ?? null, watchMin, loggedMin,
     scored, score, pts, maxPts, done, total: list.length, avoids, penalty, pillars,
     hasData: !!(d.log || d.food.length || d.workouts.length || Object.keys(d.tlogs).length),
@@ -146,8 +159,8 @@ export function periodStats(S, n, endKey, today) {
   return {
     days: n,
     kcal: avg(logged.map((c) => c.eaten)),
-    protein: avg(logged.map((c) => c.protein)),
-    proteinHit: logged.filter((c) => c.protein >= S.targets.protein).length,
+    protein: avg(cs.filter((c) => c.pMode || c.d.food.length).map((c) => c.protein)),
+    proteinHit: cs.filter((c) => (c.pMode || c.d.food.length) && c.protein >= S.targets.protein).length,
     loggedDays: logged.length,
     deficit: avg(closed.map((c) => c.deficit)),
     deficitTotal: closed.reduce((a, c) => a + c.deficit, 0),
@@ -163,4 +176,32 @@ export function periodStats(S, n, endKey, today) {
     weightStart: weights.length ? weights[0] : null,
     weightEnd: weights.length ? weights[weights.length - 1] : null,
   };
+}
+
+/** Streak per habit, in days it was scheduled. Today only counts once it's done (an unfinished today doesn't break it).
+ * Goals: 7 days first, then 21 for a medal. Every 21 days in a row earns one medal. */
+export const STREAK_GOALS = [7, 21];
+export function habitStreaks(S, today, days = 400) {
+  const habits = S.tasks.filter((x) => !x.archived && !['avoid', 'todo'].includes(x.type) && !(x.type === 'auto' && NOT_SCORED.includes(x.auto_key)));
+  const out = Object.fromEntries(habits.map((h) => [h.id, { run: 0, best: 0, medals: 0, doneToday: false }]));
+  const first = Object.keys(S.days).sort()[0];
+  if (!first) return out;
+  const start = parse(first > key(addDays(parse(today), -days)) ? first : key(addDays(parse(today), -days)));
+  for (let dt = start; key(dt) <= today; dt = addDays(dt, 1)) {
+    const k = key(dt), c = calcDay(S, k, today), dow = dt.getDay();
+    for (const h of habits) {
+      const o = out[h.id];
+      if (!h.days.includes(dow) || (h.created_at && k < h.created_at.slice(0, 10))) continue;
+      if (c.rest && h.auto_key === 'workout') continue;          // rest day: neither counts nor breaks
+      const s = c.scored.find((x) => x.task.id === h.id);
+      const done = !!s && s.credit >= 0.999;
+      if (done) {
+        o.run += 1; o.best = Math.max(o.best, o.run);
+        if (o.run % 21 === 0) o.medals += 1;
+        if (k === today) o.doneToday = true;
+      } else if (k !== today) o.run = 0;
+    }
+  }
+  for (const o of Object.values(out)) o.goal = o.run < 7 ? 7 : 21 * (Math.floor(o.run / 21) + 1);
+  return out;
 }

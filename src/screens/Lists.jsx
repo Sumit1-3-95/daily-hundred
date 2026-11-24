@@ -6,6 +6,7 @@ import { Icon, IconTile, iconForWorkout } from '../components/Icons.jsx';
 import PhotoField from '../components/PhotoField.jsx';
 import { taskIcon } from '../components/TaskRow.jsx';
 import { taskName } from '../lib/calc.js';
+import { workoutArt } from '../lib/art.js';
 import { Tile, TileGrid } from '../components/Tile.jsx';
 import { Cover } from '../sheets/Books.jsx';
 import { DOW, MEALS } from '../lib/dates.js';
@@ -106,7 +107,7 @@ function Workouts({ onBack }) {
       <TileGrid>
         <button className="tile2 add" onClick={() => open('workoutEdit')}><span>+</span>New</button>
         {S.wtypes.filter((w) => !w.archived).map((w) => (
-          <Tile key={w.id} img={w.image_url} icon={iconForWorkout(w.area)} tone="teal" num={`${w.kcal_per_min}/m`}
+          <Tile key={w.id} img={workoutArt(w)} light className={w.image_url && !w.image_url.startsWith('/ex/') ? '' : 'ex-tile'} icon={iconForWorkout(w.area)} tone="teal" num={`${w.kcal_per_min}/m`}
             label={w.name} sub={w.area} onClick={() => open('workoutEdit', { id: w.id })} />
         ))}
       </TileGrid>

@@ -166,22 +166,35 @@ export function StoreProvider({ session, children }) {
     },
     // ---------- one-time to-dos ----------
     addTodo: async (name, weight = 1, k = today) => {
-      const sort = Math.max(0, ...ref.current.tasks.map((x) => x.sort)) + 1;
+      const sort = Math.min(0, ...ref.current.tasks.filter((x) => x.type === 'todo').map((x) => x.sort)) - 1;   // newest on top
       const row = await q(supabase.from('tasks').insert({ user_id: uid, name, type: 'todo', weight, on_day: k, days: [0, 1, 2, 3, 4, 5, 6], sort }).select().single());
       commit((S) => S.tasks.push(row));
       track('todo_added', { weight });
     },
-    /** Copy unfinished to-dos of `fromK` to `toK` (once each). */
+    /** Move unfinished to-dos of `fromK` to `toK` (to-dos aren't scored, so they just move). */
     carryTodos: async (fromK, toK) => {
       const S = ref.current;
       const open = S.tasks.filter((t) => t.type === 'todo' && !t.archived && t.on_day === fromK && !S.days[fromK]?.tlogs[t.id]?.done
         && !S.tasks.some((x) => x.carried_from === t.id));
       if (!open.length) return 0;
-      const rows = open.map((t) => ({ user_id: uid, name: t.name, type: 'todo', weight: t.weight, icon: t.icon, image_url: t.image_url,
-        on_day: toK, days: t.days, sort: t.sort, carried_from: t.id }));
-      const ins = await q(supabase.from('tasks').insert(rows).select());
-      commit((S2) => S2.tasks.push(...ins));
-      return ins.length;
+      const ids = open.map((t) => t.id);
+      await q(supabase.from('tasks').update({ on_day: toK }).in('id', ids));
+      commit((S2) => { S2.tasks = S2.tasks.map((t) => (ids.includes(t.id) ? { ...t, on_day: toK } : t)); });
+      return ids.length;
+    },
+    /** Change a to-do: rename, move to a day (null = someday), or reorder. */
+    updateTodo: async (id, patch) => {
+      const prev = ref.current.tasks.find((t) => t.id === id);
+      commit((S) => { S.tasks = S.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)); });
+      try { await q(supabase.from('tasks').update(patch).eq('id', id)); } catch { commit((S) => { S.tasks = S.tasks.map((t) => (t.id === id ? prev : t)); }); }
+    },
+    /** Tick / untick a to-do. Someday to-dos land on today when you tick them. */
+    toggleTodo: async (task) => {
+      const k = task.on_day || today;
+      if (!task.on_day) await A.updateTodo(task.id, { on_day: today });
+      const done = !!day(k).tlogs[task.id]?.done;
+      await A.setTaskLog(k, task, { done: !done });
+      if (!done) track('todo_done', {});
     },
     /** When the date changes, bring forward anything left from earlier days. */
     rollover: async () => {
@@ -189,9 +202,10 @@ export function StoreProvider({ session, children }) {
       const past = [...new Set(S.tasks.filter((t) => t.type === 'todo' && !t.archived && t.on_day && t.on_day < today).map((t) => t.on_day))].sort();
       let n = 0;
       for (const d of past) n += await A.carryTodos(d, today);
-      if (n) toast(`${n} to-do${n > 1 ? 's' : ''} moved to today`);
+      if (n) track('todos_rolled', { n });
     },
     autofill: async () => {
+      if (!ref.current.profile.prefs?.autofill) return;   // protein mode: no default meals logged for you
       const S = ref.current, plan = mealPlan(S), now = new Date();
       const hour = now.getHours() + now.getMinutes() / 60;
       const yday = key(addDays(new Date(), -1));
@@ -412,13 +426,17 @@ export function StoreProvider({ session, children }) {
     /** Finish the day's plan: log its workouts and mark it done. */
     completePlan: async (k) => {
       const p = ref.current.plan[k];
-      for (const l of p.logs || []) {
+      // new plans: each activity card carries its own log; log the ones you ticked (or all, if you ticked none)
+      const cards = (p.items || []).filter((i) => i.log);
+      const ticked = cards.filter((i) => (p.checked || []).includes(i.id));
+      const logs = cards.length ? (ticked.length ? ticked : cards).map((i) => i.log) : p.logs || [];
+      for (const l of logs) {
         const type = ref.current.wtypes.find((w) => w.name.toLowerCase() === l.name.toLowerCase());
         await A.logWorkout(k, { type_id: type?.id ?? null, name: l.name, area: l.area, minutes: l.minutes, kcal: l.kcal, source: p.place?.includes('Cult') ? 'cult' : 'manual' });
       }
       if (p.kind === 'rest' && k === today) await A.saveDay(k, { rest: true });
       await A.savePlan(k, { status: 'done', checked: (p.items || []).map((i) => i.id) });
-      toast(p.logs?.length ? `Done! Logged ${p.logs.map((l) => l.name).join(' + ')}` : 'Done!');
+      toast(logs.length ? `Done! Logged ${logs.map((l) => l.name).join(' + ')}` : 'Done!');
       track('plan_done', { kind: p.kind });
     },
     skipPlan: (k) => A.savePlan(k, { status: 'skipped' }),

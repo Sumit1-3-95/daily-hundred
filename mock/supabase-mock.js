@@ -12,7 +12,7 @@ function seed() {
   const db = { profiles: [], foods: [], food_logs: [], workout_types: [], workouts: [], day_logs: [], lists: [], list_items: [], tasks: [], task_logs: [],
     body_scans: [], blood_results: [], nudges: [], push_subscriptions: [], api_tokens: [], events: [], plan_days: [] };
   const u = { user_id: UID };
-  db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 8000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1 } });
+  db.profiles.push({ id: UID, name: 'Sumit', tz: 'Asia/Kolkata', prefs: { home_metrics: ['water', 'protein', 'eaten', 'burned', 'weight', 'sleep'], focus: { metric: 'water', days: 7, start: key(addDays(new Date(), -3)) } }, targets: { activeKcal: 400, steps: 8000, bmr: 1605, deficit: 500, workoutMin: 45, protein: 100, kcal: 2000, water: 3000, sleep: 8, goalWeight: 71.5, startWeight: 77.1, proteinBase: 40, proteinSince: key(addDays(new Date(), -10)) } });
   const F = [
     ['poha', 'Poha', '1 plate', 250, 5, 'bowl', ['Breakfast'], 'poha'], ['coffee', 'Coffee', '1 cup with milk', 70, 3, 'chai', ['Breakfast', 'Snack'], 'coffee'],
     ['shake', 'Protein shake', '1 scoop whey in water', 130, 25, 'shake', ['Breakfast', 'Snack'], 'shake'], ['chai', 'Masala chai', '1 cup with sugar', 90, 3, 'chai', ['Breakfast', 'Snack'], 'chai'],
@@ -28,7 +28,7 @@ function seed() {
     ['bshake', 'Banana shake', '1 glass', 250, 9, 'shake', ['Breakfast'], 'bananashake', 'drink'], ['chaas', 'Buttermilk', '1 glass', 60, 3, 'chai', ['Lunch'], 'buttermilk', 'drink']];
   const fid = {};
   F.forEach(([k, name, serving, kcal, protein, icon, meals, img, category]) => { const id = uuid(); fid[k] = id; db.foods.push({ id, ...u, name, serving, kcal, protein, quick: true, icon, meals, image_url: `/food/${img}.svg`, category: category || (['coffee', 'chai', 'shake'].includes(k) ? 'drink' : null), archived: false }); });
-  const W = [['Cult Strength', 'Full body', 7], ['Cult HRX', 'Full body', 9], ['Leg day', 'Lower body', 7], ['Outdoor walk', 'Cardio', 5]];
+  const W = [['Cult Strength', 'Full body', 7], ['Cult HRX', 'Full body', 9], ['Leg day', 'Lower body', 7], ['Outdoor walk', 'Cardio', 5], ['Badminton', 'Sport', 7], ['Cricket', 'Sport', 5], ['Treadmill', 'Cardio', 9.5], ['Cult Yoga', 'Mobility', 3.5]];
   const wt = W.map(([name, area, kpm]) => { const r = { id: uuid(), ...u, name, area, kcal_per_min: kpm }; db.workout_types.push(r); return r; });
   const routine = { id: uuid(), ...u, title: 'Morning routine', kind: 'routine', sort: 0 };
   const packing = { id: uuid(), ...u, title: 'Jaipur packing', kind: 'note', sort: 1 };
@@ -47,7 +47,8 @@ function seed() {
     { name: 'Read', type: 'number', target: 25, unit: 'pages', weight: 1, icon: 'book' },
     { name: 'Sleep target', type: 'auto', auto_key: 'sleep', weight: 1 },
     { name: 'Log all meals and close the day', type: 'auto', auto_key: 'closed', weight: 1 },
-  ].map((t, i) => ({ id: uuid(), ...u, days: ALL, auto_key: null, target: null, unit: null, list_id: null, archived: false, sort: i, ...t }));
+  ].map((t, i) => ({ id: uuid(), ...u, days: ALL, auto_key: null, target: null, unit: null, list_id: null, sort: i, ...t, weight: 1,
+    archived: !['Workout', 'Protein', 'Water', 'Read'].includes(t.name) }));
   db.tasks.push(...T);
   const AV = [{ id: uuid(), ...u, name: 'Alcohol', type: 'avoid', weight: 3, unit: 'drinks', icon: 'drink', days: ALL, sort: 90, archived: false },
     { id: uuid(), ...u, name: 'Smoking', type: 'avoid', weight: 3, unit: 'cigarettes', icon: 'smoke', days: ALL, sort: 91, archived: false }];
@@ -81,10 +82,12 @@ function seed() {
     const ri = db.list_items.filter((x) => x.list_id === routine.id).map((x) => x.id);
     const got = good ? ri : ri.filter(() => r() < 0.7);
     db.task_logs.push({ ...u, day: k, task_id: T[0].id, done: got.length === ri.length, value: null, items: got });
-    db.task_logs.push({ ...u, day: k, task_id: T[7].id, done: good, value: good ? 25 : Math.floor(r() * 30), items: [] });
+    const rd = good || i <= 8;
+    db.task_logs.push({ ...u, day: k, task_id: T[7].id, done: rd, value: rd ? 25 : Math.floor(r() * 24), items: [] });
+    if (i <= 5) db.day_logs[db.day_logs.length - 1].water_ml = 3000;
   }
   const k = key(now);
-  db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid.poha, qty: 1, meal: 'Breakfast', is_default: true }, { id: uuid(), ...u, day: k, food_id: fid.coffee, qty: 2, meal: 'Breakfast', is_default: true }, { id: uuid(), ...u, day: k, food_id: fid.csalad, qty: 1, meal: 'Lunch' });
+  db.food_logs.push({ id: uuid(), ...u, day: k, food_id: fid.poha, qty: 1, meal: 'Breakfast', is_default: true }, { id: uuid(), ...u, day: k, food_id: fid.coffee, qty: 2, meal: 'Breakfast', is_default: true }, { id: uuid(), ...u, day: k, food_id: fid.shake, qty: 1, meal: 'Breakfast' });
   db.day_logs.push({ ...u, day: k, autofilled: ['Breakfast'], water_ml: 1250, sleep_hours: null, weight: null, active_kcal: 220, steps: 3100, closed: false, rest: false });
   return db;
 }

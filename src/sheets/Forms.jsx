@@ -4,14 +4,15 @@ import { Field, fmt } from '../components/ui.jsx';
 import { CloseBlock, RoutineBlock, WakeBlock, WaterBlock, WeightBlock } from '../components/Nudges.jsx';
 import FoodPicker from '../components/FoodPicker.jsx';
 import PhotoField from '../components/PhotoField.jsx';
-import { TASK_ART } from '../lib/art.js';
+import { TASK_ART, workoutArt } from '../lib/art.js';
+import { Tile, TileGrid } from '../components/Tile.jsx';
 import { FOOD_ICONS, IconTile, iconForWorkout } from '../components/Icons.jsx';
 
 const TASK_ICONS = ['drink', 'smoke', 'check', 'book', 'sun', 'moon', 'water', 'bolt', 'dumbbell', 'shoe', 'lotus', 'steps', 'fire', 'list', 'flag', 'chai', 'bed', 'target'];
 import { DOW, MEALS, lastN, mealNow, parse } from '../lib/dates.js';
 import { AUTO_LABEL } from '../lib/calc.js';
 
-const AREAS = ['Full body', 'Upper body', 'Lower body', 'Core', 'Cardio', 'Mobility', 'Other'];
+const AREAS = ['Full body', 'Upper body', 'Lower body', 'Core', 'Cardio', 'Mobility', 'Sport', 'Other'];
 const n = (v) => (v === '' || v == null ? null : Number(v));
 
 export function LogFood() {
@@ -74,56 +75,73 @@ export function frequentWorkouts(S, today, n = 4) {
   return S.wtypes.filter((w) => !w.archived).slice(0, n).map((w) => ({ name: w.name, area: w.area, type_id: w.id, minutes: 45, kcal: Math.round(45 * w.kcal_per_min) }));
 }
 
-export function LogWorkout() {
+/** Every workout type is a picture tile. Tap one, adjust time and calories, log it. */
+export function LogWorkout({ k: k0 }) {
   const { S, today, A, open, close, toast } = useStore();
-  const [manual, setManual] = useState(false);
+  const k = k0 || today;
   const picks = frequentWorkouts(S, today);
-  const [typeId, setType] = useState(S.wtypes.find((w) => !w.archived)?.id || '');
-  const [min, setMin] = useState(45);
-  const w = S.wtypes.find((x) => x.id === typeId);
-  const est = Math.round((Number(min) || 0) * (w?.kcal_per_min || 6));
+  const types = S.wtypes.filter((x) => !x.archived).sort((a, b) => a.name.localeCompare(b.name));
+  const [sel, setSel] = useState(null);       // { type, minutes, kcal }
+  const [kcalEdited, setKE] = useState(false);
+  const usual = (w) => picks.find((p) => p.type_id === w.id || p.name === w.name);
+  const pick = (w) => { const u = usual(w); setKE(!!u); setSel({ type: w, minutes: u?.minutes || 45, kcal: u?.kcal ?? Math.round(45 * (w.kcal_per_min || 6)) }); };
+  const setMin = (m) => setSel((x) => ({ ...x, minutes: m, kcal: kcalEdited ? x.kcal : Math.round((Number(m) || 0) * (x.type.kcal_per_min || 6)) }));
+  const save = async (src) => {
+    const w = sel.type;
+    await A.logWorkout(k, { type_id: w.id, name: w.name, area: w.area || 'Other', minutes: Number(sel.minutes) || 0, kcal: Number(sel.kcal) || 0, source: src });
+    toast(`Logged ${w.name} · ${sel.minutes} min`); close();
+  };
+  if (sel) {
+    const w = sel.type;
+    return (
+      <>
+        <div className="lhead"><button className="back" onClick={() => setSel(null)} aria-label="Back to workouts">‹</button><h2>{w.name}</h2></div>
+        <div className="lw-hero"><img src={workoutArt(w)} alt="" /><span className="sub">{w.area}</span></div>
+        <div className="field"><span className="lb">Minutes</span>
+          <div className="stepper">
+            <button type="button" onClick={() => setMin(Math.max(5, Number(sel.minutes) - 5))} aria-label="5 minutes less">−</button>
+            <input type="number" inputMode="numeric" min="1" value={sel.minutes} onChange={(e) => setMin(e.target.value)} aria-label="Minutes" />
+            <button type="button" onClick={() => setMin(Number(sel.minutes) + 5)} aria-label="5 minutes more">+</button>
+          </div>
+          <div className="chips">{[20, 30, 45, 60, 90].map((m) => <button type="button" key={m} className={`chip${Number(sel.minutes) === m ? ' on' : ''}`} onClick={() => setMin(m)}>{m}</button>)}</div>
+        </div>
+        <Field label="Calories burned (from your watch or Cult app)" id="lwK">
+          <input id="lwK" type="number" inputMode="numeric" min="0" value={sel.kcal} onChange={(e) => { setKE(true); setSel((x) => ({ ...x, kcal: e.target.value })); }} />
+        </Field>
+        <p className="hint">{kcalEdited ? 'Using your number.' : `Estimated at ${w.kcal_per_min || 6} kcal a minute. Type the real number if you have it.`}</p>
+        <button className="btn" onClick={() => save(/cult/i.test(w.name) ? 'cult' : 'manual')}>Log {w.name}</button>
+      </>
+    );
+  }
   return (
     <>
       <h2>Log workout</h2>
-      <div className="wpicks">{picks.map((w) => (
-        <button key={w.name} className="wpick" onClick={async () => {
-          await A.logWorkout(today, { type_id: w.type_id, name: w.name, area: w.area, minutes: w.minutes, kcal: w.kcal, source: 'cult' });
-          toast(`Logged ${w.name}`); close();
-        }}><IconTile name={iconForWorkout(w.area)} /><span className="fname">{w.name}</span><span className="fnum">{fmt(w.minutes)} min · {fmt(w.kcal)} kcal</span></button>
-      ))}</div>
-      <p className="hint">Tap to log with your usual time and calories, or enter the exact numbers from the Cult app.</p>
-      <button className="btn ghost" onClick={() => setManual((m) => !m)} aria-expanded={manual}>{manual ? 'Hide' : 'Enter exact numbers'}</button>
-      {manual && <form onSubmit={async (e) => {
-        e.preventDefault(); const fd = new FormData(e.currentTarget);
-        await A.logWorkout(today, { type_id: w?.id ?? null, name: w?.name || 'Workout', area: w?.area || 'Other',
-          minutes: Number(min), kcal: n(fd.get('kcal')) ?? est, source: fd.get('src') });
-        toast(`Logged ${w?.name || 'workout'}`); close();
-      }}>
-        <Field label="Workout" id="lwT"><select id="lwT" value={typeId} onChange={(e) => setType(e.target.value)}>
-          {S.wtypes.filter((x) => !x.archived).map((x) => <option key={x.id} value={x.id}>{x.name} · {x.area}</option>)}</select></Field>
-        <div className="two">
-          <Field label="Minutes" id="lwM"><input id="lwM" type="number" inputMode="numeric" min="1" required value={min} onChange={(e) => setMin(e.target.value)} /></Field>
-          <Field label="Calories burned" id="lwK"><input id="lwK" name="kcal" type="number" inputMode="numeric" min="0" placeholder={String(est)} /></Field>
-        </div>
-        <Field label="Source" id="lwS"><select id="lwS" name="src" defaultValue="cult">
-          <option value="cult">Cult app</option><option value="apple_watch">Apple Watch</option><option value="manual">Manual</option></select></Field>
-        <p className="hint">Leave calories empty to estimate from the workout type. Copy the exact number from the Cult app when you have it.</p>
-        <button className="btn">Save workout</button>
-        <button type="button" className="link" onClick={() => open('newWorkout')}>Add a new workout type</button>
-      </form>}
+      {picks.length > 0 && S.days && <>
+        <div className="row-h"><h3>One tap · your usual</h3></div>
+        <TileGrid>{picks.map((p) => {
+          const w = S.wtypes.find((x) => x.id === p.type_id) || { name: p.name, area: p.area };
+          return <Tile key={p.name} img={workoutArt(w)} light className={w.image_url && !w.image_url.startsWith('/ex/') ? '' : 'ex-tile'} tone="teal" num={`${fmt(p.minutes)}m`} label={p.name} sub={`${fmt(p.kcal)} kcal`}
+            onClick={async () => { await A.logWorkout(k, { type_id: p.type_id, name: p.name, area: p.area, minutes: p.minutes, kcal: p.kcal, source: 'manual' }); toast(`Logged ${p.name}`); close(); }} />;
+        })}</TileGrid>
+      </>}
+      <div className="row-h"><h3>All workouts</h3><span className="sub">tap to set time</span></div>
+      <TileGrid>
+        {types.map((w) => <Tile key={w.id} img={workoutArt(w)} light className={w.image_url && !w.image_url.startsWith('/ex/') ? '' : 'ex-tile'} tone="teal" label={w.name} sub={w.area} onClick={() => pick(w)} />)}
+        <button className="tile2 add" onClick={() => open('newWorkout', { back: 'logWorkout' })}><span>+</span>New</button>
+      </TileGrid>
     </>
   );
 }
 
 export function NewWorkout() {
-  const { A, close, toast } = useStore();
+  const { A, open, toast } = useStore();
   return (
     <>
       <h2>New workout type</h2>
       <form onSubmit={async (e) => {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
         await A.createWorkoutType({ name: fd.get('name').trim(), area: fd.get('area'), kcal_per_min: Number(fd.get('kpm')) });
-        toast('Workout type saved'); close();
+        toast('Saved. Tap it to log.'); open('logWorkout');
       }}>
         <Field label="Name" id="nwN"><input id="nwN" name="name" required placeholder="e.g. Cult Boxing" /></Field>
         <div className="two">

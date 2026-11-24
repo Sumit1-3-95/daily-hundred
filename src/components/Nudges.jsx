@@ -186,16 +186,9 @@ export function Alerts({ k }) {
   const c = calc(k);
   const h = new Date().getHours();
   const dismissed = getDismissed(k);
-  const ate = (m) => c.d.food.some((f) => f.meal === m);
-  const rts = routineTasks(S, c);
   const list = [];
-  if (h >= 5 && !c.log.wake_time && !c.log.sleep_hours) list.push(['wake', 'sun', 'Add your wake-up time', 'sleep']);
-  if (h >= 5 && h < 12 && c.weight == null) list.push(['weight', 'scale', 'Weigh in before breakfast', 'weight']);
-  if (h >= 8 && rts.some((r) => r.credit < 0.999)) list.push(['routine', 'list', 'Finish your morning routine', 'routine']);
-  // only the latest meal that's missing, so the list stays short
-  const missing = [[21, 'Dinner'], [15, 'Lunch'], [10, 'Breakfast']].find(([hr, m]) => h >= hr && !ate(m));
-  if (missing) list.push([`meal-${missing[1]}`, 'thali', `Log your ${missing[1].toLowerCase()}`, 'logFood']);
-  if (h >= 21 && !c.closed) list.push(['close', 'moon', 'Sign off and close the day', 'closeDay']);
+  // kept short on purpose: only the morning weigh-in
+  if (h >= 5 && h < 12 && c.weight == null) list.push(['weight', 'scale', 'Weigh in before breakfast', 'weightPage']);
   const show = list.filter(([id]) => !dismissed.includes(id)).slice(0, 3);
   if (!show.length) return null;
   return (

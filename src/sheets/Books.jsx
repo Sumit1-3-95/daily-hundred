@@ -90,15 +90,16 @@ function BookDetail({ id, onBack, onEdit }) {
   const notes = S.bookNotes.filter((n) => n.book_id === id);
   return (
     <>
-      <div className="lhead"><button className="back" onClick={onBack} aria-label="Back to shelf">‹</button><h2>{b.title}</h2>
-        <button className="link" onClick={onEdit}>Edit</button></div>
+      <div className="lhead"><button className="back" onClick={onBack} aria-label="Back to shelf">‹</button><h2>{b.title}</h2></div>
       <div className="bk-top">
-        <Cover book={b} size="xl" />
+        <button className="bk-cover" onClick={onEdit} aria-label="Change cover"><Cover book={b} size="xl" /><span className="pf-badge">Change</span></button>
         <div className="bk-b">
           <span className="nc-a">{b.author}</span>
           <div className="bk-pct">{Math.round(pct(b) * 100)}<small>%</small></div>
           <MBar v={pct(b)} />
           <span className="nc-p">{b.pages_read} of {b.total_pages} pages{b.total_pages > b.pages_read ? ` · ${b.total_pages - b.pages_read} to go` : ''}</span>
+          <PageFix b={b} />
+          <button className="btn ghost sm bk-edit" onClick={onEdit}>Edit book · cover, pages, status</button>
           <div className="seg3" role="group" aria-label="Status">
             {[['reading', 'Reading'], ['next', 'Next'], ['read', 'Read']].map(([k, l]) => (
               <button key={k} aria-pressed={b.status === k} onClick={() => A.saveBook({ id, status: k, ...(k === 'read' ? { pages_read: b.total_pages || b.pages_read } : {}) })}>{l}</button>
@@ -128,20 +129,75 @@ function BookDetail({ id, onBack, onEdit }) {
   );
 }
 
+/** Find a cover online (Open Library) or paste an image link. */
+function CoverFinder({ title, author, value, onPick }) {
+  const [res, setRes] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [link, setLink] = useState('');
+  const find = async () => {
+    const t = document.getElementById('bkT')?.value?.trim() || title, a = document.getElementById('bkA')?.value?.trim() || author;
+    if (!t) return setRes([]);
+    setBusy(true);
+    try {
+      const u = `https://openlibrary.org/search.json?limit=12&fields=cover_i,title&title=${encodeURIComponent(t)}${a ? `&author=${encodeURIComponent(a.split('&')[0].trim())}` : ''}`;
+      const j = await (await fetch(u)).json();
+      setRes([...new Set((j.docs || []).map((d) => d.cover_i).filter(Boolean))].slice(0, 8).map((id) => `https://covers.openlibrary.org/b/id/${id}-M.jpg`));
+    } catch { setRes([]); } finally { setBusy(false); }
+  };
+  return (
+    <div className="field cover-find"><span className="lb">Cover</span>
+      <div className="btn-row">
+        <button type="button" className="btn ghost sm" onClick={find} disabled={busy}>{busy ? 'Searching…' : 'Find cover online'}</button>
+        {value && <button type="button" className="link" onClick={() => onPick(null)}>Use plain cover</button>}
+      </div>
+      {res && (res.length ? <div className="cf-grid">{res.map((u) => (
+        <button type="button" key={u} aria-pressed={value === u} onClick={() => onPick(u)}><img src={u} alt="" loading="lazy" /></button>
+      ))}</div> : <p className="hint">No covers found. Upload a photo of the cover, or paste a link below.</p>)}
+      <div className="cf-link"><input type="url" inputMode="url" autoCapitalize="off" value={link} onChange={(e) => setLink(e.target.value)} placeholder="…or paste an image link" aria-label="Cover image link" />
+        {link.trim() && <button type="button" className="btn sm" onClick={() => { onPick(link.trim()); setLink(''); }}>Use</button>}</div>
+    </div>
+  );
+}
+
+/** Set the page you're on, any time — also for a book marked read by mistake. */
+function PageFix({ b }) {
+  const { A, toast } = useStore();
+  const [v, setV] = useState(String(b.pages_read || 0));
+  const n = Math.max(0, Math.min(b.total_pages || Infinity, Number(v) || 0));
+  const changed = n !== (b.pages_read || 0);
+  return (
+    <form className="pg-fix" onSubmit={async (e) => {
+      e.preventDefault(); if (!changed) return;
+      const status = b.total_pages && n >= b.total_pages ? 'read' : b.status === 'read' ? 'reading' : b.status;
+      await A.saveBook({ id: b.id, pages_read: n, status, ...(status !== 'read' ? { finished_on: null } : {}) });
+      toast(status === 'reading' && b.status === 'read' ? 'Back to reading' : 'Pages updated');
+    }}>
+      <label htmlFor={`pf-${b.id}`}>On page</label>
+      <input id={`pf-${b.id}`} type="number" inputMode="numeric" min="0" max={b.total_pages || undefined} value={v} onChange={(e) => setV(e.target.value)} />
+      {changed && <button className="btn sm">Save</button>}
+    </form>
+  );
+}
+
 function BookForm({ id, onDone }) {
   const { S, A, toast } = useStore();
   const b0 = id ? (S.books || []).find((x) => x.id === id) : null;
   const [cover, setCover] = useState(b0?.cover_url || null);
   const [status, setStatus] = useState(b0?.status || 'next');
+  const [total, setTotal] = useState(String(b0?.total_pages || ''));
+  const [read, setRead] = useState(String(b0?.pages_read || 0));
   const [sure, setSure] = useState(false);
   return (
     <>
       <h2>{b0 ? 'Edit book' : 'Add a book'}</h2>
       <form onSubmit={async (e) => {
         e.preventDefault(); const fd = new FormData(e.currentTarget);
-        const total = Number(fd.get('total')) || 0;
-        const row = { ...(b0 ? { id: b0.id } : {}), title: fd.get('title').trim(), author: fd.get('author').trim() || null, total_pages: total,
-          pages_read: status === 'read' ? total : Math.min(total || Infinity, Number(fd.get('read')) || 0), status, cover_url: cover };
+        const tot = Number(total) || 0;
+        const pr = Math.min(tot || Infinity, Number(read) || 0);
+        // pages decide: fewer than the total means not finished yet, even if it was marked read
+        const st = status === 'read' && tot && pr < tot ? 'reading' : status;
+        const row = { ...(b0 ? { id: b0.id } : {}), title: fd.get('title').trim(), author: fd.get('author').trim() || null, total_pages: tot,
+          pages_read: pr, status: st, cover_url: cover, ...(st !== 'read' ? { finished_on: null } : {}) };
         const saved = await A.saveBook(row); toast('Saved'); onDone(saved);
       }}>
         <div className="edit-top">
@@ -151,13 +207,14 @@ function BookForm({ id, onDone }) {
             <Field label="Author" id="bkA"><input id="bkA" name="author" defaultValue={b0?.author || ''} /></Field>
           </div>
         </div>
+        <CoverFinder title={b0?.title} author={b0?.author} value={cover} onPick={setCover} />
         <div className="two">
-          <Field label="Total pages" id="bkP"><input id="bkP" name="total" type="number" inputMode="numeric" min="0" defaultValue={b0?.total_pages || ''} /></Field>
-          <Field label="Pages read" id="bkR"><input id="bkR" name="read" type="number" inputMode="numeric" min="0" defaultValue={b0?.pages_read || 0} /></Field>
+          <Field label="Total pages" id="bkP"><input id="bkP" name="total" type="number" inputMode="numeric" min="0" value={total} onChange={(e) => setTotal(e.target.value)} /></Field>
+          <Field label="Pages read" id="bkR"><input id="bkR" name="read" type="number" inputMode="numeric" min="0" value={read} onChange={(e) => setRead(e.target.value)} /></Field>
         </div>
         <div className="seg3" role="group" aria-label="Status">
           {[['reading', 'Reading'], ['next', 'Up next'], ['read', 'Read']].map(([k, l]) => (
-            <button type="button" key={k} aria-pressed={status === k} onClick={() => setStatus(k)}>{l}</button>))}
+            <button type="button" key={k} aria-pressed={status === k} onClick={() => { setStatus(k); if (k === 'read' && total) setRead(total); }}>{l}</button>))}
         </div>
         <button className="btn">{b0 ? 'Save' : 'Add book'}</button>
       </form>
